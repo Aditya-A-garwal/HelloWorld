@@ -5,10 +5,9 @@ class DBIO:
     # Constructor
     def __init__(self, target):
         self.name = "Worlds/" + target + '.db'
+        self.conn = sqlite3.connect(self.name)
+        c = self.conn.cursor()
         try:
-            self.conn = sqlite3.connect(self.name)
-            c = self.conn.cursor()
-
             # Create Table
             c.execute('''CREATE TABLE terrain(keys INTEGER NOT NULL PRIMARY KEY, binry TEXT)''')
             self.conn.commit()
