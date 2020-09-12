@@ -1,0 +1,7 @@
+Mountains, plains
+Snowy, Desert, jungle
+
+To be added- Ice Tile, snow tile (in world gen)
+Fluid mechanics- Aditya
+andy typeface
+
