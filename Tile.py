@@ -6,7 +6,7 @@ class Tile:
 
     def __init__(self, texture, rect=(0,0,TILE_WIDTH,TILE_WIDTH)):
         self.rect = rect
-        self.texture = pygame.image.load("Assets/"+texture)
+        self.texture = pygame.image.load("Resources/Mock/"+texture)
 
 class Grass(Tile):
 
