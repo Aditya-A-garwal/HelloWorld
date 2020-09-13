@@ -5,3 +5,6 @@ To be added- Ice Tile, snow tile (in world gen)
 Fluid mechanics- Aditya
 andy typeface
 
+https://wiki.tiker.net/PyOpenCL/Installation/Windows/
+http://www.minho-kim.com/courses/17sp43.635/pyopencl.html
+https://www.lfd.uci.edu/~gohlke/pythonlibs/#pyopencl
