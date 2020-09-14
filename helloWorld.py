@@ -78,17 +78,7 @@ while running:
     pygame.display.update()
 
 
-    # Server-side    
-
-    # Key to movement translation
-    if(keyDown == pygame.K_a): playerInc[0] = -1
-    elif(keyDown == pygame.K_d): playerInc[0] = 1
-
-    if(keyDown == pygame.K_w): playerInc[1] = 1
-    elif(keyDown == pygame.K_s): playerInc[1] = -1
-
-    if(keyUp == pygame.K_a or keyUp == pygame.K_d): playerInc[0] = 0    
-    elif(keyUp == pygame.K_w or keyUp == pygame.K_s): playerInc[1] = 0    
+    # Server-side         
 
     # Framerate calculation
     frameTime = clock.tick(framerate) + 1
@@ -109,11 +99,13 @@ while running:
 chunkBuff.storage.stop()
 pygame.display.quit()
 
+# Function to draw to screen (Client-side)
 @myScreen.event
 def on_draw():
     myScreen.clear()    
     image.blit(myblit[0], myblit[1])        
 
+# Key press event handler (Client-side)
 @myScreen.event
 def on_key_press(symbol, modifiers):
     if(symbol == pyglet.window.key.A): myIncrement[0] = -128
@@ -121,16 +113,43 @@ def on_key_press(symbol, modifiers):
     if(symbol == pyglet.window.key.S): myIncrement[1] = -128    
     if(symbol == pyglet.window.key.W): myIncrement[1] = 128  
 
+# Key Release event handler (Client-side)
 @myScreen.event
 def on_key_release(symbol, modifiers):
     if(symbol == pyglet.window.key.A or symbol == pyglet.window.key.D): myIncrement[0] = 0
     elif(symbol == pyglet.window.key.S or symbol == pyglet.window.key.W): myIncrement[1] = 0           
 
+# Mouse Press event handler (Client-side)
+@myScreen.event
+def on_mouse_press(x, y, button, modifiers):
+    pass
+
+# Mouse Release event handler (Client-side)
+@myScreen.event
+def on_mouse_release(x, y, button, modifiers):
+    pass
+
+# Mouse Drag event handler (Client-side)
+@myScreen.event
+def on_mouse_drag(x, y, dx, dy, buttons, modifiers):
+    pass
+
+# Mouse Enter event handler (Client-side)
+@myScreen.event
+def on_mouse_enter(x, y):
+    pass
+
+# Mouse Leave event handler (Client-side)
+@myScreen.event
+def on_mouse_leave(x, y):
+    pass
+
+# Main function (Server-side)
 def update(dt):
     myblit[0] += myIncrement[0]*dt
     myblit[1] += myIncrement[1]*dt   
 
     print(1/dt)
 
-pyglet.clock.schedule_interval(update, 1/240)
-pyglet.app.run()
+pyglet.clock.schedule_interval(update, 1/240) # Main function is called a maximum of 240 times every second
+pyglet.app.run() # Start running the app
