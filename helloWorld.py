@@ -75,7 +75,7 @@ while running:
     # Camera movement handling
     cam[0] += (player[0]-cam[0]) * 0.1
     cam[1] += (player[1]-cam[1]) * 0.1
-    currChunk = int(cam[0]//(CHUNK_WIDTH*16))
+    currChunk = int(cam[0]//(CHUNK_WIDTH*TILE_WIDTH))
 
     # Rendering and updating screen
     screen.fill((30, 175, 250))
@@ -102,7 +102,7 @@ while running:
     # Player movement handling    
     player[0] += (speed/prevFramerate) * playerInc[0]
     player[1] += (speed/prevFramerate) * playerInc[1]
-    if not(0 < player[1] < (CHUNK_HEIGHT*16)): player[1] -= (speed / prevFramerate) * playerInc[1]    
+    if not(0 < player[1] < (CHUNK_HEIGHT*TILE_WIDTH)): player[1] -= (speed / prevFramerate) * playerInc[1]    
 
     deltaChunk = currChunk-prevChunk
     prevChunk = currChunk
