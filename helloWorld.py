@@ -1,4 +1,4 @@
-import pygame, numpy, sys, random, pickle
+import pyglet, pygame, numpy, sys, random, pickle
 from pygame.locals import *
 from opensimplex import OpenSimplex
 
@@ -28,6 +28,16 @@ gen = OpenSimplex()
 pygame.init()
 clock = pygame.time.Clock()
 displaySize = [pygame.display.Info().current_w//2, pygame.display.Info().current_h//2]
+
+myScreen = pyglet.window.Window()
+label = pyglet.text.Label('Hello, world!',
+                          font_name='Arial',
+                          font_size=36,
+                          x=myScreen.width // 2,
+                          y=myScreen.height // 2,
+                          anchor_x='center',
+                          anchor_y='center')
+image = pyglet.resource.image("Resources/Mock/grass.png")                          
 
 # Create and display window
 screen = pygame.display.set_mode(displaySize, pygame.RESIZABLE)
@@ -103,3 +113,11 @@ while running:
 
 chunkBuff.storage.stop()
 pygame.display.quit()
+
+@myScreen.event
+def on_draw():
+    myScreen.clear()
+    label.draw()
+    image.blit(10, 10)
+
+pyglet.app.run()
