@@ -30,7 +30,9 @@ clock = pygame.time.Clock()
 displaySize = [pygame.display.Info().current_w//2, pygame.display.Info().current_h//2]
 
 myScreen = pyglet.window.Window()
-image = pyglet.resource.image("Resources/Mock/grass.png")                          
+image = pyglet.image.load("Resources/Mock/grass.png")     
+myblit = [10, 10]
+myIncrement = [0, 0]
 
 # Create and display window
 screen = pygame.display.set_mode(displaySize, pygame.RESIZABLE)
@@ -47,7 +49,7 @@ chunkBuff = ChunkBuffer(3, storage, 0, gen)
 renderer = Renderer()
 
 # game loop
-running = True
+running = False
 while running:
 
     # Client-side
@@ -110,6 +112,25 @@ pygame.display.quit()
 @myScreen.event
 def on_draw():
     myScreen.clear()    
-    image.blit(10, 10)
+    image.blit(myblit[0], myblit[1])        
 
+@myScreen.event
+def on_key_press(symbol, modifiers):
+    if(symbol == pyglet.window.key.A): myIncrement[0] = -128
+    if(symbol == pyglet.window.key.D): myIncrement[0] = 128
+    if(symbol == pyglet.window.key.S): myIncrement[1] = -128    
+    if(symbol == pyglet.window.key.W): myIncrement[1] = 128  
+
+@myScreen.event
+def on_key_release(symbol, modifiers):
+    if(symbol == pyglet.window.key.A or symbol == pyglet.window.key.D): myIncrement[0] = 0
+    elif(symbol == pyglet.window.key.S or symbol == pyglet.window.key.W): myIncrement[1] = 0           
+
+def update(dt):
+    myblit[0] += myIncrement[0]*dt
+    myblit[1] += myIncrement[1]*dt   
+
+    print(1/dt)
+
+pyglet.clock.schedule_interval(update, 1/240)
 pyglet.app.run()
