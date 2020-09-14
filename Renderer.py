@@ -1,5 +1,4 @@
 import pyglet
-import pygame
 from Tile import *
 from Chunk import *
 
@@ -26,13 +25,13 @@ class Renderer:
         pass
 
     # Take a chunk and render it
-    def render(self, chunks, cameraCoors, playerCoors, displaySize, surface):
+    def render(self, chunks, cameraCoors, playerCoors, displaySize):
         """
             Renders given chunks onto given surface
 
             Requires chunks, cameraCoors, playerCoors, displaySize as sequences as surface as pygame.Surface
         """
-        rects = []
+        #rects = []
         for c in range(0, len(chunks)):
 
             lowerIndex = int(max((cameraCoors[1]-displaySize[1]*0.5)/TILE_WIDTH, 0))
@@ -45,23 +44,21 @@ class Renderer:
                     currentTile = chunks[c].blocks[i][j]
 
                     if(currentTile != 0):
-
                         coors = self.arrayToChunk((j, i))
+
                         self.chunkToGraph(coors, absolutePos)
                         self.graphToCamera(coors, cameraCoors)
-
-                        coors[1] += TILE_TABLE[currentTile].rect[2] #currentTile.rect[2] # Add Offset to render from top-left instead of bottom-left
                         self.cameraToScreen(coors, displaySize)
-
-                        rects.append(surface.blit(TILE_TABLE[currentTile].texture, coors, TILE_TABLE[currentTile].rect))
+                        
+                        TILE_TABLE[currentTile].texture.blit(coors[0], coors[1])                        
 
         # Temporary player crosshair rendering
         playerPos = [playerCoors[0], playerCoors[1]]
         self.graphToCamera(playerPos, cameraCoors)
         self.cameraToScreen(playerPos, displaySize)
 
-        pygame.draw.circle(surface, (255,50,50), playerPos, 2)
-        return rects
+        crosshair = pyglet.shapes.Circle(playerPos[0], playerPos[1], 3, color=(255, 50, 50))
+        crosshair.draw()
 
     def arrayToChunk(self, coor):
         # From array-space to chunk-space
@@ -80,4 +77,4 @@ class Renderer:
     def cameraToScreen(self, coor, dispSize):
         # From camera-space to screen-space
         coor[0] += dispSize[0] * 0.5
-        coor[1] = dispSize[1] * 0.5 - coor[1]
+        coor[1] += dispSize[1] * 0.5

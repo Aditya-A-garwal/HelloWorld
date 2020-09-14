@@ -6,7 +6,7 @@ from Tile import *
 from Chunk import *
 from Renderer import *
 
-from databaseIO import *
+from Serializer import *
 
 # Screen variables
 displaySize = [800,600]
@@ -21,13 +21,8 @@ myScreen = pyglet.window.Window(width=displaySize[0], height=displaySize[1], res
 myScreen.set_minimum_size(600, 450) 
 myScreen.set_icon(pyglet.image.load("Resources/Mock/imgtester.png"))
 
-# Temporary variables
-myblit = [10, 10]
-myIncrement = [0, 0]
-image = pyglet.image.load("Resources/Mock/grass.png")  
-
 # Camera variables
-cam = [0,CHUNK_HEIGHT*16/2]
+camera = [0,CHUNK_HEIGHT*TILE_WIDTH/2]
 
 # Player variables
 player = [0,CHUNK_HEIGHT*TILE_WIDTH*0.5]
@@ -39,10 +34,10 @@ speed = 6 * TILE_WIDTH #number of tiles to move per second
 gen = OpenSimplex()
 
 # Create a database object
-storage = DBIO("myWorld2")
+storage = Serializer("myWorld2")
 
 # Create chunk buffer and chunk-position buffer
-chunkBuff = ChunkBuffer(3, storage, 0, gen)
+chunkBuffer = ChunkBuffer(3, storage, 0, gen)
 
 # Create a renderer
 renderer = Renderer()
@@ -50,8 +45,13 @@ renderer = Renderer()
 # Function to draw to screen (Client-side)
 @myScreen.event
 def on_draw():
+    global framerate
+    global player, camera, speed, playerInc
+    global chunkBuffer, deltaChunk, prevChunk, currChunk
+    global renderer
     myScreen.clear()    
-    image.blit(myblit[0], myblit[1])        
+    #image.blit(myblit[0], myblit[1])        
+    renderer.render(chunkBuffer, camera, player, displaySize)
 
 # Key press event handler (Client-side)
 @myScreen.event
@@ -104,25 +104,21 @@ def update(dt):
     global keyPress, secondaryPress, keyRelease, secondaryRelease
     global framerate
     global player, camera, speed, playerInc
-    global chunkBuff, deltaChunk, prevChunk, currChunk
+    global chunkBuffer, deltaChunk, prevChunk, currChunk
     global renderer
 
-    if(keyPress == pyglet.window.key.A): myIncrement[0] = -128
-    elif(keyPress == pyglet.window.key.D): myIncrement[0] = 128
-    elif(keyPress == pyglet.window.key.S): myIncrement[1] = -128    
-    elif(keyPress == pyglet.window.key.W): myIncrement[1] = 128  
+    if(keyPress == pyglet.window.key.A): playerInc[0] = -128
+    elif(keyPress == pyglet.window.key.D): playerInc[0] = 128
+    elif(keyPress == pyglet.window.key.S): playerInc[1] = -128    
+    elif(keyPress == pyglet.window.key.W): playerInc[1] = 128  
 
-    if(keyRelease == pyglet.window.key.A or keyRelease == pyglet.window.key.D): myIncrement[0] = 0
-    elif(keyRelease == pyglet.window.key.S or keyRelease == pyglet.window.key.W): myIncrement[1] = 0           
-
-    myblit[0] += myIncrement[0]*dt
-    myblit[1] += myIncrement[1]*dt       
+    if(keyRelease == pyglet.window.key.A or keyRelease == pyglet.window.key.D): playerInc[0] = 0
+    elif(keyRelease == pyglet.window.key.S or keyRelease == pyglet.window.key.W): playerInc[1] = 0                   
 
     # Camera movement handling
-    cam[0] += (player[0]-cam[0]) * 0.1
-    cam[1] += (player[1]-cam[1]) * 0.1
-    currChunk = int(cam[0]//(CHUNK_WIDTH*TILE_WIDTH))
-    #renderer.render(chunkBuff, cam, player, displaySize, screen)
+    camera[0] += (player[0]-camera[0]) * 0.1
+    camera[1] += (player[1]-camera[1]) * 0.1
+    currChunk = int(camera[0]//(CHUNK_WIDTH*TILE_WIDTH)) # *To be moved to player    
 
     # Player movement handling    
     player[0] += (speed/framerate) * playerInc[0]
@@ -133,15 +129,14 @@ def update(dt):
     deltaChunk = currChunk-prevChunk
     prevChunk = currChunk
 
-    if(deltaChunk > 0): chunkBuff.shiftLeft() #Player has moved right
-    elif(deltaChunk < 0): chunkBuff.shiftRight() #Player has moved left
+    if(deltaChunk > 0): chunkBuffer.shiftLeft() #Player has moved right
+    elif(deltaChunk < 0): chunkBuffer.shiftRight() #Player has moved left
 
     # Framerate calculation    
-    framerate = 1/dt
-    print(1/dt)
-    keyPress, keyRelease, secondaryPress, secondaryrelease = None, None, None, None
+    framerate = 1/dt    
+    keyPress, keyRelease, secondaryPress, secondaryRelease = None, None, None, None
 
 pyglet.clock.schedule_interval(update, 1/240) # Main function is called a maximum of 240 times every second
 pyglet.app.run() # Start running the app
 
-chunkBuff.storage.stop()
+chunkBuffer.storage.stop()

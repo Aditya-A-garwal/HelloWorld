@@ -10,11 +10,11 @@ CHUNK_WIDTH, CHUNK_HEIGHT = 16, 512
 WALKING_CONSTANT = 0.0075
 
 
-def populateChunk(chunk, noiseObj, chunkInd):
+def populateChunk(chunk, noise, chunkInd):
     coor = chunkInd * CHUNK_WIDTH
 
     for i in range(0, CHUNK_WIDTH):
-        height = int((noiseObj.noise2d(x=coor * WALKING_CONSTANT, y=0) + 1) * 64)  # Value will be from 0 to 128
+        height = int((noise.noise2d(x=coor * WALKING_CONSTANT, y=0) + 1) * 64)  # Value will be from 0 to 128
         coor += 1
         for j in range(200, 200 + height): chunk[j, i] = 1
 
@@ -543,25 +543,26 @@ class Chunk:
 
 class ChunkBuffer:
 
-    def __init__(self, length, storageObj, chunkInd, noiseObj):
+    def __init__(self, length, serializer, currChunk, noiseGenerator):
 
-        self.storage = storageObj
-        self.currChunk = chunkInd
+        self.serializer = serializer
+        self.currChunk = currChunk
 
         self.chunks = []
         self.positions = []
 
-        self.noise = noiseObj
+        self.noiseGenerator = noiseGenerator
 
+        # Length must be an odd number (current chunk is at center)
         startVal = self.currChunk - (length - 1) * 0.5
         endVal = self.currChunk + (length - 1) * 0.5
 
-        for i in range(int(self.currChunk - (length - 1) * 0.5), int(self.currChunk + (length - 1) * 0.5) + 1):
+        for i in range(int(startVal), int(endVal) + 1):
             self.positions.append(i)
-            retrieved = self.storage[i]
+            retrieved = self.serializer[i]
             if(retrieved == None):
                 retrieved = Chunk()
-                populateChunk(retrieved, self.noise, i)
+                populateChunk(retrieved, self.noiseGenerator, i)
             else:
                 retrieved = pickle.loads(retrieved)
 
@@ -571,13 +572,13 @@ class ChunkBuffer:
 
         self.currChunk += 1
 
-        self.storage[self.positions[0]-1] = pickle.dumps(self.chunks[0]) # move leftmost chunk into storage
+        self.serializer[self.positions[0]-1] = pickle.dumps(self.chunks[0]) # move leftmost chunk into storage
         for i in range(0, len(self.chunks)-1): self.chunks[i] = self.chunks[i+1] # move all chunks one space left
-        self.chunks[-1] = self.storage[self.positions[-1]+1] # take next right chunk from storage and move into buffer
+        self.chunks[-1] = self.serializer[self.positions[-1]+1] # take next right chunk from storage and move into buffer
 
         if(self.chunks[-1] == None):
             self.chunks[-1] = Chunk()
-            populateChunk(self.chunks[-1], self.noise, self.positions[-1]+1)
+            populateChunk(self.chunks[-1], self.noiseGenerator, self.positions[-1]+1)
         else:
             self.chunks[-1] = pickle.loads(self.chunks[-1])
 
@@ -588,13 +589,13 @@ class ChunkBuffer:
 
         self.currChunk -= 1
 
-        self.storage[self.positions[-1]+1] = pickle.dumps(self.chunks[-1]) # move rightmost chunk into storage
+        self.serializer[self.positions[-1]+1] = pickle.dumps(self.chunks[-1]) # move rightmost chunk into storage
         for i in range(len(self.chunks)-1, 0, -1): self.chunks[i] = self.chunks[i-1] # move all chunks one space right
-        self.chunks[0] = self.storage[self.positions[0]-1] # take next left chunks from storage and move into buffer
+        self.chunks[0] = self.serializer[self.positions[0]-1] # take next left chunks from storage and move into buffer
 
         if(self.chunks[0] == None):
             self.chunks[0] = Chunk()
-            populateChunk(self.chunks[0], self.noise, self.positions[0]-1)
+            populateChunk(self.chunks[0], self.noiseGenerator, self.positions[0]-1)
         else:
             self.chunks[0] = pickle.loads(self.chunks[0])
 
@@ -608,4 +609,4 @@ class ChunkBuffer:
         self.chunks[key] = value
 
     def __len__(self):
-        return len(self.chunks)
+        return len(self.positions)

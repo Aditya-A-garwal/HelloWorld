@@ -1,6 +1,6 @@
 import sqlite3,  zlib
 
-class DBIO:
+class Serializer:
 
     # Constructor
     def __init__(self, target):
