@@ -1,6 +1,6 @@
 import pygame
 
-TILE_WIDTH = 16
+TILE_WIDTH = 24
 
 class Tile:
 

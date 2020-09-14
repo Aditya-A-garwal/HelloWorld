@@ -18,9 +18,9 @@ class DBIO:
 
     # Save magic method
     def __setitem__(self, key, chunkObj):
-        """Saves/Updates the string at a particular key location.
-
-        Requires the key as an int and chunkObj as UTF-8 string.
+        """
+            Saves/Updates the string at a particular key location.
+            Requires the key as an int and chunkObj as UTF-8 string.
         """
         c = self.conn.cursor()
         try:  # Save string at new key location
@@ -33,10 +33,10 @@ class DBIO:
 
     # Load magic method
     def __getitem__(self, key):
-        """Retrieves the string stored at a particular key location.
-
-        Requires the key as an int.
-        Returns the string at the key's location (if key is present) or None
+        """
+            Retrieves the string stored at a particular key location.
+            Requires the key as an int.
+            Returns the string at the key's location (if key is present) or None
         """
         c = self.conn.cursor()
         c.execute('''SELECT binry FROM terrain WHERE keys=?''', (key,))
@@ -49,8 +49,9 @@ class DBIO:
             return res
 
     def savePlayer(self, name, pickled):
-        """Saves/Updates the pickledplayer at a particular playername.
 
+        """
+            Saves/Updates the pickledplayer at a particular playername.
             Requires the name as a string and pickled as UTF-8 string.
         """
         c = self.conn.cursor()
@@ -63,10 +64,11 @@ class DBIO:
             self.conn.commit()
 
     def loadPlayer(self, name):
-        """Retrieves the pickledplayer stored at a particular playername.
 
-        Requires the name as a string.
-        Returns the pickledplayer at the playername's location (if present) or None
+        """
+            Retrieves the pickledplayer stored at a particular playername.
+            Requires the name as a string.
+            Returns the pickledplayer at the playername's location (if present) or None
         """
         c = self.conn.cursor()
         c.execute('''SELECT pickledplayer FROM player WHERE playername=?''', (name,))
