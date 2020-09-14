@@ -1,4 +1,5 @@
-import pygame, pickle
+import pyglet
+import pickle
 from Tile import *
 from opensimplex import OpenSimplex
 

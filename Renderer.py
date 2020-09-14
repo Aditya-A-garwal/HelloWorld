@@ -1,5 +1,5 @@
+import pyglet
 import pygame
-from pygame.locals import *
 from Tile import *
 from Chunk import *
 
@@ -27,9 +27,10 @@ class Renderer:
 
     # Take a chunk and render it
     def render(self, chunks, cameraCoors, playerCoors, displaySize, surface):
-        """Renders given chunks onto given surface
+        """
+            Renders given chunks onto given surface
 
-        Requires chunks, cameraCoors, playerCoors, displaySize as sequences as surface as pygame.Surface
+            Requires chunks, cameraCoors, playerCoors, displaySize as sequences as surface as pygame.Surface
         """
         rects = []
         for c in range(0, len(chunks)):
