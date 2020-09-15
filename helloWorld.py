@@ -38,16 +38,17 @@ serializer = Serializer("myWorld2")
 # Create chunk buffer and chunk-position buffer
 chunkBuffer = ChunkBuffer(5, serializer, 0, gen)
 
-# Create a renderer
+# Create a renderer, giving it references to all necessary objects
 renderer = Renderer(chunkBuffer, camera, player, displaySize)
 
 # Create a background batch
 backgroundBatch = pyglet.graphics.Batch() 
 background = pyglet.shapes.Rectangle(x=0, y=0, width=displaySize[0], height=displaySize[1], color=(100,175,250), batch=backgroundBatch)
 
-# Function to draw to screen (Client-side)
 @myScreen.event
 def on_draw():
+    # Function to draw to screen (Client-side)
+
     global framerate
     global player, camera, speed, playerInc
     global chunkBuffer, deltaChunk, prevChunk, currChunk
@@ -58,52 +59,53 @@ def on_draw():
     backgroundBatch.draw()
     renderer.render()
 
-# Key press event handler (Client-side)
 @myScreen.event
 def on_key_press(symbol, modifiers):    
+    # Key press event handler (Client-side)
     global keyPress, secondaryPress
     keyPress, secondaryPress = symbol, modifiers
 
-# Key Release event handler (Client-side)
 @myScreen.event
 def on_key_release(symbol, modifiers):
+    # Key Release event handler (Client-side)
     global keyRelease, secondaryRelease
     keyRelease, secondaryRelease = symbol, modifiers
 
-'''
-# Mouse Press event handler (Client-side)
-@myScreen.event
-def on_mouse_press(x, y, button, modifiers):
-    pass
+# @myScreen.event
+# def on_mouse_press(x, y, button, modifiers):
+#     # Mouse Press event handler (Client-side)
+#     pass
 
-# Mouse Release event handler (Client-side)
-@myScreen.event
-def on_mouse_release(x, y, button, modifiers):
-    pass
+# @myScreen.event
+# def on_mouse_release(x, y, button, modifiers):
+#     # Mouse Release event handler (Client-side)
+#     pass
 
-# Mouse Drag event handler (Client-side)
-@myScreen.event
-def on_mouse_drag(x, y, dx, dy, buttons, modifiers):
-    pass
+# @myScreen.event
+# def on_mouse_drag(x, y, dx, dy, buttons, modifiers):
+#     # Mouse Drag event handler (Client-side)
+#     pass
 
-# Mouse Enter event handler (Client-side)
-@myScreen.event
-def on_mouse_enter(x, y):
-    pass
+# @myScreen.event
+# def on_mouse_enter(x, y):
+#     # Mouse Enter event handler (Client-side)
+#     pass
 
-# Mouse Leave event handler (Client-side)
-@myScreen.event
-def on_mouse_leave(x, y):
-    pass
-'''
+# @myScreen.event
+# def on_mouse_leave(x, y):
+#     # Mouse Leave event handler (Client-side)
+#     pass
 
-# Window Resize event handler (Client-side)
 @myScreen.event
 def on_resize(newWidth, newHeight):
+    # Window Resize event handler (Client-side)
     global displaySize
     global background, backgroundBatch
 
-    background.width, background.height = displaySize = newWidth, newHeight    
+    displaySize[0] = newWidth
+    displaySize[1] = newHeight
+
+    background.width, background.height = displaySize
 
 
 # Main function (Server-side)
@@ -124,8 +126,8 @@ def update(dt):
     elif(keyRelease == pyglet.window.key.S or keyRelease == pyglet.window.key.W): playerInc[1] = 0                   
 
     # Camera movement handling
-    camera[0] += (player[0]-camera[0]) * 0.2
-    camera[1] += (player[1]-camera[1]) * 0.2     
+    camera[0] += (player[0]-camera[0]) * 0.25
+    camera[1] += (player[1]-camera[1]) * 0.25
 
     # Player movement handling    
     player[0] += (speed*dt) * playerInc[0]
@@ -144,7 +146,7 @@ def update(dt):
     framerate = 1/dt    
     keyPress, keyRelease, secondaryPress, secondaryRelease = None, None, None, None
 
-pyglet.clock.schedule_interval(update, 0.01) # Main function is called a maximum of 240 times every second
-pyglet.app.run() # Start running the app
+pyglet.clock.schedule_interval(update, 0.01) # Main function is called a maximum of 100 times every second
+pyglet.app.run() # Start running the program
 
 chunkBuffer.serializer.stop()

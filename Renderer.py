@@ -20,7 +20,7 @@ Translations
 '''
 class Renderer:
 
-    def __init__(self, chunkBuffer, camera, player, displaySize):
+    def __init__(self, chunkBuffer, camera, player, displaySize):        
         self.chunkBuffer = chunkBuffer
         self.camera = camera
         self.player = player
@@ -30,12 +30,14 @@ class Renderer:
     def render(self):
         """
             Renders given chunks onto given surface
-
-            Requires chunks, cameraCoors, playerCoors, displaySize as sequences as surface as pygame.Surface
+            Requires chunks, cameraCoors, playerCoors, displaySize as sequences 
         """        
+
         lowerIndex = int(max((self.camera[1]-self.displaySize[1]*0.5)/TILE_WIDTH, 0))
-        upperIndex = int(min(1 + (self.camera[1]+self.displaySize[1]*0.5)/TILE_WIDTH, CHUNK_HEIGHT)) #1 is added to accomodate for exclusiveness of for loops
+        upperIndex = int(min(1 + (self.camera[1]+self.displaySize[1]*0.5)/TILE_WIDTH, CHUNK_HEIGHT)) 
+
         for c in range(0, len(self.chunkBuffer)):            
+
             absolutePos = self.chunkBuffer.positions[c]
 
             for i in range(lowerIndex, upperIndex):
