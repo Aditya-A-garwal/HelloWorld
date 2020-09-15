@@ -8,7 +8,7 @@ class Serializer:
         self.conn = sqlite3.connect(self.name)
         c = self.conn.cursor()
         try:
-            # Create Table
+            # Create Tables
             c.execute('''CREATE TABLE terrain(keys INTEGER NOT NULL PRIMARY KEY, binry TEXT)''')
             self.conn.commit()
             c.execute('''CREATE TABLE player(playername TEXT NOT NULL PRIMARY KEY, pickledplayer TEXT)''')

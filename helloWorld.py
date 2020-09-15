@@ -7,18 +7,15 @@ from Renderer import *
 
 from Serializer import *
 
-# Screen variables
-displaySize = [800,600]
-framerate = 1
+# Create Pyglet Window
+displaySize = [400, 300]
+myScreen = pyglet.window.Window(width=displaySize[0], height=displaySize[1], resizable = True, caption="Hello World!")
+myScreen.set_minimum_size(displaySize[0], displaySize[1]) 
+myScreen.set_icon(pyglet.image.load("Resources/Mock/imgtester.png"))
 
 # Variables to store Client actions
 keyPress, keyRelease = None, None
 secondaryPress, secondaryRelease = None, None
-
-# Create Pyglet Window
-myScreen = pyglet.window.Window(width=displaySize[0], height=displaySize[1], resizable = True, caption="Hello World!")
-myScreen.set_minimum_size(600, 450) 
-myScreen.set_icon(pyglet.image.load("Resources/Mock/imgtester.png"))
 
 # Camera variables
 camera = [0,CHUNK_HEIGHT*TILE_WIDTH*0.5]
@@ -27,19 +24,20 @@ camera = [0,CHUNK_HEIGHT*TILE_WIDTH*0.5]
 player = [0,CHUNK_HEIGHT*TILE_WIDTH*0.5]
 playerInc = [0,0]
 currChunk = prevChunk = deltaChunk = 0
+framerate = 1
 speed = 8 * TILE_WIDTH #number of tiles to move per second
 
 #Create noise object
 gen = OpenSimplex()
 
-# Create a database object
+# Create a derializer object
 serializer = Serializer("myWorld2")
 
 # Create chunk buffer and chunk-position buffer
 chunkBuffer = ChunkBuffer(5, serializer, 0, gen)
 
-# Create a renderer, giving it references to all necessary objects
-renderer = Renderer(chunkBuffer, camera, player, displaySize)
+# Initialize the renderer by giving it references to all necessary objects
+Renderer.initialize(chunkBuffer, camera, player, displaySize)
 
 # Create a background batch
 backgroundBatch = pyglet.graphics.Batch() 
@@ -48,7 +46,6 @@ background = pyglet.shapes.Rectangle(x=0, y=0, width=displaySize[0], height=disp
 @myScreen.event
 def on_draw():
     # Function to draw to screen (Client-side)
-
     global framerate
     global player, camera, speed, playerInc
     global chunkBuffer, deltaChunk, prevChunk, currChunk
@@ -57,7 +54,7 @@ def on_draw():
     global background, backgroundBatch
 
     backgroundBatch.draw()
-    renderer.render()
+    Renderer.render()
 
 @myScreen.event
 def on_key_press(symbol, modifiers):    
