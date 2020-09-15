@@ -20,40 +20,41 @@ Translations
 '''
 class Renderer:
 
-    def __init__(self):
-        pass
+    def __init__(self, chunkBuffer, camera, player, displaySize):
+        self.chunkBuffer = chunkBuffer
+        self.camera = camera
+        self.player = player
+        self.displaySize = displaySize        
 
     # Take a chunk and render it
-    def render(self, chunks, cameraCoors, playerCoors, displaySize):
+    def render(self):
         """
             Renders given chunks onto given surface
 
             Requires chunks, cameraCoors, playerCoors, displaySize as sequences as surface as pygame.Surface
-        """
-        #rects = []
-        lowerIndex = int(max((cameraCoors[1]-displaySize[1]*0.5)/TILE_WIDTH, 0))
-        upperIndex = int(min(1 + (cameraCoors[1]+displaySize[1]*0.5)/TILE_WIDTH, CHUNK_HEIGHT)) #1 is added to accomodate for exclusiveness of for loops
-        for c in range(0, len(chunks)):            
-            absolutePos = chunks.positions[c]
+        """        
+        lowerIndex = int(max((self.camera[1]-self.displaySize[1]*0.5)/TILE_WIDTH, 0))
+        upperIndex = int(min(1 + (self.camera[1]+self.displaySize[1]*0.5)/TILE_WIDTH, CHUNK_HEIGHT)) #1 is added to accomodate for exclusiveness of for loops
+        for c in range(0, len(self.chunkBuffer)):            
+            absolutePos = self.chunkBuffer.positions[c]
 
             for i in range(lowerIndex, upperIndex):
                 for j in range(0, CHUNK_WIDTH):
-                    currentTile = chunks[c].blocks[i][j]
+                    currentTile = self.chunkBuffer[c].blocks[i][j]
 
                     if(currentTile != 0):
                         coors = self.arrayToChunk((j, i))
 
                         self.chunkToGraph(coors, absolutePos)
-                        self.graphToCamera(coors, cameraCoors)
-                        self.cameraToScreen(coors, displaySize)
+                        self.graphToCamera(coors)
+                        self.cameraToScreen(coors)
                         
                         TILE_TABLE[currentTile].blit(coors[0], coors[1])                        
 
         # Temporary player crosshair rendering
-
-        playerPos = [playerCoors[0], playerCoors[1]]
-        self.graphToCamera(playerPos, cameraCoors)
-        self.cameraToScreen(playerPos, displaySize)
+        playerPos = [self.player[0], self.player[1]]
+        self.graphToCamera(playerPos)
+        self.cameraToScreen(playerPos)
 
         pyglet.shapes.Circle(x=playerPos[0], y=playerPos[1], radius=4, color=(255, 50, 50)).draw()        
 
@@ -66,12 +67,12 @@ class Renderer:
         coor[0] += (chunkInd * CHUNK_WIDTH * TILE_WIDTH)
         coor[1] = coor[1]
 
-    def graphToCamera(self, coor, camCoor):
+    def graphToCamera(self, coor):
         # From absolute-space to camera-space
-        coor[0] -= camCoor[0]
-        coor[1] -= camCoor[1]
+        coor[0] -= self.camera[0]
+        coor[1] -= self.camera[1]
 
-    def cameraToScreen(self, coor, dispSize):
+    def cameraToScreen(self, coor):
         # From camera-space to screen-space
-        coor[0] += dispSize[0] * 0.5
-        coor[1] += dispSize[1] * 0.5
+        coor[0] += self.displaySize[0] * 0.5
+        coor[1] += self.displaySize[1] * 0.5

@@ -11,11 +11,11 @@ from Serializer import *
 displaySize = [800,600]
 framerate = 1
 
-# Create variables to store Client actions
+# Variables to store Client actions
 keyPress, keyRelease = None, None
 secondaryPress, secondaryRelease = None, None
 
-# create Pyglet Window
+# Create Pyglet Window
 myScreen = pyglet.window.Window(width=displaySize[0], height=displaySize[1], resizable = True, caption="Hello World!")
 myScreen.set_minimum_size(600, 450) 
 myScreen.set_icon(pyglet.image.load("Resources/Mock/imgtester.png"))
@@ -39,7 +39,11 @@ serializer = Serializer("myWorld2")
 chunkBuffer = ChunkBuffer(5, serializer, 0, gen)
 
 # Create a renderer
-renderer = Renderer()
+renderer = Renderer(chunkBuffer, camera, player, displaySize)
+
+# Create a background batch
+backgroundBatch = pyglet.graphics.Batch() 
+background = pyglet.shapes.Rectangle(x=0, y=0, width=displaySize[0], height=displaySize[1], color=(100,175,250), batch=backgroundBatch)
 
 # Function to draw to screen (Client-side)
 @myScreen.event
@@ -49,10 +53,10 @@ def on_draw():
     global chunkBuffer, deltaChunk, prevChunk, currChunk
     global renderer
     global displaySize
-    
-    myScreen.clear() #Clear the screen
-    pyglet.shapes.Rectangle(x=0, y=0, width=displaySize[0], height=displaySize[1], color=(100,175,250)).draw() # Blue background
-    renderer.render(chunkBuffer, camera, player, displaySize)
+    global background, backgroundBatch
+
+    backgroundBatch.draw()
+    renderer.render()
 
 # Key press event handler (Client-side)
 @myScreen.event
@@ -97,8 +101,10 @@ def on_mouse_leave(x, y):
 @myScreen.event
 def on_resize(newWidth, newHeight):
     global displaySize
-    displaySize[0] = newWidth
-    displaySize[1] = newHeight
+    global background, backgroundBatch
+
+    background.width, background.height = displaySize = newWidth, newHeight    
+
 
 # Main function (Server-side)
 def update(dt):        
@@ -122,10 +128,10 @@ def update(dt):
     camera[1] += (player[1]-camera[1]) * 0.2     
 
     # Player movement handling    
-    player[0] += (speed/framerate) * playerInc[0]
-    player[1] += (speed/framerate) * playerInc[1]
+    player[0] += (speed*dt) * playerInc[0]
+    player[1] += (speed*dt) * playerInc[1]
     currChunk = int(player[0]//(CHUNK_WIDTH*TILE_WIDTH))    
-    if not(0 < player[1] < (CHUNK_HEIGHT*TILE_WIDTH)): player[1] -= (speed / framerate) * playerInc[1]    
+    if not(0 < player[1] < (CHUNK_HEIGHT*TILE_WIDTH)): player[1] -= (speed*dt) * playerInc[1]    
 
     # Chunk movement handling
     deltaChunk = currChunk-prevChunk
@@ -138,7 +144,7 @@ def update(dt):
     framerate = 1/dt    
     keyPress, keyRelease, secondaryPress, secondaryRelease = None, None, None, None
 
-pyglet.clock.schedule_interval(update, 1/240) # Main function is called a maximum of 240 times every second
+pyglet.clock.schedule_interval(update, 0.01) # Main function is called a maximum of 240 times every second
 pyglet.app.run() # Start running the app
 
 chunkBuffer.serializer.stop()
