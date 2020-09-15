@@ -1,6 +1,7 @@
 import pyglet
 
 TILE_WIDTH = 24
+texturePack = "Mock"
 
 class Tile:
 
@@ -23,4 +24,8 @@ class Bedrock(Tile):
     def __init__(self):
         super().__init__("bedrock.png")
 
-TILE_TABLE = {1:Grass(), 2:Stone(), 3:Bedrock()}
+
+TILE_NAMES = {1: "grass", 2: "stone", 3: "bedrock"}
+TILE_TABLE = {}
+
+for key in TILE_NAMES.keys(): TILE_TABLE[key] = pyglet.image.load("Resources/" + texturePack + "/" + TILE_NAMES[key] + ".png")

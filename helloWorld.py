@@ -36,7 +36,7 @@ gen = OpenSimplex()
 serializer = Serializer("myWorld2")
 
 # Create chunk buffer and chunk-position buffer
-chunkBuffer = ChunkBuffer(3, serializer, 0, gen)
+chunkBuffer = ChunkBuffer(5, serializer, 0, gen)
 
 # Create a renderer
 renderer = Renderer()
@@ -118,8 +118,8 @@ def update(dt):
     elif(keyRelease == pyglet.window.key.S or keyRelease == pyglet.window.key.W): playerInc[1] = 0                   
 
     # Camera movement handling
-    camera[0] += (player[0]-camera[0]) * 0.1
-    camera[1] += (player[1]-camera[1]) * 0.1     
+    camera[0] += (player[0]-camera[0]) * 0.2
+    camera[1] += (player[1]-camera[1]) * 0.2     
 
     # Player movement handling    
     player[0] += (speed/framerate) * playerInc[0]

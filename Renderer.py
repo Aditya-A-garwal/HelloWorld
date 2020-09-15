@@ -1,5 +1,4 @@
 import pyglet
-from Tile import *
 from Chunk import *
 
 '''
@@ -48,7 +47,7 @@ class Renderer:
                         self.graphToCamera(coors, cameraCoors)
                         self.cameraToScreen(coors, displaySize)
                         
-                        TILE_TABLE[currentTile].texture.blit(coors[0], coors[1])                        
+                        TILE_TABLE[currentTile].blit(coors[0], coors[1])                        
 
         # Temporary player crosshair rendering
 

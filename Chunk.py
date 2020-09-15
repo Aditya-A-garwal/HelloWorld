@@ -1,7 +1,6 @@
 import pyglet
 import pickle
 from Tile import *
-from opensimplex import OpenSimplex
 
 # constants for chunk width and chunk height
 CHUNK_WIDTH, CHUNK_HEIGHT = 16, 512
