@@ -53,12 +53,12 @@ class Renderer:
                         TILE_TABLE[currentTile].texture.blit(coors[0], coors[1])                        
 
         # Temporary player crosshair rendering
+
         playerPos = [playerCoors[0], playerCoors[1]]
         self.graphToCamera(playerPos, cameraCoors)
         self.cameraToScreen(playerPos, displaySize)
 
-        crosshair = pyglet.shapes.Circle(playerPos[0], playerPos[1], 3, color=(255, 50, 50))
-        crosshair.draw()
+        pyglet.shapes.Circle(x=playerPos[0], y=playerPos[1], radius=4, color=(255, 50, 50)).draw()        
 
     def arrayToChunk(self, coor):
         # From array-space to chunk-space

@@ -1,5 +1,4 @@
 import pyglet, numpy, sys, random, pickle
-from pygame.locals import *
 from opensimplex import OpenSimplex
 
 from Tile import *
@@ -22,22 +21,22 @@ myScreen.set_minimum_size(600, 450)
 myScreen.set_icon(pyglet.image.load("Resources/Mock/imgtester.png"))
 
 # Camera variables
-camera = [0,CHUNK_HEIGHT*TILE_WIDTH/2]
+camera = [0,CHUNK_HEIGHT*TILE_WIDTH*0.5]
 
 # Player variables
 player = [0,CHUNK_HEIGHT*TILE_WIDTH*0.5]
 playerInc = [0,0]
 currChunk = prevChunk = deltaChunk = 0
-speed = 6 * TILE_WIDTH #number of tiles to move per second
+speed = 8 * TILE_WIDTH #number of tiles to move per second
 
 #Create noise object
 gen = OpenSimplex()
 
 # Create a database object
-storage = Serializer("myWorld2")
+serializer = Serializer("myWorld2")
 
 # Create chunk buffer and chunk-position buffer
-chunkBuffer = ChunkBuffer(3, storage, 0, gen)
+chunkBuffer = ChunkBuffer(3, serializer, 0, gen)
 
 # Create a renderer
 renderer = Renderer()
@@ -49,8 +48,10 @@ def on_draw():
     global player, camera, speed, playerInc
     global chunkBuffer, deltaChunk, prevChunk, currChunk
     global renderer
-    myScreen.clear()    
-    #image.blit(myblit[0], myblit[1])        
+    global displaySize
+    
+    myScreen.clear() #Clear the screen
+    pyglet.shapes.Rectangle(x=0, y=0, width=displaySize[0], height=displaySize[1], color=(100,175,250)).draw() # Blue background
     renderer.render(chunkBuffer, camera, player, displaySize)
 
 # Key press event handler (Client-side)
@@ -106,23 +107,24 @@ def update(dt):
     global player, camera, speed, playerInc
     global chunkBuffer, deltaChunk, prevChunk, currChunk
     global renderer
+    global displaySize
 
-    if(keyPress == pyglet.window.key.A): playerInc[0] = -128
-    elif(keyPress == pyglet.window.key.D): playerInc[0] = 128
-    elif(keyPress == pyglet.window.key.S): playerInc[1] = -128    
-    elif(keyPress == pyglet.window.key.W): playerInc[1] = 128  
+    if(keyPress == pyglet.window.key.A): playerInc[0] = -1
+    elif(keyPress == pyglet.window.key.D): playerInc[0] = 1
+    elif(keyPress == pyglet.window.key.S): playerInc[1] = -1    
+    elif(keyPress == pyglet.window.key.W): playerInc[1] = 1  
 
     if(keyRelease == pyglet.window.key.A or keyRelease == pyglet.window.key.D): playerInc[0] = 0
     elif(keyRelease == pyglet.window.key.S or keyRelease == pyglet.window.key.W): playerInc[1] = 0                   
 
     # Camera movement handling
     camera[0] += (player[0]-camera[0]) * 0.1
-    camera[1] += (player[1]-camera[1]) * 0.1
-    currChunk = int(camera[0]//(CHUNK_WIDTH*TILE_WIDTH)) # *To be moved to player    
+    camera[1] += (player[1]-camera[1]) * 0.1     
 
     # Player movement handling    
     player[0] += (speed/framerate) * playerInc[0]
     player[1] += (speed/framerate) * playerInc[1]
+    currChunk = int(player[0]//(CHUNK_WIDTH*TILE_WIDTH))    
     if not(0 < player[1] < (CHUNK_HEIGHT*TILE_WIDTH)): player[1] -= (speed / framerate) * playerInc[1]    
 
     # Chunk movement handling
@@ -139,4 +141,4 @@ def update(dt):
 pyglet.clock.schedule_interval(update, 1/240) # Main function is called a maximum of 240 times every second
 pyglet.app.run() # Start running the app
 
-chunkBuffer.storage.stop()
+chunkBuffer.serializer.stop()

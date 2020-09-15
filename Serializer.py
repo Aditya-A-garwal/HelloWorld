@@ -81,6 +81,6 @@ class Serializer:
             return res
 
     # Close the connection
-    def stop(self):
+    def stop(self):        
         self.conn.close()
 
