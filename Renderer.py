@@ -32,11 +32,9 @@ class Renderer:
             Requires chunks, cameraCoors, playerCoors, displaySize as sequences as surface as pygame.Surface
         """
         #rects = []
-        for c in range(0, len(chunks)):
-
-            lowerIndex = int(max((cameraCoors[1]-displaySize[1]*0.5)/TILE_WIDTH, 0))
-            upperIndex = int(min(1 + (cameraCoors[1]+displaySize[1]*0.5)/TILE_WIDTH, CHUNK_HEIGHT)) #1 is added to accomodate for exclusiveness of for loops
-
+        lowerIndex = int(max((cameraCoors[1]-displaySize[1]*0.5)/TILE_WIDTH, 0))
+        upperIndex = int(min(1 + (cameraCoors[1]+displaySize[1]*0.5)/TILE_WIDTH, CHUNK_HEIGHT)) #1 is added to accomodate for exclusiveness of for loops
+        for c in range(0, len(chunks)):            
             absolutePos = chunks.positions[c]
 
             for i in range(lowerIndex, upperIndex):
