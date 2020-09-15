@@ -1,4 +1,5 @@
 import pyglet, numpy, sys, random, pickle
+from pynoise.noisemodule import Perlin
 from opensimplex import OpenSimplex
 
 from Tile import *
@@ -11,7 +12,7 @@ from Serializer import *
 displaySize = [400, 300]
 myScreen = pyglet.window.Window(width=displaySize[0], height=displaySize[1], resizable = True, caption="Hello World!")
 myScreen.set_minimum_size(displaySize[0], displaySize[1]) 
-myScreen.set_icon(pyglet.image.load("Resources/Mock/imgtester.png"))
+myScreen.set_icon(pyglet.image.load("Resources/Default/gameIcon.png"))
 
 # Variables to store Client actions
 keyPress, keyRelease = None, None
@@ -29,6 +30,7 @@ speed = 8 * TILE_WIDTH #number of tiles to move per second
 
 #Create noise object
 gen = OpenSimplex()
+perlinGen = Perlin()
 
 # Create a derializer object
 serializer = Serializer("myWorld2")
