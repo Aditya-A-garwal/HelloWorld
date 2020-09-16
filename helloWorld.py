@@ -10,9 +10,9 @@ from Serializer import *
 
 # Create Pyglet Window
 displaySize = [400, 300]
-myScreen = pyglet.window.Window(width=displaySize[0], height=displaySize[1], resizable = True, caption="Hello World!", config=pyglet.gl.Config(depth_size=0))
-myScreen.set_minimum_size(displaySize[0], displaySize[1]) 
-myScreen.set_icon(pyglet.image.load("Resources/Default/gameIcon.png"))
+screen = pyglet.window.Window(width=displaySize[0], height=displaySize[1], resizable = True, caption="Hello World!", config=pyglet.gl.Config(depth_size=0))
+screen.set_minimum_size(displaySize[0], displaySize[1]) 
+screen.set_icon(pyglet.image.load("Resources/Default/gameIcon.png"))
 
 # Variables to store Client actions
 keyPress, keyRelease = None, None
@@ -36,16 +36,17 @@ gen = OpenSimplex()
 serializer = Serializer("myWorld2")
 
 # Create chunk buffer and chunk-position buffer
-chunkBuffer = ChunkBuffer(3, serializer, 0, gen)
+chunkBuffer = ChunkBuffer(7, serializer, 0, gen)
 
 # Initialize the renderer by giving it references to all necessary objects
 Renderer.initialize(chunkBuffer, camera, player, displaySize)
 
-# Create a background batch
+# Create a background batch, FPS display
 backgroundBatch = pyglet.graphics.Batch() 
 background = pyglet.shapes.Rectangle(x=0, y=0, width=displaySize[0], height=displaySize[1], color=(100,175,250), batch=backgroundBatch)
+fpsDisplay = pyglet.window.FPSDisplay(window=screen)
 
-@myScreen.event
+@screen.event
 def on_draw():
     # Function to draw to screen (Client-side)
     global framerate
@@ -57,46 +58,47 @@ def on_draw():
 
     backgroundBatch.draw()
     Renderer.render()
+    fpsDisplay.draw()
     
 
-@myScreen.event
+@screen.event
 def on_key_press(symbol, modifiers):    
     # Key press event handler (Client-side)
     global keyPress, secondaryPress
     keyPress, secondaryPress = symbol, modifiers
 
-@myScreen.event
+@screen.event
 def on_key_release(symbol, modifiers):
     # Key Release event handler (Client-side)
     global keyRelease, secondaryRelease
     keyRelease, secondaryRelease = symbol, modifiers
 
-# @myScreen.event
+# @screen.event
 # def on_mouse_press(x, y, button, modifiers):
 #     # Mouse Press event handler (Client-side)
 #     pass
 
-# @myScreen.event
+# @screen.event
 # def on_mouse_release(x, y, button, modifiers):
 #     # Mouse Release event handler (Client-side)
 #     pass
 
-# @myScreen.event
+# @screen.event
 # def on_mouse_drag(x, y, dx, dy, buttons, modifiers):
 #     # Mouse Drag event handler (Client-side)
 #     pass
 
-# @myScreen.event
+# @screen.event
 # def on_mouse_enter(x, y):
 #     # Mouse Enter event handler (Client-side)
 #     pass
 
-# @myScreen.event
+# @screen.event
 # def on_mouse_leave(x, y):
 #     # Mouse Leave event handler (Client-side)
 #     pass
 
-@myScreen.event
+@screen.event
 def on_resize(newWidth, newHeight):
     # Window Resize event handler (Client-side)
     global displaySize
@@ -139,11 +141,9 @@ def update(dt):
     if(deltaChunk > 0): chunkBuffer.shiftLeft() #Player has moved right
     elif(deltaChunk < 0): chunkBuffer.shiftRight() #Player has moved left
 
-    # # Framerate calculation    
+    # Framerate calculation    
     framerate = 1/dt    
-    keyPress, keyRelease, secondaryPress, secondaryRelease = None, None, None, None
-    
-    print("%3.1f" % (framerate))
+    keyPress, keyRelease, secondaryPress, secondaryRelease = None, None, None, None    
 
 pyglet.clock.schedule_interval(update, 0.001) # Main function is called a maximum of 100 times every second
 pyglet.app.run() # Start running the program
