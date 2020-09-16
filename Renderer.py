@@ -16,9 +16,8 @@ Translations
 class Renderer:
         
     @classmethod    
-    def initialize(cls, chunkBuffer, camera, player, displaySize, screen):
-        Renderer.screen = screen
-        Renderer.chunkBuffer, Renderer.player, Renderer.camera, Renderer.displaySize = chunkBuffer, player, camera, displaySize         
+    def initialize(cls, chunkBuffer, camera, player, displaySize, screen):         
+        Renderer.screen, Renderer.chunkBuffer, Renderer.player, Renderer.camera, Renderer.displaySize = screen, chunkBuffer, player, camera, displaySize         
 
     @classmethod
     def render(cls):
@@ -79,12 +78,11 @@ class Renderer:
             rightWalker += 1
 
         # Temporary player crosshair rendering
-        playerPos = [Renderer.player[0], Renderer.player[1]]
+        playerPos = Renderer.player.copy
         Renderer.graphToCamera(playerPos)
         Renderer.cameraToScreen(playerPos)
 
-        pygame.draw.circle(Renderer.screen, (255,50,50), playerPos, 2)        
-        #pyglet.shapes.Circle(x=playerx, y=playery, radius=4, color=(255, 50, 50)).draw()        
+        pygame.draw.circle(Renderer.screen, (255,50,50), playerPos, 2)                      
 
 
     @classmethod
