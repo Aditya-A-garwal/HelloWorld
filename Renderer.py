@@ -40,43 +40,45 @@ class Renderer:
 
             for i in range(lowerIndex, upperIndex):
                 for j in range(0, CHUNK_WIDTH):
+
                     currentTile = Renderer.chunkBuffer[c].blocks[i][j]
 
                     if(currentTile != 0):
-                        coors = self.arrayToChunk((j, i))
-
+                        coors = [j, i]
+                        Renderer.arrayToChunk(coors)
                         Renderer.chunkToGraph(coors, absolutePos)
                         Renderer.graphToCamera(coors)
                         Renderer.cameraToScreen(coors)
                         
-                        TILE_TABLE[currentTile].blit(coors[0], coors[1])                        
+                        #TILE_TABLE[currentTile].blit(coors[0], coors[1])                        
 
         # Temporary player crosshair rendering
-        playerPos = [Renderer.player[0], Renderer.player[1]]
+        playerPos = Renderer.player.copy()        
         Renderer.graphToCamera(playerPos)
         Renderer.cameraToScreen(playerPos)
 
         pyglet.shapes.Circle(x=playerPos[0], y=playerPos[1], radius=4, color=(255, 50, 50)).draw()        
 
     @classmethod
-    def arrayToChunk(self, coor):
+    def arrayToChunk(cls, coor):
         # From array-space to chunk-space
-        return [coor[0] * TILE_WIDTH, coor[1] * TILE_WIDTH]
+        coor[0] *= TILE_WIDTH
+        coor[1] *= TILE_WIDTH
 
     @classmethod
-    def chunkToGraph(self, coor, chunkInd):
+    def chunkToGraph(cls, coor, chunkInd):
         # From chunk-space to absolute-space
         coor[0] += (chunkInd * CHUNK_WIDTH * TILE_WIDTH)
         coor[1] = coor[1]
 
     @classmethod
-    def graphToCamera(self, coor):
+    def graphToCamera(cls, coor):
         # From absolute-space to camera-space
         coor[0] -= Renderer.camera[0]
         coor[1] -= Renderer.camera[1]
 
     @classmethod
-    def cameraToScreen(self, coor):
+    def cameraToScreen(cls, coor):
         # From camera-space to screen-space
         coor[0] += Renderer.displaySize[0] * 0.5
         coor[1] += Renderer.displaySize[1] * 0.5
