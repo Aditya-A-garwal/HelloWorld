@@ -34,29 +34,48 @@ class Renderer:
         lowerIndex = int(max((Renderer.camera[1]-Renderer.displaySize[1]*0.5)/TILE_WIDTH, 0))
         upperIndex = int(min(1 + (Renderer.camera[1]+Renderer.displaySize[1]*0.5)/TILE_WIDTH, CHUNK_HEIGHT)) 
 
-        for c in range(0, len(Renderer.chunkBuffer)):            
+        length = len(Renderer.chunkBuffer)
+        midpoint = int((length-1)*0.5)
 
-            absolutePos = Renderer.chunkBuffer.positions[c]
+        rightWalker = midpoint  # goes from midpoint to length-1
+        leftWalker = midpoint-1 # goes from midpoint-1 to 0
 
-            for i in range(lowerIndex, upperIndex):
-                for j in range(0, CHUNK_WIDTH):
+        while(leftWalker >= 0):
+            absoluteChunkIndex = Renderer.chunkBuffer.positions[leftWalker]
+            for j in range(CHUNK_WIDTH-1, -1, -1):
+                for i in range(lowerIndex, upperIndex):                
+                    currentTile = Renderer.chunkBuffer[leftWalker].blocks[i][j]
+                    coors = [j, i]
 
-                    currentTile = Renderer.chunkBuffer[c].blocks[i][j]
+                    if(currentTile != 0):                        
+                        Renderer.chunkToScreen(coors, absoluteChunkIndex)                                                                   
+                        TILE_TABLE[currentTile].blit(coors[0], coors[1])        
 
-                    if(currentTile != 0):
-                        coors = [j, i]
-                        Renderer.arrayToChunk(coors)
-                        Renderer.chunkToGraph(coors, absolutePos)
-                        Renderer.graphToCamera(coors)
-                        Renderer.cameraToScreen(coors)
-                        
-                        #TILE_TABLE[currentTile].blit(coors[0], coors[1])                        
+                if(coors[0] < 0):
+                    leftWalker = -1
+                    break                
+            leftWalker -= 1
 
+        while(rightWalker < length):
+            absoluteChunkIndex = Renderer.chunkBuffer.positions[rightWalker]
+            for j in range(0, CHUNK_WIDTH):
+                for i in range(lowerIndex, upperIndex):                
+                    currentTile = Renderer.chunkBuffer[rightWalker].blocks[i][j]
+                    coors = [j, i]
+
+                    if(currentTile != 0):                        
+                        Renderer.chunkToScreen(coors, absoluteChunkIndex)                                               
+                        TILE_TABLE[currentTile].blit(coors[0], coors[1])        
+
+                if(coors[0] > Renderer.displaySize[0]-TILE_WIDTH):
+                    leftWalker = length
+                    break                                     
+            rightWalker += 1
+    
         # Temporary player crosshair rendering
         playerPos = Renderer.player.copy()        
         Renderer.graphToCamera(playerPos)
         Renderer.cameraToScreen(playerPos)
-
         pyglet.shapes.Circle(x=playerPos[0], y=playerPos[1], radius=4, color=(255, 50, 50)).draw()        
 
     @classmethod
@@ -82,3 +101,10 @@ class Renderer:
         # From camera-space to screen-space
         coor[0] += Renderer.displaySize[0] * 0.5
         coor[1] += Renderer.displaySize[1] * 0.5
+
+    @classmethod
+    def chunkToScreen(cls, coor, chunkInd):
+        cls.arrayToChunk(coor)       
+        cls.chunkToGraph(coor, chunkInd)
+        cls.graphToCamera(coor)
+        cls.cameraToScreen(coor)

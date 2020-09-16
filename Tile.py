@@ -28,4 +28,4 @@ class Bedrock(Tile):
 TILE_NAMES = {1: "dirt", 2: "grass", 3: "sand"}
 TILE_TABLE = {}
 
-for key in TILE_NAMES.keys(): TILE_TABLE[key] = pyglet.image.load("Resources/" + texturePack + "/" + TILE_NAMES[key] + ".png")
+for key in TILE_NAMES.keys(): TILE_TABLE[key] = pyglet.image.load("Resources/" + texturePack + "/" + TILE_NAMES[key] + ".png").get_texture(rectangle=True)
