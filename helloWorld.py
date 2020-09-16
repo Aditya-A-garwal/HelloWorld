@@ -33,7 +33,7 @@ gen = OpenSimplex()
 # perlinGen = Perlin()
 
 # Create a derializer object
-serializer = Serializer("myWorld2")
+serializer = Serializer("world1")
 
 # Create chunk buffer and chunk-position buffer
 chunkBuffer = ChunkBuffer(7, serializer, 0, gen)
@@ -51,8 +51,7 @@ def on_draw():
     # Function to draw to screen (Client-side)
     global framerate
     global player, camera, speed, playerInc
-    global chunkBuffer, deltaChunk, prevChunk, currChunk
-    global renderer
+    global chunkBuffer, deltaChunk, prevChunk, currChunk    
     global displaySize
     global background, backgroundBatch
 
@@ -112,8 +111,7 @@ def update(dt):
     global keyPress, secondaryPress, keyRelease, secondaryRelease
     global framerate
     global player, camera, speed, playerInc
-    global chunkBuffer, deltaChunk, prevChunk, currChunk
-    global renderer
+    global chunkBuffer, deltaChunk, prevChunk, currChunk    
     global displaySize
 
     if(keyPress == pyglet.window.key.A): playerInc[0] = -1

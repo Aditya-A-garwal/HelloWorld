@@ -25,58 +25,115 @@ class Renderer:
         Renderer.chunkBuffer, Renderer.player, Renderer.camera, Renderer.displaySize = chunkBuffer, player, camera, displaySize         
 
     @classmethod
-    def render(self):
+    def render(cls):
         """
             Renders given chunks onto given surface
             Requires chunks, cameraCoors, playerCoors, displaySize as sequences 
         """        
 
         lowerIndex = int(max((Renderer.camera[1]-Renderer.displaySize[1]*0.5)/TILE_WIDTH, 0))
-        upperIndex = int(min(1 + (Renderer.camera[1]+Renderer.displaySize[1]*0.5)/TILE_WIDTH, CHUNK_HEIGHT)) 
+        upperIndex = int(min((Renderer.camera[1]+Renderer.displaySize[1]*0.5)/TILE_WIDTH, CHUNK_HEIGHT - 1))
 
-        length = len(Renderer.chunkBuffer)
-        midpoint = int((length-1)*0.5)
+        midpoint = int((len(Renderer.chunkBuffer)-1)*0.5)
 
-        rightWalker = midpoint  # goes from midpoint to length-1
-        leftWalker = midpoint-1 # goes from midpoint-1 to 0
+        rightWalker = midpoint  # goes from midpoint to length-1 (both inclusive)
+        leftWalker = midpoint-1 # goes from midpoint-1 to 0 (both inclusive)
 
-        while(leftWalker >= 0):
+        numRight, numRightDone = (Renderer.displaySize[0] * 0.5)/TILE_WIDTH + CHUNK_WIDTH - 1, 0
+        numLeft, numLeftDone = (Renderer.displaySize[0] * 0.5)/TILE_WIDTH + 1, 0
+
+        while(numLeftDone <= numLeft):
+
             absoluteChunkIndex = Renderer.chunkBuffer.positions[leftWalker]
+
             for j in range(CHUNK_WIDTH-1, -1, -1):
-                for i in range(lowerIndex, upperIndex):                
-                    currentTile = Renderer.chunkBuffer[leftWalker].blocks[i][j]
-                    coors = [j, i]
 
-                    if(currentTile != 0):                        
-                        Renderer.chunkToScreen(coors, absoluteChunkIndex)                                                                   
-                        TILE_TABLE[currentTile].blit(coors[0], coors[1])        
+                x = Renderer.arrayToScreen_x(j, absoluteChunkIndex)
+                numLeftDone += 1
 
-                if(coors[0] < 0):
-                    leftWalker = -1
-                    break                
+                for i in range(lowerIndex, upperIndex+1):                
+
+                    currentTile = Renderer.chunkBuffer[leftWalker].blocks[i][j]                        
+                    y = Renderer.arrayToScreen_y(i, absoluteChunkIndex)                        
+
+                    if(currentTile != 0): TILE_TABLE[currentTile].blit(x, y)        
+
+                if(numLeftDone > numLeft): break      
+
             leftWalker -= 1
 
-        while(rightWalker < length):
+        while(numRightDone <= numRight):
+
             absoluteChunkIndex = Renderer.chunkBuffer.positions[rightWalker]
+
             for j in range(0, CHUNK_WIDTH):
-                for i in range(lowerIndex, upperIndex):                
+                
+                x = Renderer.arrayToScreen_x(j, absoluteChunkIndex)
+                numRightDone += 1
+
+                for i in range(lowerIndex, upperIndex+1):                
+
                     currentTile = Renderer.chunkBuffer[rightWalker].blocks[i][j]
-                    coors = [j, i]
+                    y = Renderer.arrayToScreen_y(i, absoluteChunkIndex)                        
 
-                    if(currentTile != 0):                        
-                        Renderer.chunkToScreen(coors, absoluteChunkIndex)                                               
-                        TILE_TABLE[currentTile].blit(coors[0], coors[1])        
+                    if(currentTile != 0): TILE_TABLE[currentTile].blit(x, y)                         
 
-                if(coors[0] > Renderer.displaySize[0]-TILE_WIDTH):
-                    leftWalker = length
-                    break                                     
+                if(numRightDone > numRight): break   
+
             rightWalker += 1
-    
+
         # Temporary player crosshair rendering
-        playerPos = Renderer.player.copy()        
-        Renderer.graphToCamera(playerPos)
-        Renderer.cameraToScreen(playerPos)
-        pyglet.shapes.Circle(x=playerPos[0], y=playerPos[1], radius=4, color=(255, 50, 50)).draw()        
+        playerx = Renderer.graphToCamera_x(Renderer.cameraToScreen_x(Renderer.player[0]))
+        playery = Renderer.graphToCamera_y(Renderer.cameraToScreen_y(Renderer.player[1]))
+                
+        pyglet.shapes.Circle(x=playerx, y=playery, radius=4, color=(255, 50, 50)).draw()        
+
+
+    @classmethod
+    def arrayToChunk_x(cls, x):
+        return x * TILE_WIDTH
+
+    @classmethod
+    def arrayToChunk_y(cls, y):
+        return y * TILE_WIDTH
+
+    @classmethod
+    def chunkToGraph_x(cls, x, chunkInd):
+        # From chunk-space to absolute-space
+        return x + chunkInd * CHUNK_WIDTH * TILE_WIDTH
+
+    @classmethod
+    def chunkToGraph_y(cls, y, chunkInd):
+        # From chunk-space to absolute-space
+        return y
+
+    @classmethod
+    def graphToCamera_x(cls, x):
+        # From absolute-space to camera-space
+        return x - Renderer.camera[0]        
+
+    @classmethod
+    def graphToCamera_y(cls, y):
+        # From absolute-space to camera-space
+        return y - Renderer.camera[1]
+
+    @classmethod
+    def cameraToScreen_x(cls, x):
+        # From camera-space to screen-space
+        return x + Renderer.displaySize[0] * 0.5        
+
+    @classmethod
+    def cameraToScreen_y(cls, y):
+        # From camera-space to screen-space        
+        return y + Renderer.displaySize[1] * 0.5
+
+    @classmethod
+    def arrayToScreen_x(cls, x, chunkInd):
+        return cls.cameraToScreen_x(cls.graphToCamera_x(cls.chunkToGraph_x(cls.arrayToChunk_x(x), chunkInd)))        
+
+    @classmethod
+    def arrayToScreen_y(cls, y, chunkInd):
+        return cls.cameraToScreen_y(cls.graphToCamera_y(cls.chunkToGraph_y(cls.arrayToChunk_y(y), chunkInd)))
 
     @classmethod
     def arrayToChunk(cls, coor):
