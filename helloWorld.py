@@ -38,10 +38,10 @@ pygame.display.set_icon(pygame.image.load("Resources/Mock/imgtester.png"))
 storage = DBIO("myWorld2")
 
 # Create chunk buffer and chunk-position buffer
-chunkBuff = ChunkBuffer(3, storage, 0, gen)
+chunkBuff = ChunkBuffer(211, storage, 0, gen)
 
 # Create a renderer
-renderer = Renderer()
+Renderer.initialize(chunkBuff, cam, player, displaySize, screen)
 
 # game loop
 running = True
@@ -69,7 +69,7 @@ while running:
 
     # Rendering and updating screen
     screen.fill((30, 175, 250))
-    renderer.render(chunkBuff, cam, player, displaySize, screen)
+    Renderer.render()
     pygame.display.update()
 
 
@@ -99,6 +99,7 @@ while running:
 
     if(deltaChunk > 0): chunkBuff.shiftLeft() #Player has moved right
     elif(deltaChunk < 0): chunkBuff.shiftRight() #Player has moved left
+    print(prevFramerate)
 
 
 chunkBuff.storage.stop()
