@@ -32,7 +32,7 @@ displaySize = [pygame.display.Info().current_w//2, pygame.display.Info().current
 # Create and display window
 screen = pygame.display.set_mode(displaySize, pygame.RESIZABLE)
 pygame.display.set_caption("Hello World!")
-pygame.display.set_icon(pygame.image.load("Resources/Mock/imgtester.png"))
+pygame.display.set_icon(pygame.image.load("Resources/Default/gameIcon.png"))
 
 # Create a database object
 storage = Serializer("world1")
