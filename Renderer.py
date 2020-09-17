@@ -22,7 +22,7 @@ class Renderer:
         
     @classmethod    
     def initialize(cls, chunkBuffer, camera, player, displaySize):
-        Renderer.chunkBuffer, Renderer.player, Renderer.camera, Renderer.displaySize = chunkBuffer, player, camera, displaySize         
+        cls.chunkBuffer, cls.player, cls.camera, cls.displaySize = chunkBuffer, player, camera, displaySize         
 
     @classmethod
     def render(cls):
@@ -31,30 +31,30 @@ class Renderer:
             Requires chunks, cameraCoors, playerCoors, displaySize as sequences 
         """        
 
-        lowerIndex = int(max((Renderer.camera[1]-Renderer.displaySize[1]*0.5)/TILE_WIDTH, 0))
-        upperIndex = int(min((Renderer.camera[1]+Renderer.displaySize[1]*0.5)/TILE_WIDTH, CHUNK_HEIGHT - 1))
+        lowerIndex = int(max((cls.camera[1]-cls.displaySize[1]*0.5)/TILE_WIDTH, 0))
+        upperIndex = int(min((cls.camera[1]+cls.displaySize[1]*0.5)/TILE_WIDTH, CHUNK_HEIGHT - 1))
 
-        midpoint = int((len(Renderer.chunkBuffer)-1)*0.5)
+        midpoint = int((len(cls.chunkBuffer)-1)*0.5)
 
         rightWalker = midpoint  # goes from midpoint to length-1 (both inclusive)
         leftWalker = midpoint-1 # goes from midpoint-1 to 0 (both inclusive)
 
-        numRight, numRightDone = (Renderer.displaySize[0] * 0.5)/TILE_WIDTH + CHUNK_WIDTH - 1, 0
-        numLeft, numLeftDone = (Renderer.displaySize[0] * 0.5)/TILE_WIDTH + 1, 0
+        numRight, numRightDone = (cls.displaySize[0] * 0.5)/TILE_WIDTH + CHUNK_WIDTH - 1, 0
+        numLeft, numLeftDone = (cls.displaySize[0] * 0.5)/TILE_WIDTH + 1, 0
 
         while(numLeftDone <= numLeft):
 
-            absoluteChunkIndex = Renderer.chunkBuffer.positions[leftWalker]
+            absoluteChunkIndex = cls.chunkBuffer.positions[leftWalker]
 
             for j in range(CHUNK_WIDTH-1, -1, -1):
 
-                x = Renderer.arrayToScreen_x(j, absoluteChunkIndex)
+                x = cls.arrayToScreen_x(j, absoluteChunkIndex)
                 numLeftDone += 1
 
                 for i in range(lowerIndex, upperIndex+1):                
 
-                    currentTile = Renderer.chunkBuffer[leftWalker].blocks[i][j]                        
-                    y = Renderer.arrayToScreen_y(i, absoluteChunkIndex)                        
+                    currentTile = cls.chunkBuffer[leftWalker].blocks[i][j]                        
+                    y = cls.arrayToScreen_y(i, absoluteChunkIndex)                        
 
                     if(currentTile != 0): TILE_TABLE[currentTile].blit(x, y)        
 
@@ -64,17 +64,17 @@ class Renderer:
 
         while(numRightDone <= numRight):
 
-            absoluteChunkIndex = Renderer.chunkBuffer.positions[rightWalker]
+            absoluteChunkIndex = cls.chunkBuffer.positions[rightWalker]
 
             for j in range(0, CHUNK_WIDTH):
                 
-                x = Renderer.arrayToScreen_x(j, absoluteChunkIndex)
+                x = cls.arrayToScreen_x(j, absoluteChunkIndex)
                 numRightDone += 1
 
                 for i in range(lowerIndex, upperIndex+1):                
 
-                    currentTile = Renderer.chunkBuffer[rightWalker].blocks[i][j]
-                    y = Renderer.arrayToScreen_y(i, absoluteChunkIndex)                        
+                    currentTile = cls.chunkBuffer[rightWalker].blocks[i][j]
+                    y = cls.arrayToScreen_y(i, absoluteChunkIndex)                        
 
                     if(currentTile != 0): TILE_TABLE[currentTile].blit(x, y)                         
 
@@ -83,8 +83,8 @@ class Renderer:
             rightWalker += 1
 
         # Temporary player crosshair rendering
-        playerx = Renderer.graphToCamera_x(Renderer.cameraToScreen_x(Renderer.player[0]))
-        playery = Renderer.graphToCamera_y(Renderer.cameraToScreen_y(Renderer.player[1]))
+        playerx = cls.graphToCamera_x(cls.cameraToScreen_x(cls.player[0]))
+        playery = cls.graphToCamera_y(cls.cameraToScreen_y(cls.player[1]))
                 
         pyglet.shapes.Circle(x=playerx, y=playery, radius=4, color=(255, 50, 50)).draw()        
 
@@ -110,22 +110,22 @@ class Renderer:
     @classmethod
     def graphToCamera_x(cls, x):
         # From absolute-space to camera-space
-        return x - Renderer.camera[0]        
+        return x - cls.camera[0]        
 
     @classmethod
     def graphToCamera_y(cls, y):
         # From absolute-space to camera-space
-        return y - Renderer.camera[1]
+        return y - cls.camera[1]
 
     @classmethod
     def cameraToScreen_x(cls, x):
         # From camera-space to screen-space
-        return x + Renderer.displaySize[0] * 0.5        
+        return x + cls.displaySize[0] * 0.5        
 
     @classmethod
     def cameraToScreen_y(cls, y):
         # From camera-space to screen-space        
-        return y + Renderer.displaySize[1] * 0.5
+        return y + cls.displaySize[1] * 0.5
 
     @classmethod
     def arrayToScreen_x(cls, x, chunkInd):
@@ -150,14 +150,14 @@ class Renderer:
     @classmethod
     def graphToCamera(cls, coor):
         # From absolute-space to camera-space
-        coor[0] -= Renderer.camera[0]
-        coor[1] -= Renderer.camera[1]
+        coor[0] -= cls.camera[0]
+        coor[1] -= cls.camera[1]
 
     @classmethod
     def cameraToScreen(cls, coor):
         # From camera-space to screen-space
-        coor[0] += Renderer.displaySize[0] * 0.5
-        coor[1] += Renderer.displaySize[1] * 0.5
+        coor[0] += cls.displaySize[0] * 0.5
+        coor[1] += cls.displaySize[1] * 0.5
 
     @classmethod
     def chunkToScreen(cls, coor, chunkInd):
