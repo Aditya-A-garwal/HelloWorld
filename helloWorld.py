@@ -6,7 +6,7 @@ from Tile import *
 from Chunk import *
 from Renderer import *
 
-from databaseIO import *
+from Serializer import *
 
 # Screen variables
 displaySize = [0,0]
@@ -35,7 +35,7 @@ pygame.display.set_caption("Hello World!")
 pygame.display.set_icon(pygame.image.load("Resources/Mock/imgtester.png"))
 
 # Create a database object
-storage = DBIO("myWorld2")
+storage = Serializer("world1")
 
 # Create chunk buffer and chunk-position buffer
 chunkBuff = ChunkBuffer(211, storage, 0, gen)
