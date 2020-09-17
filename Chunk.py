@@ -14,7 +14,8 @@ def populateChunk(chunk, noiseObj, chunkInd):
     for i in range(0, CHUNK_WIDTH):
         height = int((noiseObj.noise2d(x=coor * WALKING_CONSTANT, y=0) + 1) * 64)  # Value will be from 0 to 128
         coor += 1
-        for j in range(200, 200 + height): chunk[j, i] = 1
+        for j in range(200, 200+height): chunk[j, i] = 2
+        chunk[200+height, i] = 1
 
 class Chunk:
 

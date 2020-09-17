@@ -12,8 +12,8 @@ from Serializer import *
 displaySize = [0,0]
 prevFramerate = framerate = 0
 
-# Camera variables
-cam = [0,CHUNK_HEIGHT*16/2]
+# cameraera variables
+camera = [0,CHUNK_HEIGHT*16/2]
 
 # Player variables
 player = [0,CHUNK_HEIGHT*TILE_WIDTH*0.5]
@@ -35,13 +35,13 @@ pygame.display.set_caption("Hello World!")
 pygame.display.set_icon(pygame.image.load("Resources/Default/gameIcon.png"))
 
 # Create a database object
-storage = Serializer("world1")
+serializer = Serializer("world1")
 
 # Create chunk buffer and chunk-position buffer
-chunkBuff = ChunkBuffer(211, storage, 0, gen)
+chunkBuff = ChunkBuffer(211, serializer, 0, gen)
 
 # Create a renderer
-Renderer.initialize(chunkBuff, cam, player, displaySize, screen)
+Renderer.initialize(chunkBuff, camera, player, displaySize, screen)
 
 # game loop
 running = True
@@ -49,7 +49,7 @@ while running:
 
     # Client-side
 
-    keyUp, keyDown = None, None    
+    keyRelease, keyPress = None, None    
 
     # event handling loop
     for event in pygame.event.get():
@@ -57,18 +57,18 @@ while running:
             chunkBuff.saveComplete()
             running = False #quit game if user leaves
 
-        elif event.type == pygame.KEYDOWN: keyDown = event.key            
-        elif event.type == pygame.KEYUP: keyUp = event.key            
+        elif event.type == pygame.KEYDOWN: keyPress = event.key            
+        elif event.type == pygame.KEYUP: keyRelease = event.key            
 
         elif event.type == pygame.VIDEORESIZE:
             pygame.display.Info()
             displaySize[0] = screen.get_width()
             displaySize[1] = screen.get_height()
 
-    # Camera movement handling
-    cam[0] += (player[0]-cam[0]) * 0.075
-    cam[1] += (player[1]-cam[1]) * 0.075 
-    currChunk = int(cam[0]//(CHUNK_WIDTH*TILE_WIDTH))
+    # cameraera movement handling
+    camera[0] += (player[0]-camera[0]) * 0.075
+    camera[1] += (player[1]-camera[1]) * 0.075 
+    currChunk = int(camera[0]//(CHUNK_WIDTH*TILE_WIDTH))
 
     # Rendering and updating screen
     screen.fill((30, 175, 250))
@@ -79,14 +79,14 @@ while running:
     # Server-side    
 
     # Key to movement translation
-    if(keyDown == pygame.K_a): playerInc[0] = -1
-    elif(keyDown == pygame.K_d): playerInc[0] = 1
+    if(keyPress == pygame.K_a): playerInc[0] = -1
+    elif(keyPress == pygame.K_d): playerInc[0] = 1
 
-    if(keyDown == pygame.K_w): playerInc[1] = 1
-    elif(keyDown == pygame.K_s): playerInc[1] = -1
+    if(keyPress == pygame.K_w): playerInc[1] = 1
+    elif(keyPress == pygame.K_s): playerInc[1] = -1
 
-    if(keyUp == pygame.K_a or keyUp == pygame.K_d): playerInc[0] = 0    
-    elif(keyUp == pygame.K_w or keyUp == pygame.K_s): playerInc[1] = 0    
+    if(keyRelease == pygame.K_a or keyRelease == pygame.K_d): playerInc[0] = 0    
+    elif(keyRelease == pygame.K_w or keyRelease == pygame.K_s): playerInc[1] = 0    
 
     # Framerate calculation
     frameTime = clock.tick(framerate) + 1
@@ -105,5 +105,5 @@ while running:
     print(prevFramerate)
 
 
-chunkBuff.storage.stop()
+chunkBuff.serializer.stop()
 pygame.display.quit()

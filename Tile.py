@@ -23,4 +23,4 @@ class Bedrock(Tile):
     def __init__(self):
         super().__init__("bedrock.png")
 
-TILE_TABLE = {1:pygame.image.load("Resources/Default/grass.png"), 2:pygame.image.load("Resources/Default/grass.png"), 3:pygame.image.load("Resources/Default/grass.png")}
+TILE_TABLE = {1:pygame.image.load("Resources/Default/grass.png"), 2:pygame.image.load("Resources/Default/dirt.png"), 3:pygame.image.load("Resources/Default/grass.png")}

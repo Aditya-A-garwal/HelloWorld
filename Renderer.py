@@ -27,7 +27,7 @@ class Renderer:
         """        
 
         lowerIndex = int(max((cls.camera[1]-cls.displaySize[1]*0.5)/TILE_WIDTH, 0))
-        upperIndex = int(min((cls.camera[1]+cls.displaySize[1]*0.5)/TILE_WIDTH+1, CHUNK_HEIGHT - 1))
+        upperIndex = int(min((cls.camera[1]+cls.displaySize[1]*0.5)/TILE_WIDTH, CHUNK_HEIGHT - 1))
 
         midpoint = int((len(cls.chunkBuffer)-1)*0.5)
 
@@ -49,7 +49,7 @@ class Renderer:
                 for i in range(lowerIndex, upperIndex+1):                
 
                     currentTile = cls.chunkBuffer[leftWalker].blocks[i][j]                        
-                    y = cls.arrayToScreen_y(i, absoluteChunkIndex)                        
+                    y = cls.arrayToScreen_y(i, absoluteChunkIndex)-TILE_WIDTH                       
 
                     if(currentTile != 0): cls.screen.blit(TILE_TABLE[currentTile], [x,y])
 
@@ -69,7 +69,7 @@ class Renderer:
                 for i in range(lowerIndex, upperIndex+1):                
 
                     currentTile = cls.chunkBuffer[rightWalker].blocks[i][j]
-                    y = cls.arrayToScreen_y(i, absoluteChunkIndex)                        
+                    y = cls.arrayToScreen_y(i, absoluteChunkIndex)-TILE_WIDTH             
 
                     if(currentTile != 0): cls.screen.blit(TILE_TABLE[currentTile], [x,y])                        
 
