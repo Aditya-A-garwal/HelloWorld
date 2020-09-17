@@ -26,7 +26,7 @@ player = [0,CHUNK_HEIGHT*TILE_WIDTH*0.5]
 playerInc = [0,0]
 currChunk = prevChunk = deltaChunk = 0
 framerate = 1
-speed = 8 * TILE_WIDTH #number of tiles to move per second
+speed = 55 * TILE_WIDTH #number of tiles to move per second
 
 #Create noise object
 gen = OpenSimplex()
@@ -36,7 +36,7 @@ gen = OpenSimplex()
 serializer = Serializer("world1")
 
 # Create chunk buffer and chunk-position buffer
-chunkBuffer = ChunkBuffer(7, serializer, 0, gen)
+chunkBuffer = ChunkBuffer(211, serializer, 0, gen)
 
 # Initialize the renderer by giving it references to all necessary objects
 Renderer.initialize(chunkBuffer, camera, player, displaySize)
@@ -125,11 +125,11 @@ def update(dt):
     # Camera movement handling
     camera[0] += (player[0]-camera[0]) * 0.25
     camera[1] += (player[1]-camera[1]) * 0.25
+    currChunk = int(camera[0]//(CHUNK_WIDTH*TILE_WIDTH)) 
 
     # Player movement handling    
     player[0] += (speed*dt) * playerInc[0]
-    player[1] += (speed*dt) * playerInc[1]
-    currChunk = int(player[0]//(CHUNK_WIDTH*TILE_WIDTH))    
+    player[1] += (speed*dt) * playerInc[1]       
     if not(0 < player[1] < (CHUNK_HEIGHT*TILE_WIDTH)): player[1] -= (speed*dt) * playerInc[1]    
 
     # Chunk movement handling
@@ -146,4 +146,5 @@ def update(dt):
 pyglet.clock.schedule_interval(update, 0.001) # Main function is called a maximum of 100 times every second
 pyglet.app.run() # Start running the program
 
+chunkBuffer.saveComplete()       
 chunkBuffer.serializer.stop()
