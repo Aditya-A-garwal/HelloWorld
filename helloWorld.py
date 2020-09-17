@@ -27,7 +27,7 @@ gen = OpenSimplex()
 # Initialize pygame and start clock
 pygame.init()
 clock = pygame.time.Clock()
-displaySize = [pygame.display.Info().current_w//2, pygame.display.Info().current_h//2]
+displaySize = [400, 300] #[pygame.display.Info().current_w//2, pygame.display.Info().current_h//2]
 
 # Create and display window
 screen = pygame.display.set_mode(displaySize, pygame.RESIZABLE)
@@ -60,12 +60,12 @@ while running:
 
         elif event.type == pygame.VIDEORESIZE:
             pygame.display.Info()
-            displaySize = [screen.get_width(), screen.get_height()]
+            displaySize[0] = screen.get_width()
+            displaySize[1] = screen.get_height()
 
     # Camera movement handling
     cam[0] += (player[0]-cam[0]) * 0.1
-    cam[1] += (player[1]-cam[1]) * 0.1
-    currChunk = int(cam[0]//(CHUNK_WIDTH*16))
+    cam[1] += (player[1]-cam[1]) * 0.1    
 
     # Rendering and updating screen
     screen.fill((30, 175, 250))
@@ -92,7 +92,8 @@ while running:
     # Player movement handling    
     player[0] += (speed/prevFramerate) * playerInc[0]
     player[1] += (speed/prevFramerate) * playerInc[1]
-    if not(0 < player[1] < (CHUNK_HEIGHT*16)): player[1] -= (speed / prevFramerate) * playerInc[1]    
+    currChunk = int(player[0]/(CHUNK_WIDTH*TILE_WIDTH))
+    if not(0 < player[1] < (CHUNK_HEIGHT*TILE_WIDTH)): player[1] -= (speed / prevFramerate) * playerInc[1]    
 
     deltaChunk = currChunk-prevChunk
     prevChunk = currChunk
