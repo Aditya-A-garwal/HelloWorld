@@ -598,6 +598,9 @@ class ChunkBuffer:
 
         for i in range(0, len(self.positions)): self.positions[i] -= 1
 
+    def saveComplete(self):
+        for i in range(0, len(self.positions)):
+            self.storage[self.positions[i]] = pickle.dumps(self.chunks[i])
 
     def __getitem__(self, key):
         return self.chunks[key]

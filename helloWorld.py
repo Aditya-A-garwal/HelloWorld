@@ -19,7 +19,7 @@ cam = [0,CHUNK_HEIGHT*16/2]
 player = [0,CHUNK_HEIGHT*TILE_WIDTH*0.5]
 playerInc = [0,0]
 currChunk = prevChunk = deltaChunk = 0
-speed = 5.5 * TILE_WIDTH #number of tiles to move per second
+speed = 55 * TILE_WIDTH #number of tiles to move per second
 
 #Create noise object
 gen = OpenSimplex()
@@ -53,7 +53,9 @@ while running:
 
     # event handling loop
     for event in pygame.event.get():
-        if event.type == pygame.QUIT: running = False #quit game if user leaves
+        if event.type == pygame.QUIT: 
+            chunkBuff.saveComplete()
+            running = False #quit game if user leaves
 
         elif event.type == pygame.KEYDOWN: keyDown = event.key            
         elif event.type == pygame.KEYUP: keyUp = event.key            
@@ -64,8 +66,9 @@ while running:
             displaySize[1] = screen.get_height()
 
     # Camera movement handling
-    cam[0] += (player[0]-cam[0]) * 0.1
-    cam[1] += (player[1]-cam[1]) * 0.1    
+    cam[0] += (player[0]-cam[0]) * 0.075
+    cam[1] += (player[1]-cam[1]) * 0.075 
+    currChunk = int(cam[0]//(CHUNK_WIDTH*TILE_WIDTH))
 
     # Rendering and updating screen
     screen.fill((30, 175, 250))
@@ -91,8 +94,7 @@ while running:
 
     # Player movement handling    
     player[0] += (speed/prevFramerate) * playerInc[0]
-    player[1] += (speed/prevFramerate) * playerInc[1]
-    currChunk = int(player[0]/(CHUNK_WIDTH*TILE_WIDTH))
+    player[1] += (speed/prevFramerate) * playerInc[1]    
     if not(0 < player[1] < (CHUNK_HEIGHT*TILE_WIDTH)): player[1] -= (speed / prevFramerate) * playerInc[1]    
 
     deltaChunk = currChunk-prevChunk

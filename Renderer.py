@@ -78,11 +78,12 @@ class Renderer:
             rightWalker += 1
 
         # Temporary player crosshair rendering
-        playerx, playery = cls.player         
-        playerx = cls.cameraToScreen_x(cls.graphToCamera_x(playerx))
-        playery = cls.cameraToScreen_y(cls.graphToCamera_y(playery))
+        
+        playercoors = cls.player.copy()
+        cls.graphToCamera(playercoors)
+        cls.cameraToScreen(playercoors)        
 
-        pygame.draw.circle(cls.screen, (255,50,50), [playerx, playery], 2)                      
+        pygame.draw.circle(cls.screen, (255,50,50), playercoors, 2)                      
 
 
     @classmethod
@@ -131,33 +132,33 @@ class Renderer:
     def arrayToScreen_y(cls, y, chunkInd):
         return cls.cameraToScreen_y(cls.graphToCamera_y(cls.chunkToGraph_y(cls.arrayToChunk_y(y), chunkInd)))
 
-    # @classmethod
-    # def arrayToChunk(cls, coor):
-    #     # From array-space to chunk-space
-    #     coor[0] *= TILE_WIDTH
-    #     coor[1] *= TILE_WIDTH
+    @classmethod
+    def arrayToChunk(cls, coor):
+        # From array-space to chunk-space
+        coor[0] *= TILE_WIDTH
+        coor[1] *= TILE_WIDTH
 
-    # @classmethod
-    # def chunkToGraph(cls, coor, chunkInd):
-    #     # From chunk-space to absolute-space
-    #     coor[0] += (chunkInd * CHUNK_WIDTH * TILE_WIDTH)
-    #     coor[1] = coor[1]
+    @classmethod
+    def chunkToGraph(cls, coor, chunkInd):
+        # From chunk-space to absolute-space
+        coor[0] += (chunkInd * CHUNK_WIDTH * TILE_WIDTH)
+        coor[1] = coor[1]
 
-    # @classmethod
-    # def graphToCamera(cls, coor):
-    #     # From absolute-space to camera-space
-    #     coor[0] -= cls.camera[0]
-    #     coor[1] -= cls.camera[1]
+    @classmethod
+    def graphToCamera(cls, coor):
+        # From absolute-space to camera-space
+        coor[0] -= cls.camera[0]
+        coor[1] -= cls.camera[1]
 
-    # @classmethod
-    # def cameraToScreen(cls, coor):
-    #     # From camera-space to screen-space
-    #     coor[0] += cls.displaySize[0] * 0.5
-    #     coor[1] += cls.displaySize[1] * 0.5
+    @classmethod
+    def cameraToScreen(cls, coor):
+        # From camera-space to screen-space
+        coor[0] += cls.displaySize[0] * 0.5
+        coor[1] = cls.displaySize[1] * 0.5 - coor[1]
 
-    # @classmethod
-    # def chunkToScreen(cls, coor, chunkInd):
-    #     cls.arrayToChunk(coor)       
-    #     cls.chunkToGraph(coor, chunkInd)
-    #     cls.graphToCamera(coor)
-    #     cls.cameraToScreen(coor)
+    @classmethod
+    def chunkToScreen(cls, coor, chunkInd):
+        cls.arrayToChunk(coor)       
+        cls.chunkToGraph(coor, chunkInd)
+        cls.graphToCamera(coor)
+        cls.cameraToScreen(coor)
