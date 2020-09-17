@@ -17,14 +17,16 @@ class Renderer:
         
     @classmethod    
     def initialize(cls, chunkBuffer, camera, player, displaySize, screen):         
-        cls.screen, cls.chunkBuffer, cls.player, cls.camera, cls.displaySize = screen, chunkBuffer, player, camera, displaySize         
+        cls.chunkBuffer, cls.player, cls.camera, cls.displaySize, cls.screen = chunkBuffer, player, camera, displaySize, screen        
 
     @classmethod
     def render(cls):
         """
             Renders given chunks onto given surface
             Requires chunks, cameraCoors, playerCoors, displaySize as sequences 
-        """        
+        """       
+
+        rects = [] 
 
         lowerIndex = int(max((cls.camera[1]-cls.displaySize[1]*0.5)/TILE_WIDTH, 0))
         upperIndex = int(min((cls.camera[1]+cls.displaySize[1]*0.5)/TILE_WIDTH, CHUNK_HEIGHT - 1))
@@ -51,7 +53,7 @@ class Renderer:
                     currentTile = cls.chunkBuffer[leftWalker].blocks[i][j]                        
                     y = cls.arrayToScreen_y(i, absoluteChunkIndex)-TILE_WIDTH                       
 
-                    if(currentTile != 0): cls.screen.blit(TILE_TABLE[currentTile], [x,y])
+                    if(currentTile != 0): rects.append(cls.screen.blit(TILE_TABLE[currentTile], [x,y]))
 
                 if(numLeftDone > numLeft): break      
 
@@ -71,7 +73,7 @@ class Renderer:
                     currentTile = cls.chunkBuffer[rightWalker].blocks[i][j]
                     y = cls.arrayToScreen_y(i, absoluteChunkIndex)-TILE_WIDTH             
 
-                    if(currentTile != 0): cls.screen.blit(TILE_TABLE[currentTile], [x,y])                        
+                    if(currentTile != 0): rects.append(cls.screen.blit(TILE_TABLE[currentTile], [x,y])                        )
 
                 if(numRightDone > numRight): break   
 
@@ -83,7 +85,8 @@ class Renderer:
         cls.graphToCamera(playercoors)
         cls.cameraToScreen(playercoors)        
 
-        pygame.draw.circle(cls.screen, (255,50,50), playercoors, 2)                      
+        pygame.draw.circle(cls.screen, (255,50,50), playercoors, 2)
+        return rects            
 
 
     @classmethod

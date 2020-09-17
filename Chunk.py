@@ -542,9 +542,9 @@ class Chunk:
 
 class ChunkBuffer:
 
-    def __init__(self, length, storageObj, chunkInd, noiseObj):
+    def __init__(self, length, serializer, chunkInd, noiseObj):
 
-        self.storage = storageObj
+        self.serializer = serializer
         self.currChunk = chunkInd
 
         self.chunks = []
@@ -557,7 +557,7 @@ class ChunkBuffer:
 
         for i in range(int(self.currChunk - (length - 1) * 0.5), int(self.currChunk + (length - 1) * 0.5) + 1):
             self.positions.append(i)
-            retrieved = self.storage[i]
+            retrieved = self.serializer[i]
             if(retrieved == None):
                 retrieved = Chunk()
                 populateChunk(retrieved, self.noise, i)
@@ -570,9 +570,9 @@ class ChunkBuffer:
 
         self.currChunk += 1
 
-        self.storage[self.positions[0]-1] = pickle.dumps(self.chunks[0]) # move leftmost chunk into storage
+        self.serializer[self.positions[0]-1] = pickle.dumps(self.chunks[0]) # move leftmost chunk into serializer
         for i in range(0, len(self.chunks)-1): self.chunks[i] = self.chunks[i+1] # move all chunks one space left
-        self.chunks[-1] = self.storage[self.positions[-1]+1] # take next right chunk from storage and move into buffer
+        self.chunks[-1] = self.serializer[self.positions[-1]+1] # take next right chunk from serializer and move into buffer
 
         if(self.chunks[-1] == None):
             self.chunks[-1] = Chunk()
@@ -587,9 +587,9 @@ class ChunkBuffer:
 
         self.currChunk -= 1
 
-        self.storage[self.positions[-1]+1] = pickle.dumps(self.chunks[-1]) # move rightmost chunk into storage
+        self.serializer[self.positions[-1]+1] = pickle.dumps(self.chunks[-1]) # move rightmost chunk into serializer
         for i in range(len(self.chunks)-1, 0, -1): self.chunks[i] = self.chunks[i-1] # move all chunks one space right
-        self.chunks[0] = self.storage[self.positions[0]-1] # take next left chunks from storage and move into buffer
+        self.chunks[0] = self.serializer[self.positions[0]-1] # take next left chunks from serializer and move into buffer
 
         if(self.chunks[0] == None):
             self.chunks[0] = Chunk()
@@ -601,7 +601,7 @@ class ChunkBuffer:
 
     def saveComplete(self):
         for i in range(0, len(self.positions)):
-            self.storage[self.positions[i]] = pickle.dumps(self.chunks[i])
+            self.serializer[self.positions[i]] = pickle.dumps(self.chunks[i])
 
     def __getitem__(self, key):
         return self.chunks[key]

@@ -71,9 +71,8 @@ while running:
     currChunk = int(camera[0]//(CHUNK_WIDTH*TILE_WIDTH))
 
     # Rendering and updating screen
-    screen.fill((30, 175, 250))
-    Renderer.render()
-    pygame.display.update()
+    screen.fill((30, 175, 250))    
+    pygame.display.update(Renderer.render())
 
 
     # Server-side    
