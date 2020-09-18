@@ -14,6 +14,7 @@ prevFramerate = framerate = 0
 
 # cameraera variables
 camera = [0,CHUNK_HEIGHT*TILE_WIDTH*0.5]
+prevCamera = [0, 0]
 
 # Player variables
 player = [0,CHUNK_HEIGHT*TILE_WIDTH*0.5]
@@ -38,10 +39,10 @@ pygame.display.set_icon(pygame.image.load("Resources/Default/gameIcon.png"))
 serializer = Serializer("world1")
 
 # Create chunk buffer and chunk-position buffer
-chunkBuff = ChunkBuffer(211, serializer, 0, gen)
+chunkBuffer = ChunkBuffer(211, serializer, 0, gen)
 
 # Create a renderer
-Renderer.initialize(chunkBuff, camera, player, displaySize, screen)
+Renderer.initialize(chunkBuffer, camera, player, displaySize, screen)
 
 # game loop
 running = True
@@ -53,9 +54,7 @@ while running:
 
     # event handling loop
     for event in pygame.event.get():
-        if event.type == pygame.QUIT: 
-            chunkBuff.saveComplete()
-            chunkBuff.serializer.stop()
+        if event.type == pygame.QUIT:             
             running = False #quit game if user leaves
 
         elif event.type == pygame.KEYDOWN: keyPress = event.key            
@@ -63,19 +62,25 @@ while running:
 
         elif event.type == pygame.VIDEORESIZE:
             pygame.display.Info()
-            displaySize[0] = screen.get_width()
-            displaySize[1] = screen.get_height()
+            displaySize[0], displaySize[1] = screen.get_width(), screen.get_height()
+
             Renderer.updateSize()
+            Renderer.updateCam()
+            Renderer.render()
 
-    # cameraera movement handling
+    # camera movement handling
     camera[0] += (player[0]-camera[0]) * 0.075
-    camera[1] += (player[1]-camera[1]) * 0.075 
-    currChunk = int(camera[0]//(CHUNK_WIDTH*TILE_WIDTH))
-    Renderer.updateCam()
+    camera[1] += (player[1]-camera[1]) * 0.075
 
-    # Rendering and updating screen
-    screen.fill((30, 175, 250))        
-    pygame.display.update(Renderer.render())
+    if(int(prevCamera[0]) != int(camera[0]) or int(prevCamera[1]) != int(camera[1])):
+        Renderer.updateCam()        
+        Renderer.render()               
+
+    prevCamera = camera.copy()
+    currChunk = int(camera[0]//(CHUNK_WIDTH*TILE_WIDTH))    
+
+    # Updating screen    
+    pygame.display.update()            
 
 
     # Server-side    
@@ -102,8 +107,10 @@ while running:
     deltaChunk = currChunk-prevChunk
     prevChunk = currChunk
 
-    if(deltaChunk > 0): chunkBuff.shiftLeft() #Player has moved right
-    elif(deltaChunk < 0): chunkBuff.shiftRight() #Player has moved left
+    if(deltaChunk > 0): chunkBuffer.shiftLeft() #Player has moved right
+    elif(deltaChunk < 0): chunkBuffer.shiftRight() #Player has moved left
     print(prevFramerate)
 
+chunkBuffer.saveComplete()
+chunkBuffer.serializer.stop()
 pygame.display.quit()

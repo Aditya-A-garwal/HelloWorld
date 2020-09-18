@@ -35,6 +35,8 @@ class Renderer:
         numRightDone = numLeftDone = 0 
         coors = [0,0]
         
+        cls.screen.fill((30, 175, 250))
+
         flag = True 
         while(flag):
             absoluteChunkIndex = cls.chunkBuffer.positions[leftWalker]
