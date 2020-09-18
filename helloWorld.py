@@ -101,9 +101,10 @@ def on_key_release(symbol, modifiers):
 def on_resize(newWidth, newHeight):
     # Window Resize event handler (Client-side)
     global displaySize
-    global background, backgroundBatch
-
+    global background, backgroundBatch    
+    
     background.width, background.height = displaySize[0], displaySize[1] = newWidth, newHeight        
+    Renderer.updateSize()
 
 
 # Main function (Server-side)
@@ -125,6 +126,7 @@ def update(dt):
     # Camera movement handling
     camera[0] += (player[0]-camera[0]) * 0.25
     camera[1] += (player[1]-camera[1]) * 0.25
+    Renderer.updateCam()
     currChunk = int(camera[0]//(CHUNK_WIDTH*TILE_WIDTH)) 
 
     # Player movement handling    

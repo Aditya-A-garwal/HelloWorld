@@ -23,6 +23,8 @@ class Renderer:
     @classmethod    
     def initialize(cls, chunkBuffer, camera, player, displaySize):
         cls.chunkBuffer, cls.player, cls.camera, cls.displaySize = chunkBuffer, player, camera, displaySize         
+        cls.updateSize()
+        cls.updateCam()
 
     @classmethod
     def render(cls):
@@ -31,56 +33,50 @@ class Renderer:
             Requires chunks, cameraCoors, playerCoors, displaySize as sequences 
         """        
 
-        lowerIndex = int(max((cls.camera[1]-cls.displaySize[1]*0.5)/TILE_WIDTH, 0))
-        upperIndex = int(min((cls.camera[1]+cls.displaySize[1]*0.5)/TILE_WIDTH, CHUNK_HEIGHT - 1))
+        #midpoint = int((len(cls.chunkBuffer)-1)*0.5)
 
-        midpoint = int((len(cls.chunkBuffer)-1)*0.5)
+        rightWalker = cls.midpoint  # goes from midpoint to length-1 (both inclusive)
+        leftWalker = cls.midpoint-1 # goes from midpoint-1 to 0 (both inclusive)
 
-        rightWalker = midpoint  # goes from midpoint to length-1 (both inclusive)
-        leftWalker = midpoint-1 # goes from midpoint-1 to 0 (both inclusive)
+        numRightDone = numLeftDone = 0
 
-        numRight, numRightDone = (cls.displaySize[0] * 0.5)/TILE_WIDTH + CHUNK_WIDTH - 1, 0
-        numLeft, numLeftDone = (cls.displaySize[0] * 0.5)/TILE_WIDTH + 1, 0
-
-        while(numLeftDone <= numLeft):
-
-            absoluteChunkIndex = cls.chunkBuffer.positions[leftWalker]
-
-            for j in range(CHUNK_WIDTH-1, -1, -1):
-
-                x = cls.arrayToScreen_x(j, absoluteChunkIndex)
-                numLeftDone += 1
-
-                for i in range(lowerIndex, upperIndex+1):                
-
-                    currentTile = cls.chunkBuffer[leftWalker].blocks[i][j]                        
-                    y = cls.arrayToScreen_y(i, absoluteChunkIndex)                        
-
-                    if(currentTile != 0): TILE_TABLE[currentTile].blit(x, y)        
-
-                if(numLeftDone > numLeft): break      
-
+        flag = True        
+        while(flag):
+            chunkIndex = cls.chunkBuffer.positions[leftWalker]
+            currChunkReference = cls.chunkBuffer[leftWalker]
             leftWalker -= 1
 
-        while(numRightDone <= numRight):
+            for j in range(CHUNK_WIDTH-1, -1, -1):
+                x = cls.arrayToScreen_x(j, chunkIndex)                                
 
-            absoluteChunkIndex = cls.chunkBuffer.positions[rightWalker]
-
-            for j in range(0, CHUNK_WIDTH):
+                for i in range(cls.lowerIndex, cls.upperIndex+1):                                    
+                    y = cls.arrayToScreen_y(i)                       
+                    curTileRef = currChunkReference.blocks[i][j] 
+                    if(curTileRef != 0): TILE_TABLE[curTileRef].blit(x, y)        
                 
-                x = cls.arrayToScreen_x(j, absoluteChunkIndex)
-                numRightDone += 1
+                numLeftDone += 1
+                if(numLeftDone > cls.numLeft): 
+                    flag = False
+                    break      
 
-                for i in range(lowerIndex, upperIndex+1):                
-
-                    currentTile = cls.chunkBuffer[rightWalker].blocks[i][j]
-                    y = cls.arrayToScreen_y(i, absoluteChunkIndex)                        
-
-                    if(currentTile != 0): TILE_TABLE[currentTile].blit(x, y)                         
-
-                if(numRightDone > numRight): break   
-
+        flag = True
+        while(flag):
+            chunkIndex = cls.chunkBuffer.positions[rightWalker]
+            currChunkReference = cls.chunkBuffer[rightWalker]
             rightWalker += 1
+
+            for j in range(0, CHUNK_WIDTH):            
+                x = cls.arrayToScreen_x(j, chunkIndex)                
+
+                for i in range(cls.lowerIndex, cls.upperIndex+1):               
+                    y = cls.arrayToScreen_y(i)
+                    currTileRef = currChunkReference.blocks[i][j]
+                    if(currTileRef != 0): TILE_TABLE[currTileRef].blit(x, y)                         
+
+                numRightDone += 1
+                if(numRightDone > cls.numRight):
+                    flag = False
+                    break   
 
         # Temporary player crosshair rendering
         playerx = cls.graphToCamera_x(cls.cameraToScreen_x(cls.player[0]))
@@ -103,7 +99,7 @@ class Renderer:
         return x + chunkInd * CHUNK_WIDTH * TILE_WIDTH
 
     @classmethod
-    def chunkToGraph_y(cls, y, chunkInd):
+    def chunkToGraph_y(cls, y):
         # From chunk-space to absolute-space
         return y
 
@@ -132,8 +128,8 @@ class Renderer:
         return cls.cameraToScreen_x(cls.graphToCamera_x(cls.chunkToGraph_x(cls.arrayToChunk_x(x), chunkInd)))        
 
     @classmethod
-    def arrayToScreen_y(cls, y, chunkInd):
-        return cls.cameraToScreen_y(cls.graphToCamera_y(cls.chunkToGraph_y(cls.arrayToChunk_y(y), chunkInd)))
+    def arrayToScreen_y(cls, y):
+        return cls.cameraToScreen_y(cls.graphToCamera_y(cls.chunkToGraph_y(cls.arrayToChunk_y(y))))
 
     @classmethod
     def arrayToChunk(cls, coor):
@@ -165,3 +161,15 @@ class Renderer:
         cls.chunkToGraph(coor, chunkInd)
         cls.graphToCamera(coor)
         cls.cameraToScreen(coor)
+
+    @classmethod
+    def updateSize(cls):        
+        cls.midpoint = int((len(cls.chunkBuffer)-1)*0.5)        
+
+        cls.numRight = (cls.displaySize[0] * 0.5)/TILE_WIDTH + CHUNK_WIDTH - 1
+        cls.numLeft = (cls.displaySize[0] * 0.5)/TILE_WIDTH + 1
+    
+    @classmethod
+    def updateCam(cls):        
+        cls.lowerIndex = int(max((cls.camera[1]-cls.displaySize[1]*0.5)/TILE_WIDTH, 0))
+        cls.upperIndex = int(min((cls.camera[1]+cls.displaySize[1]*0.5)/TILE_WIDTH, CHUNK_HEIGHT - 1))
