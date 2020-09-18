@@ -55,6 +55,7 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT: 
             chunkBuff.saveComplete()
+            chunkBuff.serializer.stop()
             running = False #quit game if user leaves
 
         elif event.type == pygame.KEYDOWN: keyPress = event.key            
@@ -64,11 +65,13 @@ while running:
             pygame.display.Info()
             displaySize[0] = screen.get_width()
             displaySize[1] = screen.get_height()
+            Renderer.updateSize()
 
     # cameraera movement handling
     camera[0] += (player[0]-camera[0]) * 0.075
     camera[1] += (player[1]-camera[1]) * 0.075 
     currChunk = int(camera[0]//(CHUNK_WIDTH*TILE_WIDTH))
+    Renderer.updateCam()
 
     # Rendering and updating screen
     screen.fill((30, 175, 250))        
@@ -92,9 +95,9 @@ while running:
     prevFramerate = 1000 / frameTime
 
     # Player movement handling    
-    player[0] += (speed/prevFramerate) * playerInc[0]
-    player[1] += (speed/prevFramerate) * playerInc[1]    
-    if not(0 < player[1] < (CHUNK_HEIGHT*TILE_WIDTH)): player[1] -= (speed / prevFramerate) * playerInc[1]    
+    player[0] += (speed * frameTime * 0.001) * playerInc[0]
+    player[1] += (speed * frameTime * 0.001) * playerInc[1]    
+    if not(0 < player[1] < (CHUNK_HEIGHT*TILE_WIDTH)): player[1] -= (speed * frametime * 0.001) * playerInc[1]    
 
     deltaChunk = currChunk-prevChunk
     prevChunk = currChunk
@@ -103,6 +106,4 @@ while running:
     elif(deltaChunk < 0): chunkBuff.shiftRight() #Player has moved left
     print(prevFramerate)
 
-
-chunkBuff.serializer.stop()
 pygame.display.quit()

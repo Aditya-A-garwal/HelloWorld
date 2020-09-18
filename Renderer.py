@@ -18,28 +18,24 @@ class Renderer:
     @classmethod    
     def initialize(cls, chunkBuffer, camera, player, displaySize, screen):         
         cls.chunkBuffer, cls.player, cls.camera, cls.displaySize, cls.screen = chunkBuffer, player, camera, displaySize, screen        
+        cls.updateSize()
+        cls.updateCam()
 
     @classmethod
     def render(cls):
         """
             Renders given chunks onto given surface
             Requires chunks, cameraCoors, playerCoors, displaySize as sequences 
-        """       
-
+        """ 
         rects = [] 
 
-        lowerIndex = int(max((cls.camera[1]-cls.displaySize[1]*0.5)/TILE_WIDTH, 0))
-        upperIndex = int(min((cls.camera[1]+cls.displaySize[1]*0.5)/TILE_WIDTH, CHUNK_HEIGHT - 1))
+        rightWalker = cls.midpoint  # goes from midpoint to length-1 (both inclusive)
+        leftWalker = cls.midpoint-1 # goes from midpoint-1 to 0 (both inclusive)
 
-        midpoint = int((len(cls.chunkBuffer)-1)*0.5)
+        numRightDone = 0
+        numLeftDone = 0
 
-        rightWalker = midpoint  # goes from midpoint to length-1 (both inclusive)
-        leftWalker = midpoint-1 # goes from midpoint-1 to 0 (both inclusive)
-
-        numRight, numRightDone = (cls.displaySize[0] * 0.5)/TILE_WIDTH + CHUNK_WIDTH - 1, 0
-        numLeft, numLeftDone = (cls.displaySize[0] * 0.5)/TILE_WIDTH + 1, 0
-
-        while(numLeftDone <= numLeft):
+        while(numLeftDone <= cls.numLeft):
 
             absoluteChunkIndex = cls.chunkBuffer.positions[leftWalker]
 
@@ -48,18 +44,18 @@ class Renderer:
                 x = cls.arrayToScreen_x(j, absoluteChunkIndex)
                 numLeftDone += 1
 
-                for i in range(lowerIndex, upperIndex+1):                
+                for i in range(cls.lowerIndex, cls.upperIndex+1):                
 
                     currentTile = cls.chunkBuffer[leftWalker].blocks[i][j]                        
                     y = cls.arrayToScreen_y(i, absoluteChunkIndex)-TILE_WIDTH                       
 
                     if(currentTile != 0): rects.append(cls.screen.blit(TILE_TABLE[currentTile], [x,y]))
 
-                if(numLeftDone > numLeft): break      
+                if(numLeftDone > cls.numLeft): break      
 
             leftWalker -= 1
 
-        while(numRightDone <= numRight):
+        while(numRightDone <= cls.numRight):
 
             absoluteChunkIndex = cls.chunkBuffer.positions[rightWalker]
 
@@ -68,14 +64,14 @@ class Renderer:
                 x = cls.arrayToScreen_x(j, absoluteChunkIndex)
                 numRightDone += 1
 
-                for i in range(lowerIndex, upperIndex+1):                
+                for i in range(cls.lowerIndex, cls.upperIndex+1):                
 
                     currentTile = cls.chunkBuffer[rightWalker].blocks[i][j]
                     y = cls.arrayToScreen_y(i, absoluteChunkIndex)-TILE_WIDTH             
 
                     if(currentTile != 0): rects.append(cls.screen.blit(TILE_TABLE[currentTile], [x,y])                        )
 
-                if(numRightDone > numRight): break   
+                if(numRightDone > cls.numRight): break   
 
             rightWalker += 1
 
@@ -86,7 +82,7 @@ class Renderer:
         cls.cameraToScreen(playercoors)        
 
         rects.append(pygame.draw.circle(cls.screen, (255,50,50), playercoors, 2))
-        return rects            
+        return rects
 
 
     @classmethod
@@ -165,3 +161,15 @@ class Renderer:
         cls.chunkToGraph(coor, chunkInd)
         cls.graphToCamera(coor)
         cls.cameraToScreen(coor)
+
+    @classmethod
+    def updateSize(cls):        
+        cls.midpoint = int((len(cls.chunkBuffer)-1)*0.5)        
+
+        cls.numRight = (cls.displaySize[0] * 0.5)/TILE_WIDTH + CHUNK_WIDTH - 1
+        cls.numLeft = (cls.displaySize[0] * 0.5)/TILE_WIDTH + 1
+    
+    @classmethod
+    def updateCam(cls):        
+        cls.lowerIndex = int(max((cls.camera[1]-cls.displaySize[1]*0.5)/TILE_WIDTH, 0))
+        cls.upperIndex = int(min((cls.camera[1]+cls.displaySize[1]*0.5)/TILE_WIDTH, CHUNK_HEIGHT - 1))
