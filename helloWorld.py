@@ -19,7 +19,7 @@ camera = [0,CHUNK_HEIGHT*TILE_WIDTH*0.5]
 player = [0,CHUNK_HEIGHT*TILE_WIDTH*0.5]
 playerInc = [0,0]
 currChunk = prevChunk = deltaChunk = 0
-speed = 55 * TILE_WIDTH #number of tiles to move per second
+speed = 24 * TILE_WIDTH #number of tiles to move per second
 
 #Create noise object
 gen = OpenSimplex()
@@ -95,9 +95,9 @@ while running:
     prevFramerate = 1000 / frameTime
 
     # Player movement handling    
-    player[0] += (speed * frameTime * 0.001) * playerInc[0]
-    player[1] += (speed * frameTime * 0.001) * playerInc[1]    
-    if not(0 < player[1] < (CHUNK_HEIGHT*TILE_WIDTH)): player[1] -= (speed * frametime * 0.001) * playerInc[1]    
+    player[0] += (speed / prevFramerate) * playerInc[0]
+    player[1] += (speed / prevFramerate) * playerInc[1]    
+    if not(0 < player[1] < (CHUNK_HEIGHT*TILE_WIDTH)): player[1] -= (speed / prevFramerate) * playerInc[1]    
 
     deltaChunk = currChunk-prevChunk
     prevChunk = currChunk

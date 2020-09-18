@@ -32,48 +32,48 @@ class Renderer:
         rightWalker = cls.midpoint  # goes from midpoint to length-1 (both inclusive)
         leftWalker = cls.midpoint-1 # goes from midpoint-1 to 0 (both inclusive)
 
-        numRightDone = 0
-        numLeftDone = 0
-
-        while(numLeftDone <= cls.numLeft):
-
+        numRightDone = numLeftDone = 0 
+        coors = [0,0]
+        
+        flag = True 
+        while(flag):
             absoluteChunkIndex = cls.chunkBuffer.positions[leftWalker]
+            curChunkRef = cls.chunkBuffer[leftWalker]
+            leftWalker -= 1            
 
             for j in range(CHUNK_WIDTH-1, -1, -1):
+                coors[0] = cls.arrayToScreen_x(j, absoluteChunkIndex)
 
-                x = cls.arrayToScreen_x(j, absoluteChunkIndex)
+                for i in range(cls.lowerIndex, cls.upperIndex+1):                                    
+                    coors[1] = cls.arrayToScreen_y(i)-TILE_WIDTH    
+                    curTileRef = curChunkRef.blocks[i][j]                                           
+
+                    if(curTileRef != 0): rects.append(cls.screen.blit(TILE_TABLE[curTileRef], coors))
+                
                 numLeftDone += 1
+                if(numLeftDone > cls.numLeft): 
+                    flag = False
+                    break
 
-                for i in range(cls.lowerIndex, cls.upperIndex+1):                
-
-                    currentTile = cls.chunkBuffer[leftWalker].blocks[i][j]                        
-                    y = cls.arrayToScreen_y(i, absoluteChunkIndex)-TILE_WIDTH                       
-
-                    if(currentTile != 0): rects.append(cls.screen.blit(TILE_TABLE[currentTile], [x,y]))
-
-                if(numLeftDone > cls.numLeft): break      
-
-            leftWalker -= 1
-
-        while(numRightDone <= cls.numRight):
-
+        flag = True
+        while(flag):
             absoluteChunkIndex = cls.chunkBuffer.positions[rightWalker]
+            curChunkRef = cls.chunkBuffer[rightWalker]
+            rightWalker += 1
 
             for j in range(0, CHUNK_WIDTH):
-                
-                x = cls.arrayToScreen_x(j, absoluteChunkIndex)
-                numRightDone += 1
+                coors[0] = cls.arrayToScreen_x(j, absoluteChunkIndex)
 
                 for i in range(cls.lowerIndex, cls.upperIndex+1):                
+                    coors[1] = cls.arrayToScreen_y(i)-TILE_WIDTH             
+                    curTileRef = curChunkRef.blocks[i][j]                    
 
-                    currentTile = cls.chunkBuffer[rightWalker].blocks[i][j]
-                    y = cls.arrayToScreen_y(i, absoluteChunkIndex)-TILE_WIDTH             
+                    if(curTileRef != 0): rects.append(cls.screen.blit(TILE_TABLE[curTileRef], coors)                        )
 
-                    if(currentTile != 0): rects.append(cls.screen.blit(TILE_TABLE[currentTile], [x,y])                        )
-
-                if(numRightDone > cls.numRight): break   
-
-            rightWalker += 1
+                numRightDone += 1
+                if(numRightDone > cls.numRight):
+                    flag = False
+                    break
 
         # Temporary player crosshair rendering
         
@@ -99,8 +99,9 @@ class Renderer:
         return x + chunkInd * CHUNK_WIDTH * TILE_WIDTH
 
     @classmethod
-    def chunkToGraph_y(cls, y, chunkInd):
+    def chunkToGraph_y(cls, y):
         # From chunk-space to absolute-space
+        # Redundant function
         return y
 
     @classmethod
@@ -128,8 +129,8 @@ class Renderer:
         return cls.cameraToScreen_x(cls.graphToCamera_x(cls.chunkToGraph_x(cls.arrayToChunk_x(x), chunkInd)))        
 
     @classmethod
-    def arrayToScreen_y(cls, y, chunkInd):
-        return cls.cameraToScreen_y(cls.graphToCamera_y(cls.chunkToGraph_y(cls.arrayToChunk_y(y), chunkInd)))
+    def arrayToScreen_y(cls, y):
+        return cls.cameraToScreen_y(cls.graphToCamera_y(cls.arrayToChunk_y(y)))
 
     @classmethod
     def arrayToChunk(cls, coor):
