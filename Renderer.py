@@ -85,7 +85,7 @@ class Renderer:
         cls.graphToCamera(playercoors)
         cls.cameraToScreen(playercoors)        
 
-        pygame.draw.circle(cls.screen, (255,50,50), playercoors, 2)
+        rects.append(pygame.draw.circle(cls.screen, (255,50,50), playercoors, 2))
         return rects            
 
 

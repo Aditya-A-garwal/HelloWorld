@@ -13,7 +13,7 @@ displaySize = [0,0]
 prevFramerate = framerate = 0
 
 # cameraera variables
-camera = [0,CHUNK_HEIGHT*16/2]
+camera = [0,CHUNK_HEIGHT*TILE_WIDTH*0.5]
 
 # Player variables
 player = [0,CHUNK_HEIGHT*TILE_WIDTH*0.5]
@@ -71,7 +71,7 @@ while running:
     currChunk = int(camera[0]//(CHUNK_WIDTH*TILE_WIDTH))
 
     # Rendering and updating screen
-    screen.fill((30, 175, 250))    
+    screen.fill((30, 175, 250))        
     pygame.display.update(Renderer.render())
 
 
