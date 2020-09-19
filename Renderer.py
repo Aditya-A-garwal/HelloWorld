@@ -50,7 +50,7 @@ class Renderer:
                     coors[1] = cls.arrayToScreen_y(i)-TILE_WIDTH    
                     curTileRef = curChunkRef.blocks[i][j]                                           
 
-                    if(curTileRef != 0): rects.append(cls.screen.blit(TILE_TABLE[curTileRef], coors))
+                    if(curTileRef is not 0): rects.append(cls.screen.blit(TILE_TABLE[curTileRef], coors))
                 
                 numLeftDone += 1
                 if(numLeftDone > cls.numLeft): 
@@ -70,7 +70,7 @@ class Renderer:
                     coors[1] = cls.arrayToScreen_y(i)-TILE_WIDTH             
                     curTileRef = curChunkRef.blocks[i][j]                    
 
-                    if(curTileRef != 0): rects.append(cls.screen.blit(TILE_TABLE[curTileRef], coors)                        )
+                    if(curTileRef is not 0): rects.append(cls.screen.blit(TILE_TABLE[curTileRef], coors)                        )
 
                 numRightDone += 1
                 if(numRightDone > cls.numRight):
@@ -174,5 +174,15 @@ class Renderer:
     
     @classmethod
     def updateCam(cls):        
+        cls.lowerIndex = int(max((cls.camera[1]-cls.displaySize[1]*0.5)/TILE_WIDTH, 0))
+        cls.upperIndex = int(min((cls.camera[1]+cls.displaySize[1]*0.5)/TILE_WIDTH, CHUNK_HEIGHT - 1))
+
+    @classmethod
+    def updateRefs(cls):       
+        cls.midpoint = int((len(cls.chunkBuffer)-1)*0.5)        
+
+        cls.numRight = (cls.displaySize[0] * 0.5)/TILE_WIDTH + CHUNK_WIDTH - 1
+        cls.numLeft = (cls.displaySize[0] * 0.5)/TILE_WIDTH + 1
+
         cls.lowerIndex = int(max((cls.camera[1]-cls.displaySize[1]*0.5)/TILE_WIDTH, 0))
         cls.upperIndex = int(min((cls.camera[1]+cls.displaySize[1]*0.5)/TILE_WIDTH, CHUNK_HEIGHT - 1))

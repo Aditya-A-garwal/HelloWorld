@@ -2,7 +2,8 @@ import pygame, pickle
 from Tile import *
 
 # constants for chunk width and chunk height
-CHUNK_WIDTH, CHUNK_HEIGHT = 16, 512
+CHUNK_WIDTH = 16
+CHUNK_HEIGHT = 512
 
 # constant for chunk generation
 WALKING_CONSTANT = 0.0075
@@ -21,7 +22,7 @@ class Chunk:
 
     def __init__(self, index=0):
         self.index = index
-        self.blocks = [[0 for i in range(0, CHUNK_WIDTH)].copy() for i in range(0, CHUNK_HEIGHT)]       
+        self.blocks = [[0 for i in range(0, CHUNK_WIDTH)] for i in range(0, CHUNK_HEIGHT)]       
 
     def __getitem__(self, key):
         return self.blocks[key[0]][key[1]]
@@ -48,7 +49,7 @@ class ChunkBuffer:
         for i in range(int(self.currChunk - (length - 1) * 0.5), int(self.currChunk + (length - 1) * 0.5) + 1):
             self.positions.append(i)
             retrieved = self.serializer[i]
-            if(retrieved == None):
+            if(retrieved is None):
                 retrieved = Chunk(index=i)
                 populateChunk(retrieved, self.noise, i)
             else:
@@ -64,7 +65,7 @@ class ChunkBuffer:
         for i in range(0, len(self.chunks)-1): self.chunks[i] = self.chunks[i+1] # move all chunks one space left
         self.chunks[-1] = self.serializer[self.positions[-1]+1] # take next right chunk from serializer and move into buffer
 
-        if(self.chunks[-1] == None):
+        if(self.chunks[-1] is None):
             self.chunks[-1] = Chunk()
             populateChunk(self.chunks[-1], self.noise, self.positions[-1]+1)
         else:
@@ -81,7 +82,7 @@ class ChunkBuffer:
         for i in range(len(self.chunks)-1, 0, -1): self.chunks[i] = self.chunks[i-1] # move all chunks one space right
         self.chunks[0] = self.serializer[self.positions[0]-1] # take next left chunks from serializer and move into buffer
 
-        if(self.chunks[0] == None):
+        if(self.chunks[0] is None):
             self.chunks[0] = Chunk()
             populateChunk(self.chunks[0], self.noise, self.positions[0]-1)
         else:

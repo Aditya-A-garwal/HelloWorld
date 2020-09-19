@@ -9,10 +9,10 @@ from Renderer import *
 from Serializer import *
 
 # Screen variables
-displaySize = [0,0]
+displaySize = [400, 300]  #[pygame.display.Info().current_w//2, pygame.display.Info().current_h//2]
 prevFramerate = framerate = 0
 
-# cameraera variables
+# Camera variables
 camera = [0,CHUNK_HEIGHT*TILE_WIDTH*0.5]
 prevCamera = [0, 0]
 
@@ -25,23 +25,25 @@ speed = 24 * TILE_WIDTH #number of tiles to move per second
 #Create noise object
 gen = OpenSimplex()
 
+# Create a database object
+serializer = Serializer("world1")
+
 # Initialize pygame and start clock
 pygame.init()
 clock = pygame.time.Clock()
-displaySize = [400, 300] #[pygame.display.Info().current_w//2, pygame.display.Info().current_h//2]
+
+# Create chunk buffer and chunk-position buffer
+bufferSize = int(pygame.display.Info().current_w/(CHUNK_WIDTH*TILE_WIDTH))+2
+if(bufferSize % 2 == 0): bufferSize += 1
+chunkBuffer = ChunkBuffer(bufferSize, serializer, 0, gen)
+del bufferSize
 
 # Create and display window
 screen = pygame.display.set_mode(displaySize, pygame.RESIZABLE)
 pygame.display.set_caption("Hello World!")
 pygame.display.set_icon(pygame.image.load("Resources/Default/gameIcon.png"))
 
-# Create a database object
-serializer = Serializer("world1")
-
-# Create chunk buffer and chunk-position buffer
-chunkBuffer = ChunkBuffer(211, serializer, 0, gen)
-
-# Create a renderer
+# Initialize the renderer
 Renderer.initialize(chunkBuffer, camera, player, displaySize, screen)
 
 # game loop
@@ -60,12 +62,10 @@ while running:
         elif event.type == pygame.KEYDOWN: keyPress = event.key            
         elif event.type == pygame.KEYUP: keyRelease = event.key            
 
-        elif event.type == pygame.VIDEORESIZE:
-            pygame.display.Info()
-            displaySize[0], displaySize[1] = screen.get_width(), screen.get_height()
+        elif event.type == pygame.VIDEORESIZE:            
+            displaySize[0], displaySize[1] = screen.get_width(), screen.get_height()            
 
-            Renderer.updateSize()
-            Renderer.updateCam()
+            Renderer.updateRefs()
             Renderer.render()
 
     # camera movement handling
@@ -86,14 +86,14 @@ while running:
     # Server-side    
 
     # Key to movement translation
-    if(keyPress == pygame.K_a): playerInc[0] = -1
-    elif(keyPress == pygame.K_d): playerInc[0] = 1
+    if(keyPress is pygame.K_a): playerInc[0] = -1
+    elif(keyPress is pygame.K_d): playerInc[0] = 1
 
-    if(keyPress == pygame.K_w): playerInc[1] = 1
-    elif(keyPress == pygame.K_s): playerInc[1] = -1
+    if(keyPress is pygame.K_w): playerInc[1] = 1
+    elif(keyPress is pygame.K_s): playerInc[1] = -1
 
-    if(keyRelease == pygame.K_a or keyRelease == pygame.K_d): playerInc[0] = 0    
-    elif(keyRelease == pygame.K_w or keyRelease == pygame.K_s): playerInc[1] = 0    
+    if(keyRelease is pygame.K_a or keyRelease is pygame.K_d): playerInc[0] = 0    
+    elif(keyRelease is pygame.K_w or keyRelease is pygame.K_s): playerInc[1] = 0    
 
     # Framerate calculation
     frameTime = clock.tick(framerate) + 1
