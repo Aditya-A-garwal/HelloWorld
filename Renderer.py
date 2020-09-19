@@ -18,8 +18,7 @@ class Renderer:
     @classmethod    
     def initialize(cls, chunkBuffer, camera, player, displaySize, screen):         
         cls.chunkBuffer, cls.player, cls.camera, cls.displaySize, cls.screen = chunkBuffer, player, camera, displaySize, screen        
-        cls.updateSize()
-        cls.updateCam()
+        cls.updateRefs()
 
     @classmethod
     def render(cls):
@@ -169,8 +168,8 @@ class Renderer:
     def updateSize(cls):        
         cls.midpoint = int((len(cls.chunkBuffer)-1)*0.5)        
 
-        cls.numRight = (cls.displaySize[0] * 0.5)/TILE_WIDTH + CHUNK_WIDTH - 1
-        cls.numLeft = (cls.displaySize[0] * 0.5)/TILE_WIDTH + 1
+        cls.numRight = (cls.displaySize[0] * 0.5)/TILE_WIDTH + CHUNK_WIDTH
+        cls.numLeft = (cls.displaySize[0] * 0.5)/TILE_WIDTH
     
     @classmethod
     def updateCam(cls):        
@@ -181,8 +180,8 @@ class Renderer:
     def updateRefs(cls):       
         cls.midpoint = int((len(cls.chunkBuffer)-1)*0.5)        
 
-        cls.numRight = (cls.displaySize[0] * 0.5)/TILE_WIDTH + CHUNK_WIDTH - 1
-        cls.numLeft = (cls.displaySize[0] * 0.5)/TILE_WIDTH + 1
+        cls.numRight = (cls.displaySize[0] * 0.5)/TILE_WIDTH + CHUNK_WIDTH
+        cls.numLeft = (cls.displaySize[0] * 0.5)/TILE_WIDTH
 
         cls.lowerIndex = int(max((cls.camera[1]-cls.displaySize[1]*0.5)/TILE_WIDTH, 0))
         cls.upperIndex = int(min((cls.camera[1]+cls.displaySize[1]*0.5)/TILE_WIDTH, CHUNK_HEIGHT - 1))

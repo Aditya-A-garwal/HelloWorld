@@ -20,7 +20,7 @@ prevCamera = [0, 0]
 player = [0,CHUNK_HEIGHT*TILE_WIDTH*0.5]
 playerInc = [0,0]
 currChunk = prevChunk = deltaChunk = 0
-speed = 24 * TILE_WIDTH #number of tiles to move per second
+speed = 10 * TILE_WIDTH #number of tiles to move per second
 
 #Create noise object
 gen = OpenSimplex()
