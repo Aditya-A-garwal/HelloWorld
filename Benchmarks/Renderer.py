@@ -1,4 +1,3 @@
-# import pygame
 from Chunk import *
 
 '''
@@ -13,21 +12,22 @@ Translations
 4   camera-space                screen-space
     coordinates in the array    coordinates on the display
 '''
+
 chunkBuffer = None
-player = []
-camera = []
-displaySize = []
+player = None
+camera = None
+displaySize = None
 screen = None
-midpoint = 0
-upperIndex = 0
-lowerIndex = 0
-numLeft = 0
-numRight = 0
+midpoint = None
+upperIndex = None
+lowerIndex = None
+numLeft = None
+numRight = None
 
 
-def initialize(cB, cam, plyr, dS, scrn):
+def initialize(achunkBuffer, acamera, aplayer, adisplaySize, ascreen):
     global chunkBuffer, player, camera, displaySize, screen
-    chunkBuffer, player, camera, displaySize, screen = cB, plyr, cam, dS, scrn
+    chunkBuffer, player, camera, displaySize, screen = achunkBuffer, aplayer, acamera, adisplaySize, ascreen
 
     updateRefs()
 
