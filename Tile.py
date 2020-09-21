@@ -8,38 +8,41 @@ LUMINOSITY = 2
 
 # Tile names along with their IDs
 
+bedrock = 1
+obsidian = 2
+hellstone = 3
 
 # Tile table with names
 TILE_NAMES = {
     # bedrock wastes blocks
-    "Bedrock" : 1,
-    "Obsidian" : 2,
-    "Hellstone" : 3,
+    "bedrock" : 1,
+    "obsidian" : 2,
+    "hellstone" : 3,
     # ores
-    "Unobtanium" : 4,
-    "Diamond ore" : 5,
-    "Platinum ore" : 6,
-    "Gold ore" : 7,
-    "Iron ore" : 8,
-    "Copper ore" : 9,
+    "unobtanium" : 4,
+    "diamond ore" : 5,
+    "platinum ore" : 6,
+    "gold ore" : 7,
+    "iron ore" : 8,
+    "copper ore" : 9,
     # stones
-    "Granite" : 10,
-    "Quartz" : 11,
-    "Limestone" : 12,
-    "Stone" : 13,
-    "Sandstone" : 14,
+    "granite" : 10,
+    "quartz" : 11,
+    "limestone" : 12,
+    "stone" : 13,
+    "sandstone" : 14,
     # transition blocks
-    "Gravel" : 15,
-    "Coke" : 16,
+    "gravel" : 15,
+    "coke" : 16,
     # clays
-    "Clay" : 17,
-    "Red clay" : 18
+    "clay" : 17,
+    "red clay" : 18
 }
 
 TILE_TABLE = {
-    1:pygame.image.load("Resources/Default/grass.png"),
-    2:pygame.image.load("Resources/Default/dirt.png"),
-    3:pygame.image.load("Resources/Default/grass.png")
+    1:pygame.image.load("Resources/Mock/bedrock.png"),
+    2:pygame.image.load("Resources/Mock/obsidian.png"),
+    3:pygame.image.load("Resources/Mock/hellstone.png")
 }
 
 class Tile:
@@ -48,17 +51,3 @@ class Tile:
         self.rect = rect
         self.texture = pygame.image.load("Resources/Mock/"+texture)
 
-class Grass(Tile):
-
-    def __init__(self):
-        super().__init__("grass.png")
-
-class Stone(Tile):
-
-    def __init__(self):
-        super().__init__("stone.png")
-
-class Bedrock(Tile):
-
-    def __init__(self):
-        super().__init__("bedrock.png")

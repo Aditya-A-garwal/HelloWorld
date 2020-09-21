@@ -1,3 +1,8 @@
+https://wiki.tiker.net/PyOpenCL/Installation/Windows/
+http://www.minho-kim.com/courses/17sp43.635/pyopencl.html
+https://www.lfd.uci.edu/~gohlke/pythonlibs/#pyopencl
+ignore these links
+
 Tiles:             Weight    Friction    Luminosity    Breaktime    Burnable
 
 Bedrock:            100        0             0            -            

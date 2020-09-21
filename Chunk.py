@@ -1,4 +1,4 @@
-import pygame, pickle
+import pickle
 from Tile import *
 
 # constants for chunk width and chunk height
@@ -10,6 +10,11 @@ WALKING_CONSTANT = 0.0075
 
 
 def populateChunk(chunk, noiseObj, chunkInd):
+
+    # for i in range(0, CHUNK_WIDTH):
+    #     for j in range(0, CHUNK_HEIGHT):
+    #         pass
+
     coor = chunkInd * CHUNK_WIDTH
 
     for i in range(0, CHUNK_WIDTH):

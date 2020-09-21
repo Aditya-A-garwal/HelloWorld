@@ -1,9 +1,7 @@
-import pygame, numpy, sys, random, pickle
+import numpy, sys, random
 from pygame.locals import *
 from opensimplex import OpenSimplex
 
-from Tile import *
-from Chunk import *
 from Renderer import *
 
 from Serializer import *
