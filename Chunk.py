@@ -8,21 +8,6 @@ CHUNK_HEIGHT = 512
 # constant for chunk generation
 WALKING_CONSTANT = 0.0075
 
-
-def populateChunk(chunk, noiseObj, chunkInd):
-
-    # for i in range(0, CHUNK_WIDTH):
-    #     for j in range(0, CHUNK_HEIGHT):
-    #         pass
-
-    coor = chunkInd * CHUNK_WIDTH
-
-    for i in range(0, CHUNK_WIDTH):
-        height = int((noiseObj.noise2d(x=coor * WALKING_CONSTANT, y=0) + 1) * 64)  # Value will be from 0 to 128
-        coor += 1
-        for j in range(200, 200+height): chunk[j, i] = 2
-        chunk[200+height, i] = 1
-
 class Chunk:
 
     def __init__(self, index=0):
@@ -34,6 +19,20 @@ class Chunk:
 
     def __setitem__(self, key, value):
         self.blocks[key[0]][key[1]] = value
+
+    @classmethod
+    def populateChunk(cls, chunk, noiseObj, chunkInd):
+        # for i in range(0, CHUNK_WIDTH):
+        #     for j in range(0, CHUNK_HEIGHT):
+        #         pass
+
+        coor = chunkInd * CHUNK_WIDTH
+
+        for i in range(0, CHUNK_WIDTH):
+            height = int((noiseObj.noise2d(x=coor * WALKING_CONSTANT, y=0) + 1) * 64)  # Value will be from 0 to 128
+            coor += 1
+            for j in range(200, 200+height): chunk[j, i] = bedrock
+            chunk[200+height, i] = obsidian
 
 
 class ChunkBuffer:
@@ -56,7 +55,7 @@ class ChunkBuffer:
             retrieved = self.serializer[i]
             if(retrieved is None):
                 retrieved = Chunk(index=i)
-                populateChunk(retrieved, self.noise, i)
+                Chunk.populateChunk(retrieved, self.noise, i)
             else:
                 retrieved = pickle.loads(retrieved)
 
@@ -72,7 +71,7 @@ class ChunkBuffer:
 
         if(self.chunks[-1] is None):
             self.chunks[-1] = Chunk()
-            populateChunk(self.chunks[-1], self.noise, self.positions[-1]+1)
+            Chunk.populateChunk(self.chunks[-1], self.noise, self.positions[-1]+1)
         else:
             self.chunks[-1] = pickle.loads(self.chunks[-1])
 
