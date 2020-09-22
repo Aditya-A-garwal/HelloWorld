@@ -36,6 +36,10 @@ if(bufferSize % 2 == 0): bufferSize += 1
 chunkBuffer = ChunkBuffer(bufferSize, serializer, 0, gen)
 del bufferSize
 
+#debug
+for ch in chunkBuffer: print(ch.index, end=' ')        
+print()
+
 # Create and display window
 screen = pygame.display.set_mode(displaySize, pygame.RESIZABLE)
 pygame.display.set_caption("Hello World!")
@@ -105,9 +109,14 @@ while running:
     deltaChunk = currChunk-prevChunk
     prevChunk = currChunk
 
-    if(deltaChunk > 0): chunkBuffer.shiftLeft() #Player has moved right
-    elif(deltaChunk < 0): chunkBuffer.shiftRight() #Player has moved left
-    print(camera)
+    if(deltaChunk > 0): 
+        for ch in chunkBuffer: print(ch.index, end=' ')        
+        print()
+        chunkBuffer.shiftLeft() #Player has moved right
+    elif(deltaChunk < 0): 
+        for ch in chunkBuffer: print(ch.index, end=' ')
+        print()
+        chunkBuffer.shiftRight() #Player has moved left    
 
 chunkBuffer.saveComplete()
 chunkBuffer.serializer.stop()
