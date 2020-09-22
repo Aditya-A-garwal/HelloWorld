@@ -46,8 +46,7 @@ class ChunkBuffer:
 
     def __init__(self, length, serializer, currChunk, noise):
 
-        self.serializer = serializer
-        #self.currChunk = chunkInd
+        self.serializer = serializer        
 
         self.chunks = []
         self.positions = []
@@ -72,26 +71,22 @@ class ChunkBuffer:
 
     def shiftLeft(self):
 
-        #self.currChunk += 1
-
         self.serializer[self.positions[0]-1] = pickle.dumps(self.chunks[0]) # move leftmost chunk into serializer
         for i in range(0, len(self.chunks)-1): self.chunks[i] = self.chunks[i+1] # move all chunks one space left
-        self.chunks[-1] = self.serializer[self.positions[-1]+1] # take next right chunk from serializer and move into buffer
+        self.chunks[self.len] = self.serializer[self.positions[self.len]+1] # take next right chunk from serializer and move into buffer
 
-        if(self.chunks[-1] is None):
-            self.chunks[-1] = Chunk(index = self.positions[-1]+1)
-            Chunk.populateChunk(self.chunks[-1], self.noise, self.positions[-1]+1)
+        if(self.chunks[self.len] is None):
+            self.chunks[self.len] = Chunk(index = self.positions[self.len]+1)
+            Chunk.populateChunk(self.chunks[self.len], self.noise, self.positions[self.len]+1)
         else:
-            self.chunks[-1] = pickle.loads(self.chunks[-1])
+            self.chunks[self.len] = pickle.loads(self.chunks[self.len])
 
         for i in range(0, len(self.positions)): self.positions[i] += 1
 
 
     def shiftRight(self):
 
-        #self.currChunk -= 1
-
-        self.serializer[self.positions[-1]+1] = pickle.dumps(self.chunks[-1]) # move rightmost chunk into serializer
+        self.serializer[self.positions[self.len]+1] = pickle.dumps(self.chunks[self.len]) # move rightmost chunk into serializer
         for i in range(len(self.chunks)-1, 0, -1): self.chunks[i] = self.chunks[i-1] # move all chunks one space right
         self.chunks[0] = self.serializer[self.positions[0]-1] # take next left chunks from serializer and move into buffer
 
