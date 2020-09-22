@@ -22,17 +22,26 @@ class Chunk:
 
     @classmethod
     def populateChunk(cls, chunk, noiseObj, chunkInd):
-        # for i in range(0, CHUNK_WIDTH):
-        #     for j in range(0, CHUNK_HEIGHT):
-        #         pass
 
-        coor = chunkInd * CHUNK_WIDTH
+        absouluteIndex = chunkInd * CHUNK_WIDTH
 
         for i in range(0, CHUNK_WIDTH):
-            height = int((noiseObj.noise2d(x=coor * WALKING_CONSTANT, y=0) + 1) * 64)  # Value will be from 0 to 128
-            coor += 1
-            for j in range(200, 200+height): chunk[j, i] = bedrock
-            chunk[200+height, i] = obsidian
+            # Loops for bedrock wastes
+            for j in range(0, 11): # Lower bedrock wastes
+                bedrockProbability = (10-j)*10                
+                val = (noiseObj.noise3d(x=absouluteIndex, y = j, z = 0)+1)*50
+                if(0 <= val <= bedrockProbability): chunk[j, i] = bedrock
+                else : chunk[j, i] = obsidian
+
+            absouluteIndex += 1
+
+        # coor = chunkInd * CHUNK_WIDTH
+
+        # for i in range(0, CHUNK_WIDTH):
+        #     height = int((noiseObj.noise2d(x=coor * WALKING_CONSTANT, y=0) + 1) * 64)  # Value will be from 0 to 128
+        #     coor += 1
+        #     for j in range(200, 200+height): chunk[j, i] = bedrock
+        #     chunk[200+height, i] = obsidian
 
 
 class ChunkBuffer:
@@ -88,7 +97,7 @@ class ChunkBuffer:
 
         if(self.chunks[0] is None):
             self.chunks[0] = Chunk()
-            populateChunk(self.chunks[0], self.noise, self.positions[0]-1)
+            Chunk.populateChunk(self.chunks[0], self.noise, self.positions[0]-1)
         else:
             self.chunks[0] = pickle.loads(self.chunks[0])
 

@@ -11,14 +11,14 @@ displaySize = [400, 300]  #[pygame.display.Info().current_w//2, pygame.display.I
 prevFramerate = framerate = 0
 
 # Camera variables
-camera = [0,CHUNK_HEIGHT*TILE_WIDTH*0.5]
+camera = [0,1]
 prevCamera = [0, 0]
 
 # Player variables
-player = [0,CHUNK_HEIGHT*TILE_WIDTH*0.5]
+player = [0,1]
 playerInc = [0,0]
 currChunk = prevChunk = deltaChunk = 0
-speed = 10 * TILE_WIDTH #number of tiles to move per second
+speed = 24 * TILE_WIDTH #number of tiles to move per second
 
 #Create noise object
 gen = OpenSimplex()
@@ -107,7 +107,7 @@ while running:
 
     if(deltaChunk > 0): chunkBuffer.shiftLeft() #Player has moved right
     elif(deltaChunk < 0): chunkBuffer.shiftRight() #Player has moved left
-    print(prevFramerate)
+    print(camera)
 
 chunkBuffer.saveComplete()
 chunkBuffer.serializer.stop()
