@@ -110,13 +110,13 @@ while running:
     prevChunk = currChunk
 
     if(deltaChunk > 0): 
+        chunkBuffer.shiftLeft() #Player has moved right
         for ch in chunkBuffer: print(ch.index, end=' ')        
         print()
-        chunkBuffer.shiftLeft() #Player has moved right
     elif(deltaChunk < 0): 
-        for ch in chunkBuffer: print(ch.index, end=' ')
-        print()
         chunkBuffer.shiftRight() #Player has moved left    
+        for ch in chunkBuffer: print(ch.index, end=' ')        
+        print()
 
 chunkBuffer.saveComplete()
 chunkBuffer.serializer.stop()

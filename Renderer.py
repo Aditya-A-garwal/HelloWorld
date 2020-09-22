@@ -36,9 +36,9 @@ class Renderer:
         cls.screen.fill((30, 175, 250))
 
         flag = True 
-        while(flag):
-            absoluteChunkIndex = cls.chunkBuffer.positions[leftWalker]
+        while(flag):            
             curChunkRef = cls.chunkBuffer[leftWalker]
+            absoluteChunkIndex = curChunkRef.index
             leftWalker -= 1            
 
             for j in range(CHUNK_WIDTH-1, -1, -1):
@@ -56,9 +56,9 @@ class Renderer:
                     break
 
         flag = True
-        while(flag):
-            absoluteChunkIndex = cls.chunkBuffer.positions[rightWalker]
+        while(flag):            
             curChunkRef = cls.chunkBuffer[rightWalker]
+            absoluteChunkIndex = curChunkRef.index
             rightWalker += 1
 
             for j in range(0, CHUNK_WIDTH):
