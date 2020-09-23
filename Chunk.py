@@ -22,9 +22,9 @@ class Chunk:
         self.blocks[key[0]][key[1]] = value
 
     @classmethod
-    def populateChunk(cls, chunk, noiseObj, chunkInd):
+    def populateChunk(cls, chunk, noiseObj):
 
-        absouluteIndex = chunkInd * CHUNK_WIDTH
+        absouluteIndex = chunk.index * CHUNK_WIDTH
 
         for i in range(0, CHUNK_WIDTH):
             # Loops for bedrock wastes
@@ -63,41 +63,43 @@ class ChunkBuffer:
 
             if(retrieved is None):
                 retrieved = Chunk(index=i)
-                Chunk.populateChunk(retrieved, self.noise, i)
+                Chunk.populateChunk(retrieved, self.noise)
             else:
                 retrieved = pickle.loads(retrieved)
 
             self.chunks.append(retrieved)
 
-    def shiftLeft(self):
+    def shiftLeft(self):                    
         
+        self.serializer[self.leftIndex-1] = pickle.dumps(self.chunks[0]) # move leftmost chunk into serializer
         self.leftIndex += 1
-        self.middleIndex += 1
-        self.rightIndex += 1
-        
-        self.serializer[self.leftIndex-2] = pickle.dumps(self.chunks[0]) # move leftmost chunk into serializer
+
         for i in range(0, self.len): self.chunks[i] = self.chunks[i+1] # move all chunks one space left        
-        self.chunks[self.len] = self.serializer[self.rightIndex] # take next left chunks from serializer and move into buffer                        
+        self.middleIndex += 1
+
+        self.chunks[self.len] = self.serializer[self.rightIndex+1] # take next left chunks from serializer and move into buffer
+        self.rightIndex += 1
 
         if(self.chunks[self.len] is None):
             self.chunks[self.len] = Chunk(index = self.rightIndex)
-            Chunk.populateChunk(self.chunks[self.len], self.noise, self.leftIndex)
+            Chunk.populateChunk(self.chunks[self.len], self.noise)
         else:
             self.chunks[self.len] = pickle.loads(self.chunks[self.len])        
 
-    def shiftRight(self):
+    def shiftRight(self):              
 
-        self.leftIndex -= 1
-        self.middleIndex -= 1
+        self.serializer[self.rightIndex+1] = pickle.dumps(self.chunks[self.len]) # move rightmost chunk into serializer
         self.rightIndex -= 1
 
-        self.serializer[self.rightIndex+2] = pickle.dumps(self.chunks[self.len]) # move rightmost chunk into serializer
         for i in range(self.len, 0, -1): self.chunks[i] = self.chunks[i-1] # move all chunks one space right
-        self.chunks[0] = self.serializer[self.leftIndex] # take next left chunks from serializer and move into buffer        
+        self.middleIndex -= 1
+
+        self.chunks[0] = self.serializer[self.leftIndex-1] # take next left chunks from serializer and move into buffer        
+        self.leftIndex -= 1
 
         if(self.chunks[0] is None):
             self.chunks[0] = Chunk(index = self.leftIndex)
-            Chunk.populateChunk(self.chunks[0], self.noise, self.leftIndex)
+            Chunk.populateChunk(self.chunks[0], self.noise)
         else:
             self.chunks[0] = pickle.loads(self.chunks[0])
 

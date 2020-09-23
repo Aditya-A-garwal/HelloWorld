@@ -38,7 +38,7 @@ del bufferSize
 
 #debug
 for ch in chunkBuffer: print(ch.index, end=' ')        
-print()
+print("\t", currChunk)
 
 # Create and display window
 screen = pygame.display.set_mode(displaySize, pygame.RESIZABLE)
@@ -79,7 +79,7 @@ while running:
         Renderer.render()               
 
     prevCamera = camera.copy()
-    currChunk = int(camera[0]//(CHUNK_WIDTH*TILE_WIDTH))    
+    currChunk = int(camera[0]/(CHUNK_WIDTH*TILE_WIDTH))    
 
     # Updating screen    
     pygame.display.update()            
@@ -112,11 +112,11 @@ while running:
     if(deltaChunk > 0): 
         chunkBuffer.shiftLeft() #Player has moved right
         for ch in chunkBuffer: print(ch.index, end=' ')        
-        print()
+        print("\t", currChunk)
     elif(deltaChunk < 0): 
         chunkBuffer.shiftRight() #Player has moved left    
         for ch in chunkBuffer: print(ch.index, end=' ')        
-        print()
+        print("\t", currChunk)
 
 chunkBuffer.saveComplete()
 chunkBuffer.serializer.stop()
