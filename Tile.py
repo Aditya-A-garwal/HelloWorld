@@ -40,7 +40,7 @@ TILE_NAMES = {
 }
 
 TILE_TABLE = {
-    1:pygame.image.load("Resources/Mock/bedrock.png"),
+    1:pygame.image.load("Resources/Default/bedrock.png"),
     2:pygame.image.load("Resources/Mock/obsidian.png"),
     3:pygame.image.load("Resources/Mock/hellstone.png")
 }

@@ -20,6 +20,20 @@ class Renderer:
         cls.updateRefs()
 
     @classmethod
+    def renderChunks(cls):        
+        for c in range(0, len(cls.chunkBuffer)):
+            currChunkRef = cls.chunkBuffer[c]
+            currSurfRef = cls.chunkBuffer.surfaces[c]
+            coors = [0, 0]
+            for i in range(0, CHUNK_WIDTH):
+                for j in range(0, CHUNK_HEIGHT):
+                    currTileRef = currChunkRef[i, j]
+                    if(currTileRef != 0):
+                        currSurfRef.blit(TILE_TABLE[currTileRef], coors)
+                    coors[1] += TILE_WIDTH
+                coors[0] += TILE_WIDTH
+
+    @classmethod
     def render(cls):
         """
             Renders given chunks onto given surface
@@ -33,12 +47,12 @@ class Renderer:
         numRightDone = numLeftDone = 0 
         coors = [0,0]
         
-        cls.screen.fill((30, 175, 250))
+        cls.screen.fill((30, 160, 240))
 
         flag = True 
         while(flag):            
             curChunkRef = cls.chunkBuffer[leftWalker]
-            absoluteChunkIndex = curChunkRef.index
+            absoluteChunkIndex = cls.chunkBuffer[leftWalker].index
             leftWalker -= 1            
 
             for j in range(CHUNK_WIDTH-1, -1, -1):
@@ -58,7 +72,7 @@ class Renderer:
         flag = True
         while(flag):            
             curChunkRef = cls.chunkBuffer[rightWalker]
-            absoluteChunkIndex = curChunkRef.index
+            absoluteChunkIndex = cls.chunkBuffer[rightWalker].index
             rightWalker += 1
 
             for j in range(0, CHUNK_WIDTH):
