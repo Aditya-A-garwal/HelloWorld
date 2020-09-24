@@ -36,7 +36,6 @@ if(bufferSize % 2 == 0): bufferSize += 1
 chunkBuffer = ChunkBuffer(bufferSize, serializer, 0, gen)
 del bufferSize
 
-
 #debug
 for ch in chunkBuffer: print(ch.index, end=' ')        
 print("\t", currChunk)
@@ -48,6 +47,7 @@ pygame.display.set_icon(pygame.image.load("Resources/Default/gameIcon.png"))
 
 # Initialize the renderer
 Renderer.initialize(chunkBuffer, camera, player, displaySize, screen)
+Renderer.renderChunks()
 
 # game loop
 running = True

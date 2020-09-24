@@ -20,18 +20,21 @@ class Renderer:
         cls.updateRefs()
 
     @classmethod
-    def renderChunks(cls):        
+    def renderChunks(cls):         
         for c in range(0, len(cls.chunkBuffer)):
-            currChunkRef = cls.chunkBuffer[c]
-            currSurfRef = cls.chunkBuffer.surfaces[c]
-            coors = [0, 0]
-            for i in range(0, CHUNK_WIDTH):
-                for j in range(0, CHUNK_HEIGHT):
-                    currTileRef = currChunkRef[i, j]
-                    if(currTileRef != 0):
-                        currSurfRef.blit(TILE_TABLE[currTileRef], coors)
-                    coors[1] += TILE_WIDTH
+            cls.renderChunk(index=c)
+
+    @classmethod
+    def renderChunk(cls, index):
+        currChunkRef = cls.chunkBuffer[index]        
+        cls.chunkBuffer.surfaces[index].fill((30, 160, 240))
+        coors = [0,CHUNK_HEIGHT*TILE_WIDTH - TILE_WIDTH]
+        for i in range(0, CHUNK_HEIGHT):
+            for j in range(0, CHUNK_WIDTH):
+                if(currChunkRef[i,j] is not 0): cls.chunkBuffer.surfaces[index].blit(TILE_TABLE[currChunkRef[i,j]], coors)                
                 coors[0] += TILE_WIDTH
+            coors[0] = 0
+            coors[1] -= TILE_WIDTH 
 
     @classmethod
     def render(cls):
@@ -39,55 +42,11 @@ class Renderer:
             Renders given chunks onto given surface
             Requires chunks, cameraCoors, playerCoors, displaySize as sequences 
         """ 
+
+        for i in range(0, len(cls.chunkBuffer)):            
+            cls.screen.blit(cls.chunkBuffer.surfaces[i], [CHUNK_WIDTH*TILE_WIDTH*i, 0])
+
         rects = [] 
-
-        rightWalker = cls.midpoint  # goes from midpoint to length-1 (both inclusive)
-        leftWalker = cls.midpoint-1 # goes from midpoint-1 to 0 (both inclusive)
-
-        numRightDone = numLeftDone = 0 
-        coors = [0,0]
-        
-        cls.screen.fill((30, 160, 240))
-
-        flag = True 
-        while(flag):            
-            curChunkRef = cls.chunkBuffer[leftWalker]
-            absoluteChunkIndex = cls.chunkBuffer[leftWalker].index
-            leftWalker -= 1            
-
-            for j in range(CHUNK_WIDTH-1, -1, -1):
-                coors[0] = cls.arrayToScreen_x(j, absoluteChunkIndex)
-
-                for i in range(cls.lowerIndex, cls.upperIndex+1):                                    
-                    coors[1] = cls.arrayToScreen_y(i)-TILE_WIDTH    
-                    curTileRef = curChunkRef.blocks[i][j]                                           
-
-                    if(curTileRef is not 0): rects.append(cls.screen.blit(TILE_TABLE[curTileRef], coors))
-                
-                numLeftDone += 1
-                if(numLeftDone > cls.numLeft): 
-                    flag = False
-                    break
-
-        flag = True
-        while(flag):            
-            curChunkRef = cls.chunkBuffer[rightWalker]
-            absoluteChunkIndex = cls.chunkBuffer[rightWalker].index
-            rightWalker += 1
-
-            for j in range(0, CHUNK_WIDTH):
-                coors[0] = cls.arrayToScreen_x(j, absoluteChunkIndex)
-
-                for i in range(cls.lowerIndex, cls.upperIndex+1):                
-                    coors[1] = cls.arrayToScreen_y(i)-TILE_WIDTH             
-                    curTileRef = curChunkRef.blocks[i][j]                    
-
-                    if(curTileRef is not 0): rects.append(cls.screen.blit(TILE_TABLE[curTileRef], coors)                        )
-
-                numRightDone += 1
-                if(numRightDone > cls.numRight):
-                    flag = False
-                    break
 
         # Temporary player crosshair rendering
         
