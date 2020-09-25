@@ -105,7 +105,7 @@ while running:
     # Player movement handling    
     player[0] += (speed / prevFramerate) * playerInc[0]
     player[1] += (speed / prevFramerate) * playerInc[1]    
-    if not(0 < player[1] < (CHUNK_HEIGHT*TILE_WIDTH)): player[1] -= (speed / prevFramerate) * playerInc[1]    
+    if not(0 < player[1] < WORLD_HEIGHT): player[1] -= (speed / prevFramerate) * playerInc[1]    
 
     deltaChunk = currChunk-prevChunk
     prevChunk = currChunk

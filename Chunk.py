@@ -5,6 +5,10 @@ from Tile import *
 CHUNK_WIDTH = 16
 CHUNK_HEIGHT = 512
 
+# constant for world height
+WORLD_HEIGHT = CHUNK_HEIGHT * TILE_WIDTH
+WORLD_CHUNK_WIDTH = CHUNK_WIDTH * TILE_WIDTH
+
 # constant for chunk generation
 WALKING_CONSTANT = 0.0075
 
@@ -15,8 +19,8 @@ class Chunk:
         self.blocks = [[1 for i in range(0, CHUNK_WIDTH)] for i in range(0, CHUNK_HEIGHT)]       
         self.walls = self.blocks.copy()
 
-        # if(noiseObj is not None):
-        #     Chunk.populateChunk(self, noiseObj)
+        if(noiseObj is not None):
+            Chunk.populateChunk(self, noiseObj)
 
     def __getitem__(self, key):
         return self.blocks[key[0]][key[1]]
@@ -32,7 +36,7 @@ class Chunk:
         for i in range(0, CHUNK_WIDTH):
             # Loops for bedrock wastes
             for j in range(0, CHUNK_HEIGHT): # Lower bedrock wastes
-                bedrockProbability = 90 #(10-j)*10                
+                bedrockProbability = (10-j)*10                
                 frontVal = (noiseObj.noise3d(x=absouluteIndex, y = j, z = 0)+1)*50
                 backVal = (noiseObj.noise3d(x=absouluteIndex, y = j, z = 1)+1)*50
 

@@ -28,7 +28,7 @@ class Renderer:
     def renderChunk(cls, index):
         currChunkRef = cls.chunkBuffer[index]        
         cls.chunkBuffer.surfaces[index].fill((30, 160, 240))
-        coors = [0,CHUNK_HEIGHT*TILE_WIDTH - TILE_WIDTH]
+        coors = [0,WORLD_HEIGHT - TILE_WIDTH]
         for i in range(0, CHUNK_HEIGHT):
             for j in range(0, CHUNK_WIDTH):
                 if(currChunkRef[i,j] is not 0): cls.chunkBuffer.surfaces[index].blit(TILE_TABLE[currChunkRef[i,j]], coors)                
@@ -43,10 +43,16 @@ class Renderer:
             Requires chunks, cameraCoors, playerCoors, displaySize as sequences 
         """ 
 
-        for i in range(0, len(cls.chunkBuffer)):            
-            cls.screen.blit(cls.chunkBuffer.surfaces[i], [CHUNK_WIDTH*TILE_WIDTH*i, 0])
+        # Temporary rendering
 
-        rects = [] 
+        for i in range(cls.midpoint, len(cls.chunkBuffer), 1): # Loop to go from midpoint to right
+            pass
+        for i in range(cls.midpoint, -1, -1): # Loop to go from midpoint to left
+            pass
+
+        for i in range(0, len(cls.chunkBuffer)):
+            tinySurf = cls.chunkBuffer.surfaces[i].subsurface((0, cls.upIndex, WORLD_CHUNK_WIDTH, cls.numDown+cls.numUp))         
+            cls.screen.blit(tinySurf, [WORLD_CHUNK_WIDTH*i, 0])
 
         # Temporary player crosshair rendering
         
@@ -54,56 +60,7 @@ class Renderer:
         cls.graphToCamera(playercoors)
         cls.cameraToScreen(playercoors)        
 
-        rects.append(pygame.draw.circle(cls.screen, (255,50,50), playercoors, 2))
-        return rects
-
-
-    @classmethod
-    def arrayToChunk_x(cls, x):
-        return x * TILE_WIDTH
-
-    @classmethod
-    def arrayToChunk_y(cls, y):
-        return y * TILE_WIDTH
-
-    @classmethod
-    def chunkToGraph_x(cls, x, chunkInd):
-        # From chunk-space to absolute-space
-        return x + chunkInd * CHUNK_WIDTH * TILE_WIDTH
-
-    @classmethod
-    def chunkToGraph_y(cls, y):
-        # From chunk-space to absolute-space
-        # Redundant function
-        return y
-
-    @classmethod
-    def graphToCamera_x(cls, x):
-        # From absolute-space to camera-space
-        return x - cls.camera[0]        
-
-    @classmethod
-    def graphToCamera_y(cls, y):
-        # From absolute-space to camera-space
-        return y - cls.camera[1]
-
-    @classmethod
-    def cameraToScreen_x(cls, x):
-        # From camera-space to screen-space
-        return x + cls.displaySize[0] * 0.5        
-
-    @classmethod
-    def cameraToScreen_y(cls, y):
-        # From camera-space to screen-space        
-        return cls.displaySize[1] * 0.5 - y
-
-    @classmethod
-    def arrayToScreen_x(cls, x, chunkInd):
-        return cls.cameraToScreen_x(cls.graphToCamera_x(cls.chunkToGraph_x(cls.arrayToChunk_x(x), chunkInd)))        
-
-    @classmethod
-    def arrayToScreen_y(cls, y):
-        return cls.cameraToScreen_y(cls.graphToCamera_y(cls.arrayToChunk_y(y)))
+        pygame.draw.circle(cls.screen, (255,50,50), playercoors, 2)
 
     @classmethod
     def arrayToChunk(cls, coor):
@@ -138,22 +95,21 @@ class Renderer:
 
     @classmethod
     def updateSize(cls):        
-        cls.midpoint = int((len(cls.chunkBuffer)-1)*0.5)        
-
-        cls.numRight = (cls.displaySize[0] * 0.5)/TILE_WIDTH + CHUNK_WIDTH
-        cls.numLeft = (cls.displaySize[0] * 0.5)/TILE_WIDTH
-    
-    @classmethod
-    def updateCam(cls):        
-        cls.lowerIndex = int(max((cls.camera[1]-cls.displaySize[1]*0.5)/TILE_WIDTH, 0))
-        cls.upperIndex = int(min((cls.camera[1]+cls.displaySize[1]*0.5)/TILE_WIDTH, CHUNK_HEIGHT - 1))
+        cls.numUp = int(cls.displaySize[1]*0.5) + 1
+        cls.numDown = int(cls.displaySize[1]*0.5) + 1
+        cls.numLeft = int(cls.displaySize[0]*0.5) + 1
+        cls.numRight = int(cls.displaySize[0]*0.5) + 1
 
     @classmethod
-    def updateRefs(cls):       
-        cls.midpoint = int((len(cls.chunkBuffer)-1)*0.5)        
+    def updateCam(cls):
+        cls.upIndex = cls.camera[1] + cls.numUp
+        cls.downIndex = cls.camera[1] - cls.numDown
+        cls.leftIndex = cls.camera[0] - cls.numLeft
+        cls.rightIndex = cls.camera[0] + cls.numRight
 
-        cls.numRight = (cls.displaySize[0] * 0.5)/TILE_WIDTH + CHUNK_WIDTH
-        cls.numLeft = (cls.displaySize[0] * 0.5)/TILE_WIDTH
+        cls.midpoint = int((len(cls.chunkBuffer)-1)*0.5)
 
-        cls.lowerIndex = int(max((cls.camera[1]-cls.displaySize[1]*0.5)/TILE_WIDTH, 0))
-        cls.upperIndex = int(min((cls.camera[1]+cls.displaySize[1]*0.5)/TILE_WIDTH, CHUNK_HEIGHT - 1))
+    @classmethod
+    def updateRefs(cls):
+        cls.updateSize()
+        cls.updateCam()
