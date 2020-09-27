@@ -17,7 +17,7 @@ class Chunk:
     def __init__(self, index = 0, noiseObj = None):
 
         self.index      =   index
-        self.blocks     =   [[i%3 for i in range(0,   CHUNK_WIDTH)] for i in range(0, CHUNK_HEIGHT)]       
+        self.blocks     =   [[1 for i in range(0,   CHUNK_WIDTH)] for i in range(0, CHUNK_HEIGHT)]       
         self.walls      =   self.blocks.copy()
 
         # if(noiseObj is not None):
@@ -71,7 +71,7 @@ class ChunkBuffer:
             retrieved           =   Chunk(index = i, noiseObj = self.noise) if(retrieved is None) else pickle.loads(retrieved)
 
             self.chunks.append(retrieved)          
-            self.surfaces.append(pygame.Surface((WORLD_CHUNK_WIDTH, WORLD_HEIGHT)))
+            self.surfaces.append(pygame.Surface((WORLD_CHUNK_WIDTH, WORLD_HEIGHT)))            
 
     def shiftLeft(self):                    
         
@@ -79,11 +79,12 @@ class ChunkBuffer:
         self.leftIndex += 1
 
         for i in range(0, self.len):
-            self.chunks[i]      =   self.chunks[i+1] # move all chunks one space left        
+            self.chunks[i]      =   self.chunks[i+1]    # move all chunks one space left        
+            self.surfaces[i]    =   self.surfaces[i+1]  # move all surfaces one space left
 
         self.middleIndex        +=  1
 
-        self.chunks[self.len]   =   self.serializer[self.rightIndex+1] # take next left chunks from serializer and move into buffer
+        self.chunks[self.len]   =   self.serializer[self.rightIndex+1] # take next left chunks from serializer and move into buffer        
         self.rightIndex         +=  1
 
         self.chunks[self.len]   =   Chunk(index=self.rightIndex, noiseObj=self.noise) if(self.chunks[self.len] is None) else pickle.loads(self.chunks[self.len])
@@ -93,7 +94,10 @@ class ChunkBuffer:
         self.serializer[self.rightIndex+1] = pickle.dumps(self.chunks[self.len]) # move rightmost chunk into serializer
         self.rightIndex -= 1
 
-        for i in range(self.len, 0, -1): self.chunks[i] = self.chunks[i-1] # move all chunks one space right
+        for i in range(self.len, 0, -1):
+            self.chunks[i]      =   self.chunks[i-1]    # move all chunks one space right
+            self.surfaces[i]    =   self.surfaces[i-1]  # move all surfaces one space right
+
         self.middleIndex -= 1
 
         self.chunks[0] = self.serializer[self.leftIndex-1] # take next left chunks from serializer and move into buffer        

@@ -57,20 +57,25 @@ class Renderer:
     @classmethod
     def render(cls):        
         
-        #cls.screen.blit(cls.chunkBuffer.surfaces[0].subsurface([0, 0, WORLD_CHUNK_WIDTH, WORLD_HEIGHT]), [0, 20])
-
         for i in range(cls.midChunk,    cls.midChunk + cls.numRightChunks,  1):
-            cls.screen.blit(cls.chunkBuffer.surfaces[i], [int(cls.displaySize[0] * 0.5) + (i - cls.midChunk) * WORLD_CHUNK_WIDTH, 0])
+                        
+            subSurfRect = [0,0, WORLD_CHUNK_WIDTH,WORLD_HEIGHT]#[0, cls.upIndex, WORLD_CHUNK_WIDTH, cls.chunkBuffer.surfaces[i].get_height()]
+            print(subSurfRect[1], subSurfRect[3])
+            subSurf = cls.chunkBuffer.surfaces[i].subsurface(subSurfRect)
+            cls.screen.blit(subSurf, [int(cls.displaySize[0] * 0.5) + (i - cls.midChunk) * WORLD_CHUNK_WIDTH, 0])
 
         # for i in range(cls.midChunk - 1,    cls.midChunk - cls.numLeftChunks,   -1):
-        #     cls.screen.blit(cls.chunkBuffer.surfaces[i], [int(cls.displaySize[0] * 0.5) + (i - cls.midChunk) * WORLD_CHUNK_WIDTH, 0])
+                        
+        #     subSurfRect = [0, cls.upIndex, WORLD_CHUNK_WIDTH, cls.downIndex]
+        #     subSurf = cls.chunkBuffer.surfaces[i].subsurface(subSurfRect)
+        #     cls.screen.blit(subSurf, [int(cls.displaySize[0] * 0.5) + (i - cls.midChunk) * WORLD_CHUNK_WIDTH, 0])
 
-        # Temporary player crosshair rendering        
-        # playercoors = cls.player.copy()
-        # cls.graphToCamera(playercoors)
-        # cls.cameraToScreen(playercoors)
+        #Temporary player crosshair rendering
+        playercoors = cls.player.copy()
+        cls.graphToCamera(playercoors)
+        cls.cameraToScreen(playercoors)
 
-        # pygame.draw.circle(cls.screen, (255,50,50), playercoors, 2)
+        pygame.draw.circle(cls.screen, (255,50,50), playercoors, 2)
 
     @classmethod
     def updateSize(cls):
@@ -82,8 +87,8 @@ class Renderer:
         cls.numUp           =   cls.numDown     =   int(cls.displaySize[1] * 0.5)        
 
         # Number of "complete" chunks to be rendered on either side of the camera
-        cls.numRightChunks  =   2+1 #int(cls.numRight / WORLD_CHUNK_WIDTH) + 1
-        cls.numLeftChunks   =   2+1 #int(cls.numLeft  / WORLD_CHUNK_WIDTH) + 1
+        cls.numRightChunks  =   int(cls.numRight / WORLD_CHUNK_WIDTH) + 1
+        cls.numLeftChunks   =   max(int(cls.numLeft  / WORLD_CHUNK_WIDTH), 1) + 1
 
         # Number of pixels left over on either side of the camera after rendering complete chunks
         cls.numRightExtra   =   (cls.numRight % WORLD_CHUNK_WIDTH) + 1
@@ -93,9 +98,9 @@ class Renderer:
     def updateCam(cls):
 
         # Indexes of the top and bottom-most pixels of the chunk to be rendered
-        # W.R.T to the origin of the chunk-surface at its top-left
-        cls.upIndex         =   min(WORLD_HEIGHT - (cls.camera[1] + cls.numUp), WORLD_HEIGHT-1)
-        cls.downIndex       =   max(WORLD_HEIGHT - (cls.camera[1] - cls.numDown), 0)
+        # W.R.T to the origin of the chunk-surface
+        cls.upIndex         =   WORLD_HEIGHT - min(cls.camera[1] + cls.numUp, WORLD_HEIGHT)        
+        cls.downIndex       =   WORLD_HEIGHT - max(cls.camera[1] - cls.numDown, 0)
 
     @classmethod
     def updateRefs(cls):

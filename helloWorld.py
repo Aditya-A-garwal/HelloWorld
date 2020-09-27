@@ -11,11 +11,11 @@ displaySize = [400, 300]  #[pygame.display.Info().current_w//2, pygame.display.I
 prevFramerate = framerate = 0
 
 # Camera variables
-camera = [0,1]
+camera = [0,WORLD_HEIGHT//2]
 prevCamera = [0, 0]
 
 # Player variables
-player = [0,1]
+player = [0,WORLD_HEIGHT//2]
 playerInc = [0,0]
 currChunk = prevChunk = deltaChunk = 0
 speed = 24 * TILE_WIDTH #number of tiles to move per second
@@ -33,7 +33,6 @@ clock = pygame.time.Clock()
 # Create chunk buffer and chunk-position buffer
 bufferSize = int(pygame.display.Info().current_w/(CHUNK_WIDTH*TILE_WIDTH))+2
 if(bufferSize % 2 == 0): bufferSize += 1
-bufferSize = 7
 chunkBuffer = ChunkBuffer(bufferSize, serializer, 0, gen)
 del bufferSize
 
@@ -83,8 +82,7 @@ while running:
     prevCamera = camera.copy()
     currChunk = int(camera[0]/(CHUNK_WIDTH*TILE_WIDTH))    
 
-    # Updating screen
-    Renderer.render()
+    # Updating screen    
     pygame.display.update()            
 
 
@@ -114,10 +112,12 @@ while running:
 
     if(deltaChunk > 0): 
         chunkBuffer.shiftLeft() #Player has moved right
+        Renderer.renderChunk(-1)
         for ch in chunkBuffer: print(ch.index, end=' ')        
         print("\t", currChunk)
     elif(deltaChunk < 0): 
-        chunkBuffer.shiftRight() #Player has moved left    
+        chunkBuffer.shiftRight() #Player has moved left
+        Renderer.renderChunk(0)
         for ch in chunkBuffer: print(ch.index, end=' ')        
         print("\t", currChunk)
 
