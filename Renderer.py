@@ -58,17 +58,16 @@ class Renderer:
     def render(cls):        
         
         for i in range(cls.midChunk,    cls.midChunk + cls.numRightChunks,  1):
-                        
-            subSurfRect = [0,0, WORLD_CHUNK_WIDTH,WORLD_HEIGHT]#[0, cls.upIndex, WORLD_CHUNK_WIDTH, cls.chunkBuffer.surfaces[i].get_height()]
-            print(subSurfRect[1], subSurfRect[3])
-            subSurf = cls.chunkBuffer.surfaces[i].subsurface(subSurfRect)
+            
+            subSurfRect     = [0, cls.upIndex, WORLD_CHUNK_WIDTH, cls.downIndex-cls.upIndex]            
+            subSurf         = cls.chunkBuffer.surfaces[i].subsurface(subSurfRect)
             cls.screen.blit(subSurf, [int(cls.displaySize[0] * 0.5) + (i - cls.midChunk) * WORLD_CHUNK_WIDTH, 0])
 
-        # for i in range(cls.midChunk - 1,    cls.midChunk - cls.numLeftChunks,   -1):
+        for i in range(cls.midChunk - 1,    cls.midChunk - cls.numLeftChunks,   -1):
                         
-        #     subSurfRect = [0, cls.upIndex, WORLD_CHUNK_WIDTH, cls.downIndex]
-        #     subSurf = cls.chunkBuffer.surfaces[i].subsurface(subSurfRect)
-        #     cls.screen.blit(subSurf, [int(cls.displaySize[0] * 0.5) + (i - cls.midChunk) * WORLD_CHUNK_WIDTH, 0])
+            subSurfRect     = [0, cls.upIndex, WORLD_CHUNK_WIDTH, cls.downIndex-cls.upIndex]
+            subSurf         = cls.chunkBuffer.surfaces[i].subsurface(subSurfRect)
+            cls.screen.blit(subSurf, [int(cls.displaySize[0] * 0.5) + (i - cls.midChunk) * WORLD_CHUNK_WIDTH, 0])
 
         #Temporary player crosshair rendering
         playercoors = cls.player.copy()
