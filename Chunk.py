@@ -17,11 +17,11 @@ class Chunk:
     def __init__(self, index = 0, noiseObj = None):
 
         self.index      =   index
-        self.blocks     =   [[1 for i in range(0,   CHUNK_WIDTH)] for i in range(0, CHUNK_HEIGHT)]       
+        self.blocks     =   [[i%3 for i in range(0,   CHUNK_WIDTH)] for i in range(0, CHUNK_HEIGHT)]       
         self.walls      =   self.blocks.copy()
 
-        if(noiseObj is not None):
-            Chunk.populateChunk(self, noiseObj)
+        # if(noiseObj is not None):
+        #     Chunk.populateChunk(self, noiseObj)
 
     def __getitem__(self, key):        
         return self.blocks[key[0]][key[1]]
@@ -71,7 +71,7 @@ class ChunkBuffer:
             retrieved           =   Chunk(index = i, noiseObj = self.noise) if(retrieved is None) else pickle.loads(retrieved)
 
             self.chunks.append(retrieved)          
-            self.surfaces.append(pygame.Surface((CHUNK_WIDTH*TILE_WIDTH, CHUNK_HEIGHT*TILE_WIDTH)))
+            self.surfaces.append(pygame.Surface((WORLD_CHUNK_WIDTH, WORLD_HEIGHT)))
 
     def shiftLeft(self):                    
         

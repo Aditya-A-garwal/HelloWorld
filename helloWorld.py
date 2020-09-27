@@ -33,6 +33,7 @@ clock = pygame.time.Clock()
 # Create chunk buffer and chunk-position buffer
 bufferSize = int(pygame.display.Info().current_w/(CHUNK_WIDTH*TILE_WIDTH))+2
 if(bufferSize % 2 == 0): bufferSize += 1
+bufferSize = 7
 chunkBuffer = ChunkBuffer(bufferSize, serializer, 0, gen)
 del bufferSize
 
@@ -82,7 +83,8 @@ while running:
     prevCamera = camera.copy()
     currChunk = int(camera[0]/(CHUNK_WIDTH*TILE_WIDTH))    
 
-    # Updating screen    
+    # Updating screen
+    Renderer.render()
     pygame.display.update()            
 
 

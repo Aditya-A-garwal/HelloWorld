@@ -59,4 +59,3 @@ class Tile:
 
         self.rect       =   rect
         self.texture    =   pygame.image.load("Resources/Mock/"+texture)
-
