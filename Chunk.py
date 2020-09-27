@@ -17,7 +17,7 @@ class Chunk:
     def __init__(self, index = 0, noiseObj = None):
 
         self.index      =   index
-        self.blocks     =   [[1 for i in range(0,   CHUNK_WIDTH)] for i in range(0, CHUNK_HEIGHT)]       
+        self.blocks     =   [[i%3 for i in range(0,   CHUNK_WIDTH)] for i in range(0, CHUNK_HEIGHT)]       
         self.walls      =   self.blocks.copy()
 
         # if(noiseObj is not None):

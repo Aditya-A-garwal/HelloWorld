@@ -58,16 +58,28 @@ class Renderer:
     def render(cls):        
         
         for i in range(cls.midChunk,    cls.midChunk + cls.numRightChunks,  1):
-            
-            subSurfRect     = [0, cls.upIndex, WORLD_CHUNK_WIDTH, cls.downIndex-cls.upIndex]            
-            subSurf         = cls.chunkBuffer.surfaces[i].subsurface(subSurfRect)
-            cls.screen.blit(subSurf, [int(cls.displaySize[0] * 0.5) + (i - cls.midChunk) * WORLD_CHUNK_WIDTH, 0])
+
+            for j in range(0,   CHUNK_WIDTH,    1):
+
+                sliceInd    =   (cls.chunkBuffer[i].index * CHUNK_WIDTH) + j
+                slicePos    =   [sliceInd * TILE_WIDTH - cls.camera[0] + cls.displaySize[0], 0]
+
+                sliceRect   =   [j * TILE_WIDTH, cls.upIndex, TILE_WIDTH, cls.downIndex-cls.upIndex]
+                sliceSurf   =   cls.chunkBuffer.surfaces[i].subsurface(sliceRect)                
+
+                cls.screen.blit(sliceSurf, slicePos)
 
         for i in range(cls.midChunk - 1,    cls.midChunk - cls.numLeftChunks,   -1):
                         
-            subSurfRect     = [0, cls.upIndex, WORLD_CHUNK_WIDTH, cls.downIndex-cls.upIndex]
-            subSurf         = cls.chunkBuffer.surfaces[i].subsurface(subSurfRect)
-            cls.screen.blit(subSurf, [int(cls.displaySize[0] * 0.5) + (i - cls.midChunk) * WORLD_CHUNK_WIDTH, 0])
+            for j in range(0,   CHUNK_WIDTH,    1):
+
+                sliceInd    =   (cls.chunkBuffer[i].index * CHUNK_WIDTH) + j
+                slicePos    =   [sliceInd * TILE_WIDTH - cls.camera[0] + cls.displaySize[0], 0]
+
+                sliceRect   =   [j * TILE_WIDTH, cls.upIndex, TILE_WIDTH, cls.downIndex-cls.upIndex]
+                sliceSurf   =   cls.chunkBuffer.surfaces[i].subsurface(sliceRect)                
+
+                cls.screen.blit(sliceSurf, slicePos)
 
         #Temporary player crosshair rendering
         playercoors = cls.player.copy()

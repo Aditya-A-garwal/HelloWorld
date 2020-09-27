@@ -112,12 +112,14 @@ while running:
 
     if(deltaChunk > 0): 
         chunkBuffer.shiftLeft() #Player has moved right
-        Renderer.renderChunk(-1)
+        # Renderer.renderChunk(-1)
+        Renderer.renderChunks()
         for ch in chunkBuffer: print(ch.index, end=' ')        
         print("\t", currChunk)
     elif(deltaChunk < 0): 
         chunkBuffer.shiftRight() #Player has moved left
-        Renderer.renderChunk(0)
+        # Renderer.renderChunk(0)
+        Renderer.renderChunks()
         for ch in chunkBuffer: print(ch.index, end=' ')        
         print("\t", currChunk)
 
