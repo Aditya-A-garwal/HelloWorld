@@ -75,7 +75,7 @@ class ChunkBuffer:
 
     def shiftLeft(self):                    
         
-        self.serializer[self.leftIndex-1]   =   pickle.dumps(self.chunks[0]) # move leftmost chunk into serializer
+        self.serializer[self.leftIndex]   =   pickle.dumps(self.chunks[0]) # move leftmost chunk into serializer
         self.leftIndex += 1
 
         for i in range(0, self.len):
@@ -91,7 +91,7 @@ class ChunkBuffer:
 
     def shiftRight(self):              
 
-        self.serializer[self.rightIndex+1] = pickle.dumps(self.chunks[self.len]) # move rightmost chunk into serializer
+        self.serializer[self.rightIndex] = pickle.dumps(self.chunks[self.len]) # move rightmost chunk into serializer
         self.rightIndex -= 1
 
         for i in range(self.len, 0, -1):

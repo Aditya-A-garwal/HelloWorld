@@ -1,4 +1,4 @@
-import numpy, sys, random
+import numpy, sys, random, math
 from pygame.locals import *
 from opensimplex import OpenSimplex
 
@@ -72,15 +72,15 @@ while running:
             Renderer.render()
 
     # camera movement handling
-    camera[0] += (player[0]-camera[0]) * 0.075
-    camera[1] += (player[1]-camera[1]) * 0.075
+    camera[0] += (player[0]-camera[0]) * 1
+    camera[1] += (player[1]-camera[1]) * 1
 
     if(int(prevCamera[0]) != int(camera[0]) or int(prevCamera[1]) != int(camera[1])):
         Renderer.updateCam()        
         Renderer.render()               
 
     prevCamera = camera.copy()
-    currChunk = int(camera[0]/(CHUNK_WIDTH*TILE_WIDTH))    
+    currChunk = math.floor(camera[0]/(CHUNK_WIDTH*TILE_WIDTH))
 
     # Updating screen    
     pygame.display.update()            

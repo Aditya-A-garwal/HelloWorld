@@ -1,1 +1,2 @@
-
+after direction change occurs, the next-to-next is a repeat of the next chunk
+after repeat-chunk is moved off screen, it skips next chunk
