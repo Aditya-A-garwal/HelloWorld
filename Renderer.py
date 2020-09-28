@@ -25,10 +25,12 @@ class Renderer:
         cls.screen          =   screen
 
         # Index of the middle chunk in the chunk buffer
-        cls.midChunk        =   int((len(cls.chunkBuffer) - 1) * 0.5)
+        cls.length          =   len(cls.chunkBuffer)
+        cls.midChunk        =   int((cls.length - 1) * 0.5)
 
         # Update constants to reflect new References
-        cls.updateRefs()        
+        cls.updateRefs()
+        cls.renderChunks()    
 
     @classmethod
     def renderChunks(cls):         
@@ -42,7 +44,7 @@ class Renderer:
         currChunkRef        =   cls.chunkBuffer[index]        
         coors               =   [0, 0]
 
-        cls.chunkBuffer.surfaces[index].fill((30, 160, 240))                
+        cls.chunkBuffer.surfaces[index].fill((30, 150, 240))                
         
         for i in range(0,   CHUNK_HEIGHT,   1):
             
@@ -56,34 +58,45 @@ class Renderer:
 
     @classmethod
     def render(cls):        
-        
-        for i in range(cls.midChunk,    len(cls.chunkBuffer),  1):
+
+        rightWalker = cls.midChunk
+        leftWalker = cls.midChunk - 1
+
+        while(rightWalker < len(cls.chunkBuffer)):
 
             for j in range(0,   CHUNK_WIDTH,    1):
 
-                sliceInd    =   (cls.chunkBuffer[i].index * CHUNK_WIDTH) + j
+                sliceInd    =   (cls.chunkBuffer[rightWalker].index * CHUNK_WIDTH) + j
                 slicePos    =   [sliceInd * TILE_WIDTH - cls.camera[0] + cls.numHorz, 0]
 
                 sliceRect   =   [j * TILE_WIDTH, cls.upIndex, TILE_WIDTH, cls.downIndex]
-                sliceSurf   =   cls.chunkBuffer.surfaces[i].subsurface(sliceRect)                
+                sliceSurf   =   cls.chunkBuffer.surfaces[rightWalker].subsurface(sliceRect)                
+                
+                if(slicePos[0] > cls.displaySize[0]): 
+                    rightWalker = len(cls.chunkBuffer)
+                    break                
 
                 cls.screen.blit(sliceSurf, slicePos)
 
-            if(slicePos[0] > cls.displaySize[0]): break
+            rightWalker += 1
 
-        for i in range(cls.midChunk - 1,    -1,   -1):
+        while(leftWalker >= 0):
                         
-            for j in range(0,   CHUNK_WIDTH,    1):
+            for j in range(CHUNK_WIDTH-1,   -1,    -1):
 
-                sliceInd    =   (cls.chunkBuffer[i].index * CHUNK_WIDTH) + j
+                sliceInd    =   (cls.chunkBuffer[leftWalker].index * CHUNK_WIDTH) + j
                 slicePos    =   [sliceInd * TILE_WIDTH - cls.camera[0] + cls.numHorz, 0]
 
                 sliceRect   =   [j * TILE_WIDTH, cls.upIndex, TILE_WIDTH, cls.downIndex]
-                sliceSurf   =   cls.chunkBuffer.surfaces[i].subsurface(sliceRect)                
+                sliceSurf   =   cls.chunkBuffer.surfaces[leftWalker].subsurface(sliceRect)                
 
-                cls.screen.blit(sliceSurf, slicePos)
+                if(slicePos[0] <= -TILE_WIDTH): 
+                    leftWalker = -1
+                    break
 
-            if(slicePos[0] <= -TILE_WIDTH): break
+                cls.screen.blit(sliceSurf, slicePos) 
+
+            leftWalker -= 1       
 
         #Temporary player crosshair rendering
         playerCoors = cls.player.copy()

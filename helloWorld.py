@@ -43,7 +43,6 @@ pygame.display.set_icon(pygame.image.load("Resources/Default/gameIcon.png"))
 
 # Initialize the renderer
 Renderer.initialize(chunkBuffer, camera, player, displaySize, screen)
-Renderer.renderChunks()
 
 # game loop
 running = True
@@ -108,10 +107,12 @@ while running:
 
     if(deltaChunk > 0): 
         chunkBuffer.shiftLeft() #Player has moved right
-        Renderer.renderChunks()                
+        Renderer.renderChunk(-1)                
     elif(deltaChunk < 0): 
         chunkBuffer.shiftRight() #Player has moved left
-        Renderer.renderChunks()                
+        Renderer.renderChunk(0)
+
+    print(prevFramerate)          
 
 chunkBuffer.saveComplete()
 chunkBuffer.serializer.stop()
