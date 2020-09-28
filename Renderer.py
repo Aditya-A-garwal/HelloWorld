@@ -1,136 +1,127 @@
-import pyglet
 from Chunk import *
 
 '''
 Translations
-
     From                        To
-
 1   array-space                 chunk-space
     coordinates in the array    coordinates in the chunk
-
 2   chunk-space                 world-space
     coordinates in the chunk    coordinates in the world (absolute coordinates)
-
 3   world-space                 camera-space
     coordinates in the world    coordinates relative to camera
-
 4   camera-space                screen-space
     coordinates in the array    coordinates on the display
 '''
 class Renderer:
         
-    @classmethod    
-    def initialize(cls, chunkBuffer, camera, player, displaySize):
-        cls.chunkBuffer, cls.player, cls.camera, cls.displaySize = chunkBuffer, player, camera, displaySize         
-        cls.updateSize()
-        cls.updateCam()
+    @classmethod
+    def initialize(cls, chunkBuffer, camera, player, displaySize, screen):         
+
+        # Create references to global objects
+        cls.chunkBuffer     =   chunkBuffer
+        cls.player          =   player
+        cls.camera          =   camera
+        cls.displaySize     =   displaySize
+        cls.screen          =   screen
+
+        # Index of the middle chunk in the chunk buffer
+        cls.length          =   len(cls.chunkBuffer)
+        cls.midChunk        =   int((cls.length - 1) * 0.5)
+
+        # Update constants to reflect new References
+        cls.updateRefs()
+        cls.renderChunks()    
 
     @classmethod
-    def render(cls):
-        """
-            Renders given chunks onto given surface
-            Requires chunks, cameraCoors, playerCoors, displaySize as sequences 
-        """        
+    def renderChunks(cls):         
 
-        #midpoint = int((len(cls.chunkBuffer)-1)*0.5)
+        for c in range(0,   len(cls.chunkBuffer),   1):
+            cls.renderChunk(index = c)
 
-        rightWalker = cls.midpoint  # goes from midpoint to length-1 (both inclusive)
-        leftWalker = cls.midpoint-1 # goes from midpoint-1 to 0 (both inclusive)
+    @classmethod
+    def renderChunk(cls,    index):
 
-        numRightDone = numLeftDone = 0
+        currChunkRef        =   cls.chunkBuffer[index]        
+        coors               =   [0, 0]
 
-        flag = True        
-        while(flag):
-            chunkIndex = cls.chunkBuffer.positions[leftWalker]
-            currChunkReference = cls.chunkBuffer[leftWalker]
-            leftWalker -= 1
+        cls.chunkBuffer.surfaces[index].fill((30, 150, 240))                
+        
+        for i in range(0,   CHUNK_HEIGHT,   1):
+            
+            coors[1]    =   (CHUNK_HEIGHT - i - 1) * TILE_WIDTH
+            for j in range(0,   CHUNK_WIDTH,    1):
 
-            for j in range(CHUNK_WIDTH-1, -1, -1):
-                x = cls.arrayToScreen_x(j, chunkIndex)                                
+                coors[0]    =   j * TILE_WIDTH
+                if(currChunkRef[i, j] is not 0):                    
+                    cls.chunkBuffer.surfaces[index].blit(TILE_TABLE[currChunkRef[i, j]], coors)                                            
 
-                for i in range(cls.lowerIndex, cls.upperIndex+1):                                    
-                    y = cls.arrayToScreen_y(i)                       
-                    curTileRef = currChunkReference.blocks[i][j] 
-                    if(curTileRef != 0): TILE_TABLE[curTileRef].blit(x, y)        
+
+    @classmethod
+    def render(cls):        
+
+        rightWalker = cls.midChunk
+        leftWalker = cls.midChunk - 1
+
+        while(rightWalker < len(cls.chunkBuffer)):
+
+            for j in range(0,   CHUNK_WIDTH,    1):
+
+                sliceInd    =   (cls.chunkBuffer[rightWalker].index * CHUNK_WIDTH) + j
+                slicePos    =   [sliceInd * TILE_WIDTH - cls.camera[0] + cls.numHorz, 0]
+
+                sliceRect   =   [j * TILE_WIDTH, cls.upIndex, TILE_WIDTH, cls.downIndex]
+                sliceSurf   =   cls.chunkBuffer.surfaces[rightWalker].subsurface(sliceRect)                
                 
-                numLeftDone += 1
-                if(numLeftDone > cls.numLeft): 
-                    flag = False
-                    break      
+                if(slicePos[0] > cls.displaySize[0]): 
+                    rightWalker = len(cls.chunkBuffer)
+                    break                
 
-        flag = True
-        while(flag):
-            chunkIndex = cls.chunkBuffer.positions[rightWalker]
-            currChunkReference = cls.chunkBuffer[rightWalker]
+                cls.screen.blit(sliceSurf, slicePos)
+
             rightWalker += 1
 
-            for j in range(0, CHUNK_WIDTH):            
-                x = cls.arrayToScreen_x(j, chunkIndex)                
+        while(leftWalker >= 0):
+                        
+            for j in range(CHUNK_WIDTH-1,   -1,    -1):
 
-                for i in range(cls.lowerIndex, cls.upperIndex+1):               
-                    y = cls.arrayToScreen_y(i)
-                    currTileRef = currChunkReference.blocks[i][j]
-                    if(currTileRef != 0): TILE_TABLE[currTileRef].blit(x, y)                         
+                sliceInd    =   (cls.chunkBuffer[leftWalker].index * CHUNK_WIDTH) + j
+                slicePos    =   [sliceInd * TILE_WIDTH - cls.camera[0] + cls.numHorz, 0]
 
-                numRightDone += 1
-                if(numRightDone > cls.numRight):
-                    flag = False
-                    break   
+                sliceRect   =   [j * TILE_WIDTH, cls.upIndex, TILE_WIDTH, cls.downIndex]
+                sliceSurf   =   cls.chunkBuffer.surfaces[leftWalker].subsurface(sliceRect)                
 
-        # Temporary player crosshair rendering
-        playerx = cls.graphToCamera_x(cls.cameraToScreen_x(cls.player[0]))
-        playery = cls.graphToCamera_y(cls.cameraToScreen_y(cls.player[1]))
-                
-        pyglet.shapes.Circle(x=playerx, y=playery, radius=4, color=(255, 50, 50)).draw()        
+                if(slicePos[0] <= -TILE_WIDTH): 
+                    leftWalker = -1
+                    break
 
+                cls.screen.blit(sliceSurf, slicePos) 
 
-    @classmethod
-    def arrayToChunk_x(cls, x):
-        return x * TILE_WIDTH
+            leftWalker -= 1       
 
-    @classmethod
-    def arrayToChunk_y(cls, y):
-        return y * TILE_WIDTH
+        #Temporary player crosshair rendering
+        playerCoors = cls.player.copy()
 
-    @classmethod
-    def chunkToGraph_x(cls, x, chunkInd):
-        # From chunk-space to absolute-space
-        return x + chunkInd * CHUNK_WIDTH * TILE_WIDTH
+        playerCoors[0] -= cls.camera[0]
+        playerCoors[1] -= cls.camera[1]
+
+        playerCoors[0] += cls.numHorz
+        playerCoors[1] = cls.numVert - playerCoors[1]
+
+        pygame.draw.circle(cls.screen, (255,50,50), playerCoors, 2)
 
     @classmethod
-    def chunkToGraph_y(cls, y):
-        # From chunk-space to absolute-space
-        return y
+    def updateRefs(cls):
 
-    @classmethod
-    def graphToCamera_x(cls, x):
-        # From absolute-space to camera-space
-        return x - cls.camera[0]        
+        # Number of pixels to be rendered on the top and side halves of the camera
+        cls.numHorz         =   cls.displaySize[0] * 0.5
+        cls.numVert         =   cls.displaySize[1] * 0.5        
 
-    @classmethod
-    def graphToCamera_y(cls, y):
-        # From absolute-space to camera-space
-        return y - cls.camera[1]
+        # Indexes of the top and bottom-most pixels of the chunk to be rendered
+        # W.R.T to the origin of the chunk-surface
+        cls.upIndex         =   CHUNK_HEIGHT_P - (cls.camera[1] + cls.numVert) if(cls.camera[1] + cls.numVert >= 0) else 0
+        cls.downIndex       =   cls.displaySize[1] if(cls.upIndex + cls.displaySize[1] <= CHUNK_HEIGHT_P) else CHUNK_HEIGHT_P - cls.upIndex
 
-    @classmethod
-    def cameraToScreen_x(cls, x):
-        # From camera-space to screen-space
-        return x + cls.displaySize[0] * 0.5        
-
-    @classmethod
-    def cameraToScreen_y(cls, y):
-        # From camera-space to screen-space        
-        return y + cls.displaySize[1] * 0.5
-
-    @classmethod
-    def arrayToScreen_x(cls, x, chunkInd):
-        return cls.cameraToScreen_x(cls.graphToCamera_x(cls.chunkToGraph_x(cls.arrayToChunk_x(x), chunkInd)))        
-
-    @classmethod
-    def arrayToScreen_y(cls, y):
-        return cls.cameraToScreen_y(cls.graphToCamera_y(cls.chunkToGraph_y(cls.arrayToChunk_y(y))))
-
+# REDUNDANT METHODS
     @classmethod
     def arrayToChunk(cls, coor):
         # From array-space to chunk-space
@@ -153,7 +144,7 @@ class Renderer:
     def cameraToScreen(cls, coor):
         # From camera-space to screen-space
         coor[0] += cls.displaySize[0] * 0.5
-        coor[1] += cls.displaySize[1] * 0.5
+        coor[1] = cls.displaySize[1] * 0.5 - coor[1]
 
     @classmethod
     def chunkToScreen(cls, coor, chunkInd):
@@ -161,15 +152,3 @@ class Renderer:
         cls.chunkToGraph(coor, chunkInd)
         cls.graphToCamera(coor)
         cls.cameraToScreen(coor)
-
-    @classmethod
-    def updateSize(cls):        
-        cls.midpoint = int((len(cls.chunkBuffer)-1)*0.5)        
-
-        cls.numRight = (cls.displaySize[0] * 0.5)/TILE_WIDTH + CHUNK_WIDTH - 1
-        cls.numLeft = (cls.displaySize[0] * 0.5)/TILE_WIDTH + 1
-    
-    @classmethod
-    def updateCam(cls):        
-        cls.lowerIndex = int(max((cls.camera[1]-cls.displaySize[1]*0.5)/TILE_WIDTH, 0))
-        cls.upperIndex = int(min((cls.camera[1]+cls.displaySize[1]*0.5)/TILE_WIDTH, CHUNK_HEIGHT - 1))

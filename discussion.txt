@@ -1,10 +1,2 @@
-Mountains, plains
-Snowy, Desert, jungle
-
-To be added- Ice Tile, snow tile (in world gen)
-Fluid mechanics- Aditya
-andy typeface
-
-https://wiki.tiker.net/PyOpenCL/Installation/Windows/
-http://www.minho-kim.com/courses/17sp43.635/pyopencl.html
-https://www.lfd.uci.edu/~gohlke/pythonlibs/#pyopencl
+after direction change occurs, the next-to-next is a repeat of the next chunk
+after repeat-chunk is moved off screen, it skips next chunk

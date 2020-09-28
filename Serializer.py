@@ -8,7 +8,7 @@ class Serializer:
         self.conn = sqlite3.connect(self.name)
         c = self.conn.cursor()
         try:
-            # Create Tables
+            # Create Table
             c.execute('''CREATE TABLE terrain(keys INTEGER NOT NULL PRIMARY KEY, binry TEXT)''')
             self.conn.commit()
             c.execute('''CREATE TABLE player(playername TEXT NOT NULL PRIMARY KEY, pickledplayer TEXT)''')
@@ -23,11 +23,13 @@ class Serializer:
             Requires the key as an int and chunkObj as UTF-8 string.
         """
         c = self.conn.cursor()
-        try:  # Save string at new key location
+        try:  
+            # Save string at new key location
             c.execute('''INSERT INTO terrain VALUES (?,?)''', (key, zlib.compress(chunkObj)))
             self.conn.commit()
 
-        except:  # Update string at existing key
+        except:  
+            # Update string at existing key
             c.execute('UPDATE terrain SET binry =?  WHERE keys=?', (zlib.compress(chunkObj), key))
             self.conn.commit()
 
@@ -43,10 +45,8 @@ class Serializer:
         res = c.fetchone()
         self.conn.commit()
 
-        try:
-            return zlib.decompress(res[0])
-        except:
-            return res
+        try: return zlib.decompress(res[0])
+        except: return res
 
     def savePlayer(self, name, pickled):
 
@@ -55,11 +55,13 @@ class Serializer:
             Requires the name as a string and pickled as UTF-8 string.
         """
         c = self.conn.cursor()
-        try:  # Save pickledplayer at new playername
+        try:  
+            # Save pickledplayer at new playername
             c.execute('''INSERT INTO player VALUES (?,?)''', (name, zlib.compress(pickled)))
             self.conn.commit()
 
-        except:  # Update pickledplayer at existing playername
+        except:  
+            # Update pickledplayer at existing playername
             c.execute('UPDATE player SET pickledplayer =?  WHERE playername=?', (zlib.compress(pickled), name))
             self.conn.commit()
 
@@ -75,12 +77,10 @@ class Serializer:
         res = c.fetchone()
         self.conn.commit()
 
-        try:
-            return zlib.decompress(res[0])
-        except:
-            return res
+        try: return zlib.decompress(res[0])
+        except: return res
 
     # Close the connection
-    def stop(self):        
+    def stop(self):
         self.conn.close()
 
