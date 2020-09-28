@@ -33,7 +33,7 @@ clock = pygame.time.Clock()
 # Create chunk buffer and chunk-position buffer
 bufferSize = int(pygame.display.Info().current_w/CHUNK_WIDTH_P)+2
 if(bufferSize % 2 == 0): bufferSize += 1
-chunkBuffer = ChunkBuffer(bufferSize, serializer, 0, gen)
+chunkBuffer = ChunkBuffer(bufferSize, 0, serializer, gen)
 del bufferSize
 
 # Create and display window
@@ -67,11 +67,11 @@ while running:
             Renderer.render()
 
     # camera movement handling
-    camera[0] += (player[0]-camera[0]) * 0.075
-    camera[1] += (player[1]-camera[1]) * 0.075
+    camera[0] += (player[0]-camera[0]) * 0.05
+    camera[1] += (player[1]-camera[1]) * 0.05
 
     if(int(prevCamera[0]) != int(camera[0]) or int(prevCamera[1]) != int(camera[1])):
-        Renderer.updateRefs()        
+        Renderer.updateCam()        
         Renderer.render()               
 
     prevCamera = camera.copy()
@@ -105,12 +105,17 @@ while running:
     deltaChunk = currChunk-prevChunk
     prevChunk = currChunk
 
-    if(deltaChunk > 0): 
-        chunkBuffer.shiftLeft() #Player has moved right
-        Renderer.renderChunks()                
-    elif(deltaChunk < 0): 
-        chunkBuffer.shiftRight() #Player has moved left
-        Renderer.renderChunks()       
+    if(deltaChunk > 0):         
+        chunkBuffer.shiftLeft() #Player has moved right                        
+        Renderer.renderChunks()
+        # chunkBuffer.shiftSurfsLeft()
+        # Renderer.renderChunk(-1)
+
+    elif(deltaChunk < 0):      
+        chunkBuffer.shiftRight() #Player has moved left              
+        Renderer.renderChunks()
+        # chunkBuffer.shiftSurfsRight()
+        # Renderer.renderChunk(0)
 
 chunkBuffer.saveComplete()
 chunkBuffer.serializer.stop()

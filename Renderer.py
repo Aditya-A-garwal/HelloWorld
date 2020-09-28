@@ -35,7 +35,7 @@ class Renderer:
     @classmethod
     def renderChunks(cls):         
 
-        for c in range(0,   len(cls.chunkBuffer),   1):
+        for c in range(0,   cls.length,   1):
             cls.renderChunk(index = c)                    
 
     @classmethod
@@ -63,32 +63,35 @@ class Renderer:
         leftWalker = cls.midChunk - 1
         sliceConstant = 1 # Ideally must be a factor for CHUNK_WIDTH
 
-        while(rightWalker < len(cls.chunkBuffer)):
+        while(rightWalker < cls.length):
 
-            for j in range(0,   CHUNK_WIDTH,    1):
+            tileWalker = 0
+            while(tileWalker < CHUNK_WIDTH):            
 
-                sliceInd    =   (cls.chunkBuffer[rightWalker].index * CHUNK_WIDTH) + j
+                sliceInd    =   (cls.chunkBuffer[rightWalker].index * CHUNK_WIDTH) + tileWalker
                 slicePos    =   [sliceInd * TILE_WIDTH - cls.camera[0] + cls.numHorz, 0]
 
-                sliceRect   =   [j * TILE_WIDTH, cls.upIndex, TILE_WIDTH, cls.downIndex]
+                sliceRect   =   [tileWalker * TILE_WIDTH, cls.upIndex, TILE_WIDTH, cls.downIndex]
                 sliceSurf   =   cls.chunkBuffer.surfaces[rightWalker].subsurface(sliceRect)                
                 
                 if(slicePos[0] > cls.displaySize[0]): 
-                    rightWalker = len(cls.chunkBuffer)
+                    rightWalker = cls.length
                     break                
 
                 cls.screen.blit(sliceSurf, slicePos)
+                tileWalker += 1
 
             rightWalker += 1
 
         while(leftWalker >= 0):
                         
-            for j in range(CHUNK_WIDTH-1,   -1,    -1):
+            tileWalker = CHUNK_WIDTH - 1
+            while(tileWalker >= 0):                        
 
-                sliceInd    =   (cls.chunkBuffer[leftWalker].index * CHUNK_WIDTH) + j
+                sliceInd    =   (cls.chunkBuffer[leftWalker].index * CHUNK_WIDTH) + tileWalker
                 slicePos    =   [sliceInd * TILE_WIDTH - cls.camera[0] + cls.numHorz, 0]
 
-                sliceRect   =   [j * TILE_WIDTH, cls.upIndex, TILE_WIDTH, cls.downIndex]
+                sliceRect   =   [tileWalker * TILE_WIDTH, cls.upIndex, TILE_WIDTH, cls.downIndex]
                 sliceSurf   =   cls.chunkBuffer.surfaces[leftWalker].subsurface(sliceRect)                
 
                 if(slicePos[0] <= -TILE_WIDTH): 
@@ -96,6 +99,7 @@ class Renderer:
                     break
 
                 cls.screen.blit(sliceSurf, slicePos) 
+                tileWalker -= 1
 
             leftWalker -= 1       
 
@@ -113,16 +117,32 @@ class Renderer:
         pygame.draw.circle(cls.screen, (255,50,50), playerCoors, 2)
 
     @classmethod
-    def updateRefs(cls):
+    def updateSize(cls):
 
         # Number of pixels to be rendered on the top and side halves of the camera
         cls.numHorz         =   cls.displaySize[0] * 0.5
         cls.numVert         =   cls.displaySize[1] * 0.5        
 
+    @classmethod
+    def updateCam(cls):
+
         # Indexes of the top and bottom-most pixels of the chunk to be rendered
         # W.R.T to the origin of the chunk-surface
-        cls.upIndex         =   CHUNK_HEIGHT_P - (cls.camera[1] + cls.numVert) if(cls.camera[1] + cls.numVert >= 0) else 0
-        cls.downIndex       =   cls.displaySize[1] if(cls.upIndex + cls.displaySize[1] <= CHUNK_HEIGHT_P) else CHUNK_HEIGHT_P - cls.upIndex
+
+        cls.upIndex         =   CHUNK_HEIGHT_P - (cls.camera[1] + cls.numVert) 
+        if(cls.upIndex < 0):
+            cls.upIndex         =    0
+
+        cls.downIndex       =   cls.displaySize[1]
+        if(cls.downIndex + cls.upIndex >= CHUNK_HEIGHT_P):
+            cls.downIndex       =   CHUNK_HEIGHT_P - cls.upIndex
+
+    @classmethod
+    def updateRefs(cls):
+
+        cls.updateSize()
+        cls.updateCam()
+        
 
 # REDUNDANT METHODS
     @classmethod
