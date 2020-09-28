@@ -24,11 +24,11 @@ class Renderer:
         cls.displaySize     =   displaySize
         cls.screen          =   screen
 
-        # Update constants to reflect new References
-        cls.updateRefs()
-
         # Index of the middle chunk in the chunk buffer
         cls.midChunk        =   int((len(cls.chunkBuffer) - 1) * 0.5)
+
+        # Update constants to reflect new References
+        cls.updateRefs()        
 
     @classmethod
     def renderChunks(cls):         
@@ -57,68 +57,56 @@ class Renderer:
     @classmethod
     def render(cls):        
         
-        for i in range(cls.midChunk,    cls.midChunk + cls.numRightChunks,  1):
+        for i in range(cls.midChunk,    len(cls.chunkBuffer),  1):
 
             for j in range(0,   CHUNK_WIDTH,    1):
 
                 sliceInd    =   (cls.chunkBuffer[i].index * CHUNK_WIDTH) + j
-                slicePos    =   [sliceInd * TILE_WIDTH - cls.camera[0] + cls.displaySize[0], 0]
+                slicePos    =   [sliceInd * TILE_WIDTH - cls.camera[0] + cls.numHorz, 0]
 
-                sliceRect   =   [j * TILE_WIDTH, cls.upIndex, TILE_WIDTH, cls.downIndex-cls.upIndex]
+                sliceRect   =   [j * TILE_WIDTH, cls.upIndex, TILE_WIDTH, cls.downIndex]
                 sliceSurf   =   cls.chunkBuffer.surfaces[i].subsurface(sliceRect)                
 
                 cls.screen.blit(sliceSurf, slicePos)
 
-        for i in range(cls.midChunk - 1,    cls.midChunk - cls.numLeftChunks,   -1):
+            if(slicePos[0] > cls.displaySize[0]): break
+
+        for i in range(cls.midChunk - 1,    -1,   -1):
                         
             for j in range(0,   CHUNK_WIDTH,    1):
 
                 sliceInd    =   (cls.chunkBuffer[i].index * CHUNK_WIDTH) + j
-                slicePos    =   [sliceInd * TILE_WIDTH - cls.camera[0] + cls.displaySize[0], 0]
+                slicePos    =   [sliceInd * TILE_WIDTH - cls.camera[0] + cls.numHorz, 0]
 
-                sliceRect   =   [j * TILE_WIDTH, cls.upIndex, TILE_WIDTH, cls.downIndex-cls.upIndex]
+                sliceRect   =   [j * TILE_WIDTH, cls.upIndex, TILE_WIDTH, cls.downIndex]
                 sliceSurf   =   cls.chunkBuffer.surfaces[i].subsurface(sliceRect)                
 
                 cls.screen.blit(sliceSurf, slicePos)
 
+            if(slicePos[0] <= -TILE_WIDTH): break
+
         #Temporary player crosshair rendering
-        playercoors = cls.player.copy()
-        cls.graphToCamera(playercoors)
-        cls.cameraToScreen(playercoors)
+        playerCoors = cls.player.copy()
 
-        pygame.draw.circle(cls.screen, (255,50,50), playercoors, 2)
+        playerCoors[0] -= cls.camera[0]
+        playerCoors[1] -= cls.camera[1]
 
-    @classmethod
-    def updateSize(cls):
+        playerCoors[0] += cls.numHorz
+        playerCoors[1] = cls.numVert - playerCoors[1]
 
-        # Number of pixels to be rendered on the left and right sides of camera
-        cls.numLeft         =   cls.numRight    =   int(cls.displaySize[0] * 0.5)
-
-        # Number of pixels to be rendered on the top and bottom sides of camera
-        cls.numUp           =   cls.numDown     =   int(cls.displaySize[1] * 0.5)        
-
-        # Number of "complete" chunks to be rendered on either side of the camera
-        cls.numRightChunks  =   int(cls.numRight / WORLD_CHUNK_WIDTH) + 1
-        cls.numLeftChunks   =   max(int(cls.numLeft  / WORLD_CHUNK_WIDTH), 1) + 1
-
-        # Number of pixels left over on either side of the camera after rendering complete chunks
-        cls.numRightExtra   =   (cls.numRight % WORLD_CHUNK_WIDTH) + 1
-        cls.numLeftExtra    =   (cls.numLeft  % WORLD_CHUNK_WIDTH) + 1        
-
-    @classmethod
-    def updateCam(cls):
-
-        # Indexes of the top and bottom-most pixels of the chunk to be rendered
-        # W.R.T to the origin of the chunk-surface
-        cls.upIndex         =   WORLD_HEIGHT - min(cls.camera[1] + cls.numUp, WORLD_HEIGHT)        
-        cls.downIndex       =   WORLD_HEIGHT - max(cls.camera[1] - cls.numDown, 0)
+        pygame.draw.circle(cls.screen, (255,50,50), playerCoors, 2)
 
     @classmethod
     def updateRefs(cls):
 
-        # Update all the constants to reflect changes in references
-        cls.updateSize()
-        cls.updateCam()
+        # Number of pixels to be rendered on the top and side halves of the camera
+        cls.numHorz         =   cls.displaySize[0] * 0.5
+        cls.numVert         =   cls.displaySize[1] * 0.5        
+
+        # Indexes of the top and bottom-most pixels of the chunk to be rendered
+        # W.R.T to the origin of the chunk-surface
+        cls.upIndex         =   CHUNK_HEIGHT_P - (cls.camera[1] + cls.numVert) if(cls.camera[1] + cls.numVert >= 0) else 0
+        cls.downIndex       =   cls.displaySize[1] if(cls.upIndex + cls.displaySize[1] <= CHUNK_HEIGHT_P) else CHUNK_HEIGHT_P - cls.upIndex
 
 # REDUNDANT METHODS
     @classmethod

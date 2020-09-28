@@ -11,11 +11,11 @@ displaySize = [400, 300]  #[pygame.display.Info().current_w//2, pygame.display.I
 prevFramerate = framerate = 0
 
 # Camera variables
-camera = [0,WORLD_HEIGHT//2]
+camera = [0, 240]
 prevCamera = [0, 0]
 
 # Player variables
-player = [0,WORLD_HEIGHT//2]
+player = [0, 240]
 playerInc = [0,0]
 currChunk = prevChunk = deltaChunk = 0
 speed = 24 * TILE_WIDTH #number of tiles to move per second
@@ -31,14 +31,10 @@ pygame.init()
 clock = pygame.time.Clock()
 
 # Create chunk buffer and chunk-position buffer
-bufferSize = int(pygame.display.Info().current_w/(CHUNK_WIDTH*TILE_WIDTH))+2
+bufferSize = int(pygame.display.Info().current_w/CHUNK_WIDTH_P)+2
 if(bufferSize % 2 == 0): bufferSize += 1
 chunkBuffer = ChunkBuffer(bufferSize, serializer, 0, gen)
 del bufferSize
-
-#debug
-for ch in chunkBuffer: print(ch.index, end=' ')        
-print("\t", currChunk)
 
 # Create and display window
 screen = pygame.display.set_mode(displaySize, pygame.RESIZABLE)
@@ -72,15 +68,15 @@ while running:
             Renderer.render()
 
     # camera movement handling
-    camera[0] += (player[0]-camera[0]) * 1
-    camera[1] += (player[1]-camera[1]) * 1
+    camera[0] += (player[0]-camera[0]) * 0.075
+    camera[1] += (player[1]-camera[1]) * 0.075
 
     if(int(prevCamera[0]) != int(camera[0]) or int(prevCamera[1]) != int(camera[1])):
-        Renderer.updateCam()        
+        Renderer.updateRefs()        
         Renderer.render()               
 
     prevCamera = camera.copy()
-    currChunk = math.floor(camera[0]/(CHUNK_WIDTH*TILE_WIDTH))
+    currChunk = math.floor(camera[0]/CHUNK_WIDTH_P)
 
     # Updating screen    
     pygame.display.update()            
@@ -105,23 +101,17 @@ while running:
     # Player movement handling    
     player[0] += (speed / prevFramerate) * playerInc[0]
     player[1] += (speed / prevFramerate) * playerInc[1]    
-    if not(0 < player[1] < WORLD_HEIGHT): player[1] -= (speed / prevFramerate) * playerInc[1]    
+    #if not(0 < player[1] < CHUNK_HEIGHT_P): player[1] -= (speed / prevFramerate) * playerInc[1]    
 
     deltaChunk = currChunk-prevChunk
     prevChunk = currChunk
 
     if(deltaChunk > 0): 
         chunkBuffer.shiftLeft() #Player has moved right
-        # Renderer.renderChunk(-1)
-        Renderer.renderChunks()
-        for ch in chunkBuffer: print(ch.index, end=' ')        
-        print("\t", currChunk)
+        Renderer.renderChunks()                
     elif(deltaChunk < 0): 
         chunkBuffer.shiftRight() #Player has moved left
-        # Renderer.renderChunk(0)
-        Renderer.renderChunks()
-        for ch in chunkBuffer: print(ch.index, end=' ')        
-        print("\t", currChunk)
+        Renderer.renderChunks()                
 
 chunkBuffer.saveComplete()
 chunkBuffer.serializer.stop()

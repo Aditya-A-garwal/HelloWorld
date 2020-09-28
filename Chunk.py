@@ -6,8 +6,8 @@ CHUNK_WIDTH         =   16
 CHUNK_HEIGHT        =   512
 
 # Constants for world height, world-chunk width
-WORLD_HEIGHT        =   CHUNK_HEIGHT * TILE_WIDTH
-WORLD_CHUNK_WIDTH   =   CHUNK_WIDTH * TILE_WIDTH
+CHUNK_HEIGHT_P      =   CHUNK_HEIGHT * TILE_WIDTH
+CHUNK_WIDTH_P       =   CHUNK_WIDTH * TILE_WIDTH
 
 # Arbitrary constant for chunk generation
 WALKING_CONSTANT    =   0.0075
@@ -17,11 +17,11 @@ class Chunk:
     def __init__(self, index = 0, noiseObj = None):
 
         self.index      =   index
-        self.blocks     =   [[i%3 for i in range(0,   CHUNK_WIDTH)] for i in range(0, CHUNK_HEIGHT)]       
+        self.blocks     =   [[0 for i in range(0,   CHUNK_WIDTH)] for i in range(0, CHUNK_HEIGHT)]       
         self.walls      =   self.blocks.copy()
 
-        # if(noiseObj is not None):
-        #     Chunk.populateChunk(self, noiseObj)
+        if(noiseObj is not None):
+            Chunk.populateChunk(self, noiseObj)
 
     def __getitem__(self, key):        
         return self.blocks[key[0]][key[1]]
@@ -36,7 +36,7 @@ class Chunk:
 
         for i in range(0, CHUNK_WIDTH):
             # Loops for bedrock wastes
-            for j in range(0, CHUNK_HEIGHT): # Lower bedrock wastes
+            for j in range(0, 10): # Lower bedrock wastes
                 bedrockProbability = (10-j)*10                
                 frontVal    =   (noiseObj.noise3d(x = absouluteIndex, y = j, z = 0) + 1) * 50
                 backVal     =   (noiseObj.noise3d(x = absouluteIndex, y = j, z = 1) + 1) * 50
@@ -71,7 +71,7 @@ class ChunkBuffer:
             retrieved           =   Chunk(index = i, noiseObj = self.noise) if(retrieved is None) else pickle.loads(retrieved)
 
             self.chunks.append(retrieved)          
-            self.surfaces.append(pygame.Surface((WORLD_CHUNK_WIDTH, WORLD_HEIGHT)))            
+            self.surfaces.append(pygame.Surface((CHUNK_WIDTH_P, CHUNK_HEIGHT_P)))            
 
     def shiftLeft(self):                    
         
