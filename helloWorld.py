@@ -100,19 +100,17 @@ while running:
     # Player movement handling    
     player[0] += (speed / prevFramerate) * playerInc[0]
     player[1] += (speed / prevFramerate) * playerInc[1]    
-    #if not(0 < player[1] < CHUNK_HEIGHT_P): player[1] -= (speed / prevFramerate) * playerInc[1]    
+    if not(0 < player[1] < CHUNK_HEIGHT_P): player[1] -= (speed / prevFramerate) * playerInc[1]    
 
     deltaChunk = currChunk-prevChunk
     prevChunk = currChunk
 
     if(deltaChunk > 0): 
         chunkBuffer.shiftLeft() #Player has moved right
-        Renderer.renderChunk(-1)                
+        Renderer.renderChunks()                
     elif(deltaChunk < 0): 
         chunkBuffer.shiftRight() #Player has moved left
-        Renderer.renderChunk(0)
-
-    print(prevFramerate)          
+        Renderer.renderChunks()       
 
 chunkBuffer.saveComplete()
 chunkBuffer.serializer.stop()

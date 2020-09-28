@@ -79,15 +79,14 @@ class ChunkBuffer:
         self.leftIndex += 1
 
         for i in range(0, self.len):
-            self.chunks[i]      =   self.chunks[i+1]    # move all chunks one space left        
-            self.surfaces[i]    =   self.surfaces[i+1]  # move all surfaces one space left
+            self.chunks[i]      =   self.chunks[i+1]    # move all chunks one space left                    
 
         self.middleIndex        +=  1
 
-        self.chunks[self.len]   =   self.serializer[self.rightIndex+1] # take next left chunks from serializer and move into buffer        
         self.rightIndex         +=  1
+        self.chunks[self.len]   =   self.serializer[self.rightIndex] # take next left chunks from serializer and move into buffer
 
-        self.chunks[self.len]   =   Chunk(index=self.rightIndex, noiseObj=self.noise) if(self.chunks[self.len] is None) else pickle.loads(self.chunks[self.len])
+        self.chunks[self.len]   =   Chunk(index=self.rightIndex, noiseObj=self.noise) if(self.chunks[self.len] is None) else pickle.loads(self.chunks[self.len])        
 
     def shiftRight(self):              
 
@@ -95,15 +94,14 @@ class ChunkBuffer:
         self.rightIndex -= 1
 
         for i in range(self.len, 0, -1):
-            self.chunks[i]      =   self.chunks[i-1]    # move all chunks one space right
-            self.surfaces[i]    =   self.surfaces[i-1]  # move all surfaces one space right
+            self.chunks[i]      =   self.chunks[i-1]    # move all chunks one space right            
 
         self.middleIndex -= 1
 
-        self.chunks[0] = self.serializer[self.leftIndex-1] # take next left chunks from serializer and move into buffer        
         self.leftIndex -= 1
+        self.chunks[0] = self.serializer[self.leftIndex] # take next left chunks from serializer and move into buffer                
 
-        self.chunks[0] = Chunk(index=self.leftIndex, noiseObj=self.noise) if(self.chunks[0] is None) else pickle.loads(self.chunks[0])        
+        self.chunks[0] = Chunk(index=self.leftIndex, noiseObj=self.noise) if(self.chunks[0] is None) else pickle.loads(self.chunks[0])                
 
     def saveComplete(self):
         for chunk in self.chunks:

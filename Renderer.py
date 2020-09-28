@@ -36,7 +36,7 @@ class Renderer:
     def renderChunks(cls):         
 
         for c in range(0,   len(cls.chunkBuffer),   1):
-            cls.renderChunk(index = c)
+            cls.renderChunk(index = c)                    
 
     @classmethod
     def renderChunk(cls,    index):
@@ -61,6 +61,7 @@ class Renderer:
 
         rightWalker = cls.midChunk
         leftWalker = cls.midChunk - 1
+        sliceConstant = 1 # Ideally must be a factor for CHUNK_WIDTH
 
         while(rightWalker < len(cls.chunkBuffer)):
 
@@ -98,12 +99,14 @@ class Renderer:
 
             leftWalker -= 1       
 
-        #Temporary player crosshair rendering
+        # Temporary player crosshair rendering
         playerCoors = cls.player.copy()
 
+        # Translate to be in camera space
         playerCoors[0] -= cls.camera[0]
         playerCoors[1] -= cls.camera[1]
 
+        # Translate to be in screen space
         playerCoors[0] += cls.numHorz
         playerCoors[1] = cls.numVert - playerCoors[1]
 
