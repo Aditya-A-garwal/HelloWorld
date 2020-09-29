@@ -50,18 +50,18 @@ while running:
 
     # Client-side
 
-    keyRelease, keyPress = None, None    
+    keyRelease, keyPress = None, None
 
     # event handling loop
     for event in pygame.event.get():
-        if event.type == pygame.QUIT:             
+        if event.type == pygame.QUIT:
             running = False #quit game if user leaves
 
-        elif event.type == pygame.KEYDOWN: keyPress = event.key            
-        elif event.type == pygame.KEYUP: keyRelease = event.key            
+        elif event.type == pygame.KEYDOWN: keyPress = event.key
+        elif event.type == pygame.KEYUP: keyRelease = event.key
 
-        elif event.type == pygame.VIDEORESIZE:            
-            displaySize[0], displaySize[1] = screen.get_width(), screen.get_height()            
+        elif event.type == pygame.VIDEORESIZE:
+            displaySize[0], displaySize[1] = screen.get_width(), screen.get_height()
 
             Renderer.updateRefs()
             Renderer.render()
@@ -71,17 +71,17 @@ while running:
     camera[1] += (player[1]-camera[1]) * 0.05
 
     if(int(prevCamera[0]) != int(camera[0]) or int(prevCamera[1]) != int(camera[1])):
-        Renderer.updateCam()        
-        Renderer.render()               
+        Renderer.updateCam()
+        Renderer.render()
 
     prevCamera = camera.copy()
     currChunk = math.floor(camera[0]/CHUNK_WIDTH_P)
 
-    # Updating screen    
-    pygame.display.update()            
+    # Updating screen
+    pygame.display.update()
 
 
-    # Server-side    
+    # Server-side
 
     # Key to movement translation
     if(keyPress is pygame.K_a): playerInc[0] = -1
@@ -90,28 +90,28 @@ while running:
     if(keyPress is pygame.K_w): playerInc[1] = 1
     elif(keyPress is pygame.K_s): playerInc[1] = -1
 
-    if(keyRelease is pygame.K_a or keyRelease is pygame.K_d): playerInc[0] = 0    
-    elif(keyRelease is pygame.K_w or keyRelease is pygame.K_s): playerInc[1] = 0    
+    if(keyRelease is pygame.K_a or keyRelease is pygame.K_d): playerInc[0] = 0
+    elif(keyRelease is pygame.K_w or keyRelease is pygame.K_s): playerInc[1] = 0
 
     # Framerate calculation
     frameTime = clock.tick(framerate) + 1
     prevFramerate = 1000 / frameTime
 
-    # Player movement handling    
+    # Player movement handling
     player[0] += (speed / prevFramerate) * playerInc[0]
-    player[1] += (speed / prevFramerate) * playerInc[1]    
-    if not(0 < player[1] < CHUNK_HEIGHT_P): player[1] -= (speed / prevFramerate) * playerInc[1]    
+    player[1] += (speed / prevFramerate) * playerInc[1]
+    if not(0 < player[1] < CHUNK_HEIGHT_P): player[1] -= (speed / prevFramerate) * playerInc[1]
 
     deltaChunk = currChunk-prevChunk
     prevChunk = currChunk
 
-    if(deltaChunk > 0):        
-        # Player has moved right 
+    if(deltaChunk > 0):
+        # Player has moved right
         chunkBuffer.shiftLeft()
-        Renderer.renderChunk(-1)        
+        Renderer.renderChunk(-1)
 
     elif(deltaChunk < 0):
-        # Player has moved left 
+        # Player has moved left
         chunkBuffer.shiftRight()
         Renderer.renderChunk(0)
 

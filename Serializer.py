@@ -23,12 +23,12 @@ class Serializer:
             Requires the key as an int and chunkObj as UTF-8 string.
         """
         c = self.conn.cursor()
-        try:  
+        try:
             # Save string at new key location
             c.execute('''INSERT INTO terrain VALUES (?,?)''', (key, zlib.compress(chunkObj)))
             self.conn.commit()
 
-        except:  
+        except:
             # Update string at existing key
             c.execute('UPDATE terrain SET binry =?  WHERE keys=?', (zlib.compress(chunkObj), key))
             self.conn.commit()
@@ -55,12 +55,12 @@ class Serializer:
             Requires the name as a string and pickled as UTF-8 string.
         """
         c = self.conn.cursor()
-        try:  
+        try:
             # Save pickledplayer at new playername
             c.execute('''INSERT INTO player VALUES (?,?)''', (name, zlib.compress(pickled)))
             self.conn.commit()
 
-        except:  
+        except:
             # Update pickledplayer at existing playername
             c.execute('UPDATE player SET pickledplayer =?  WHERE playername=?', (zlib.compress(pickled), name))
             self.conn.commit()

@@ -9,9 +9,9 @@ class Chunk:
         self.blocks             =   [[0 for i in range(0,   CHUNK_WIDTH)] for i in range(0, CHUNK_HEIGHT)]
         self.walls              =   [[0 for i in range(0,   CHUNK_WIDTH)] for i in range(0, CHUNK_HEIGHT)]
 
-        self.TILE_TABLE_LOCAL   = {}        
+        self.TILE_TABLE_LOCAL   = {}
 
-    def __getitem__(self, key):        
+    def __getitem__(self, key):
         return self.blocks[key[0]][key[1]]
 
     def __setitem__(self, key, value):
@@ -21,7 +21,7 @@ class ChunkBuffer:
 
     def __init__(self, length, middleIndex, serializer, noiseGenerator):
 
-        self.serializer     =   serializer             
+        self.serializer     =   serializer
         self.noiseGenerator =   noiseGenerator
 
         self.len            =   length-1
@@ -36,49 +36,49 @@ class ChunkBuffer:
 
             retrieved   =   self.serializer[i]
 
-            if(retrieved is None):                
+            if(retrieved is None):
                 retrieved   =   Chunk(index = i)
                 self.populateChunk(retrieved)
             else:
                 retrieved = pickle.loads(retrieved)
 
-            self.chunks.append(retrieved)          
-            self.surfaces.append(None)            
+            self.chunks.append(retrieved)
+            self.surfaces.append(None)
 
-    def shiftLeft(self):                    
-        
+    def shiftLeft(self):
+
         self.serializer[self.leftIndex]   =   pickle.dumps(self.chunks[0]) # move leftmost chunk into serializer
         self.leftIndex += 1
 
         for i in range(0, self.len):
             self.chunks[i]      =   self.chunks[i+1]    # move all chunks one space left
-            self.surfaces[i]    =   self.surfaces[i+1]           
+            self.surfaces[i]    =   self.surfaces[i+1]
 
         self.middleIndex        +=  1
 
         self.rightIndex         +=  1
         self.chunks[self.len]   =   self.serializer[self.rightIndex] # take next left chunk from serializer and move into buffer        
-        
+
         if(self.chunks[self.len] is None):
             self.chunks[self.len] = Chunk(index=self.rightIndex)
             self.populateChunk(self.chunks[self.len])
         else:
             self.chunks[self.len] = pickle.loads(self.chunks[self.len])
 
-    def shiftRight(self):              
+    def shiftRight(self):
 
         self.serializer[self.rightIndex] = pickle.dumps(self.chunks[self.len]) # move rightmost chunk into serializer
         self.rightIndex -= 1
 
         for i in range(self.len, 0, -1):
-            self.chunks[i]      =   self.chunks[i-1]    # move all chunks one space right            
+            self.chunks[i]      =   self.chunks[i-1]    # move all chunks one space right
             self.surfaces[i]    =   self.surfaces[i-1]
 
         self.middleIndex -= 1
 
         self.leftIndex -= 1
-        self.chunks[0] = self.serializer[self.leftIndex] # take next left chunk from serializer and move into buffer        
-        
+        self.chunks[0] = self.serializer[self.leftIndex] # take next left chunk from serializer and move into buffer
+
         if(self.chunks[0] is None):
             self.chunks[0] = Chunk(index=self.leftIndex)
             self.populateChunk(self.chunks[0])
@@ -88,15 +88,15 @@ class ChunkBuffer:
     def saveComplete(self):
         for chunk in self.chunks:
             self.serializer[chunk.index] = pickle.dumps(chunk)
-    
+
     def populateChunk(self, chunk):
 
         absouluteIndex  =   chunk.index * CHUNK_WIDTH
 
         for i in range(0, CHUNK_WIDTH):
-            
+
             for j in range(0, 10): # Lower bedrock wastes
-                bedrockProbability = (10-j)*10                
+                bedrockProbability = (10-j)*10
                 frontVal    =   (self.noiseGenerator.noise3d(x = absouluteIndex, y = j, z = -1) + 1) * 50
                 backVal     =   (self.noiseGenerator.noise3d(x = absouluteIndex, y = j, z = 1) + 1) * 50
 
