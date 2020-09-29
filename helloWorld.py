@@ -1,4 +1,4 @@
-import numpy, sys, random, math
+import numpy, sys, random
 from pygame.locals import *
 from opensimplex import OpenSimplex
 

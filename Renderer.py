@@ -1,4 +1,5 @@
 from Chunk import *
+import math
 
 '''
 Translations
@@ -39,7 +40,7 @@ class Renderer:
             cls.renderChunk(index = c)
 
     @classmethod
-    def renderChunk(cls,    index):
+    def renderChunk(cls,    index,  rect = [0, 0, CHUNK_WIDTH, CHUNK_HEIGHT]):
 
         cls.chunkBuffer.surfaces[index] =   pygame.Surface((CHUNK_WIDTH_P, CHUNK_HEIGHT_P))
         currChunkRef                    =   cls.chunkBuffer[index]
@@ -47,10 +48,10 @@ class Renderer:
 
         cls.chunkBuffer.surfaces[index].fill((30, 150, 240))
 
-        for i in range(0,   CHUNK_HEIGHT,   1):
+        for i in range(rect[1],   rect[3],   1):
 
             coors[1]    =   (CHUNK_HEIGHT - i - 1) * TILE_WIDTH
-            for j in range(0,   CHUNK_WIDTH,    1):
+            for j in range(rect[0],   rect[2],    1):
 
                 currTileRef =   currChunkRef[i, j]
                 currWallRef =   currChunkRef.walls[i][j]
