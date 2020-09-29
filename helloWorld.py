@@ -11,11 +11,11 @@ displaySize = [400, 300]  #[pygame.display.Info().current_w//2, pygame.display.I
 prevFramerate = framerate = 0
 
 # Camera variables
-camera = [0, 240]
+camera = [0, CHUNK_HEIGHT_P//2]
 prevCamera = [0, 0]
 
 # Player variables
-player = [0, 240]
+player = [0, CHUNK_HEIGHT_P//2]
 playerInc = [0,0]
 currChunk = prevChunk = deltaChunk = 0
 speed = 24 * TILE_WIDTH #number of tiles to move per second
@@ -105,17 +105,15 @@ while running:
     deltaChunk = currChunk-prevChunk
     prevChunk = currChunk
 
-    if(deltaChunk > 0):         
-        chunkBuffer.shiftLeft() #Player has moved right                        
-        Renderer.renderChunks()
-        # chunkBuffer.shiftSurfsLeft()
-        # Renderer.renderChunk(-1)
+    if(deltaChunk > 0):        
+        # Player has moved right 
+        chunkBuffer.shiftLeft()
+        Renderer.renderChunk(-1)        
 
-    elif(deltaChunk < 0):      
-        chunkBuffer.shiftRight() #Player has moved left              
-        Renderer.renderChunks()
-        # chunkBuffer.shiftSurfsRight()
-        # Renderer.renderChunk(0)
+    elif(deltaChunk < 0):
+        # Player has moved left 
+        chunkBuffer.shiftRight()
+        Renderer.renderChunk(0)
 
 chunkBuffer.saveComplete()
 chunkBuffer.serializer.stop()

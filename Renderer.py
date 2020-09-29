@@ -41,8 +41,9 @@ class Renderer:
     @classmethod
     def renderChunk(cls,    index):
 
-        currChunkRef        =   cls.chunkBuffer[index]        
-        coors               =   [0, 0]
+        cls.chunkBuffer.surfaces[index] =   pygame.Surface((CHUNK_WIDTH_P, CHUNK_HEIGHT_P))
+        currChunkRef                    =   cls.chunkBuffer[index]        
+        coors                           =   [0, 0]
 
         cls.chunkBuffer.surfaces[index].fill((30, 150, 240))                
         
@@ -59,9 +60,8 @@ class Renderer:
     @classmethod
     def render(cls):        
 
-        rightWalker = cls.midChunk
-        leftWalker = cls.midChunk - 1
-        sliceConstant = 1 # Ideally must be a factor for CHUNK_WIDTH
+        rightWalker     =   cls.midChunk
+        leftWalker      =   cls.midChunk - 1
 
         while(rightWalker < cls.length):
 
@@ -94,7 +94,7 @@ class Renderer:
                 sliceRect   =   [tileWalker * TILE_WIDTH, cls.upIndex, TILE_WIDTH, cls.downIndex]
                 sliceSurf   =   cls.chunkBuffer.surfaces[leftWalker].subsurface(sliceRect)                
 
-                if(slicePos[0] <= -TILE_WIDTH): 
+                if(slicePos[0] < -TILE_WIDTH): 
                     leftWalker = -1
                     break
 
@@ -133,9 +133,9 @@ class Renderer:
         if(cls.upIndex < 0):
             cls.upIndex         =    0
 
-        cls.downIndex       =   cls.displaySize[1]
-        if(cls.downIndex + cls.upIndex >= CHUNK_HEIGHT_P):
-            cls.downIndex       =   CHUNK_HEIGHT_P - cls.upIndex
+        cls.downIndex       =   CHUNK_HEIGHT_P - cls.upIndex
+        if(cls.downIndex > cls.displaySize[1]):
+            cls.downIndex       =   cls.displaySize[1]
 
     @classmethod
     def updateRefs(cls):

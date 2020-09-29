@@ -52,10 +52,10 @@ class Chunk:
 
 class ChunkBuffer:
 
-    def __init__(self, length, middleIndex, serializer, noise):
+    def __init__(self, length, middleIndex, serializer, noiseGenerator):
 
         self.serializer     =   serializer             
-        self.noise          =   noise
+        self.noiseGenerator =   noiseGenerator
 
         self.len            =   length-1
         self.middleIndex    =   int(middleIndex)
@@ -68,10 +68,10 @@ class ChunkBuffer:
         for i in range(self.leftIndex,  self.rightIndex + 1):
 
             retrieved           =   self.serializer[i]
-            retrieved           =   Chunk(index = i, noiseGenerator = self.noise) if(retrieved is None) else pickle.loads(retrieved)
+            retrieved           =   Chunk(index = i, noiseGenerator = self.noiseGenerator) if(retrieved is None) else pickle.loads(retrieved)
 
             self.chunks.append(retrieved)          
-            self.surfaces.append(pygame.Surface((CHUNK_WIDTH_P, CHUNK_HEIGHT_P)))            
+            self.surfaces.append(None)            
 
     def shiftLeft(self):                    
         
@@ -79,14 +79,15 @@ class ChunkBuffer:
         self.leftIndex += 1
 
         for i in range(0, self.len):
-            self.chunks[i]      =   self.chunks[i+1]    # move all chunks one space left            
+            self.chunks[i]      =   self.chunks[i+1]    # move all chunks one space left
+            self.surfaces[i]    =   self.surfaces[i+1]           
 
         self.middleIndex        +=  1
 
         self.rightIndex         +=  1
         self.chunks[self.len]   =   self.serializer[self.rightIndex] # take next left chunk from serializer and move into buffer        
 
-        self.chunks[self.len]   =   Chunk(index=self.rightIndex, noiseGenerator=self.noise) if(self.chunks[self.len] is None) else pickle.loads(self.chunks[self.len])                
+        self.chunks[self.len]   =   Chunk(index=self.rightIndex, noiseGenerator=self.noiseGenerator) if(self.chunks[self.len] is None) else pickle.loads(self.chunks[self.len])                
 
     def shiftRight(self):              
 
@@ -95,23 +96,14 @@ class ChunkBuffer:
 
         for i in range(self.len, 0, -1):
             self.chunks[i]      =   self.chunks[i-1]    # move all chunks one space right            
+            self.surfaces[i]    =   self.surfaces[i-1]
 
         self.middleIndex -= 1
 
         self.leftIndex -= 1
         self.chunks[0] = self.serializer[self.leftIndex] # take next left chunk from serializer and move into buffer        
 
-        self.chunks[0] = Chunk(index=self.leftIndex, noiseGenerator=self.noise) if(self.chunks[0] is None) else pickle.loads(self.chunks[0])                
-
-    def shiftSurfsLeft(self):
-        
-        for i in range(0, self.len):
-            self.surfaces[i] = self.surfaces[i+1]
-
-    def shiftSurfsRight(self):
-        
-        for i in range(0, self.len):
-            self.surfaces[i+1] = self.surfaces[i]
+        self.chunks[0] = Chunk(index=self.leftIndex, noiseGenerator=self.noiseGenerator) if(self.chunks[0] is None) else pickle.loads(self.chunks[0])
 
     def saveComplete(self):
         for chunk in self.chunks:
