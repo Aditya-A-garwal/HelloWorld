@@ -15,7 +15,7 @@ camera = [0, CHUNK_HEIGHT_P//2]
 prevCamera = [0, 0]
 
 # Player variables
-player = [0, CHUNK_HEIGHT_P//2]
+player = [0, 0]
 playerInc = [0,0]
 currChunk = prevChunk = deltaChunk = 0
 speed = 24 * TILE_WIDTH #number of tiles to move per second

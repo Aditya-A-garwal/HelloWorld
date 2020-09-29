@@ -52,9 +52,19 @@ class Renderer:
             coors[1]    =   (CHUNK_HEIGHT - i - 1) * TILE_WIDTH
             for j in range(0,   CHUNK_WIDTH,    1):
 
+                currTileRef =   currChunkRef[i, j]
+                currWallRef =   currChunkRef.walls[i][j]
+
                 coors[0]    =   j * TILE_WIDTH
-                if(currChunkRef[i, j] is not 0):                    
-                    cls.chunkBuffer.surfaces[index].blit(TILE_TABLE[currChunkRef[i, j]], coors)                                            
+
+                if(currTileRef > 0):
+                    cls.chunkBuffer.surfaces[index].blit(TILE_TABLE[currTileRef], coors)
+                elif(currTileRef < 0):
+                    pass
+                elif(currWallRef > 0):
+                    cls.chunkBuffer.surfaces[index].blit(TILE_TABLE[currWallRef], coors)
+                elif(currWallRef < 0):
+                    pass
 
 
     @classmethod

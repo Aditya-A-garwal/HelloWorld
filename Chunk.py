@@ -1,54 +1,21 @@
 import pickle
 from Tile import *
 
-# Constants for chunk width and chunk height (in tiles)
-CHUNK_WIDTH         =   16
-CHUNK_HEIGHT        =   512
-
-# Constants for world height, world-chunk width
-CHUNK_HEIGHT_P      =   CHUNK_HEIGHT * TILE_WIDTH
-CHUNK_WIDTH_P       =   CHUNK_WIDTH * TILE_WIDTH
-
-# Arbitrary constant for chunk generation
-WALKING_CONSTANT    =   0.0075
-
 class Chunk:
 
-    def __init__(self, index = 0, noiseGenerator = None):
+    def __init__(self, index = 0):
 
-        self.index      =   index
-        self.blocks     =   [[0 for i in range(0,   CHUNK_WIDTH)] for i in range(0, CHUNK_HEIGHT)]       
-        self.walls      =   self.blocks.copy()
+        self.index              =   index
+        self.blocks             =   [[0 for i in range(0,   CHUNK_WIDTH)] for i in range(0, CHUNK_HEIGHT)]
+        self.walls              =   [[0 for i in range(0,   CHUNK_WIDTH)] for i in range(0, CHUNK_HEIGHT)]
 
-        if(noiseGenerator is not None):
-            Chunk.populateChunk(self, noiseGenerator)
+        self.TILE_TABLE_LOCAL   = {}        
 
     def __getitem__(self, key):        
         return self.blocks[key[0]][key[1]]
 
     def __setitem__(self, key, value):
         self.blocks[key[0]][key[1]] = value
-
-    @classmethod
-    def populateChunk(cls, chunk, noiseGenerator):
-
-        absouluteIndex  =   chunk.index * CHUNK_WIDTH
-
-        for i in range(0, CHUNK_WIDTH):
-            # Loops for bedrock wastes
-            for j in range(0, 10): # Lower bedrock wastes
-                bedrockProbability = (10-j)*10                
-                frontVal    =   (noiseGenerator.noise3d(x = absouluteIndex, y = j, z = 0) + 1) * 50
-                backVal     =   (noiseGenerator.noise3d(x = absouluteIndex, y = j, z = 1) + 1) * 50
-
-                if(0 <= frontVal <= bedrockProbability) :   chunk[j, i]         =   bedrock
-                else                                    :   chunk[j, i]         =   obsidian
-
-                if(0 <= backVal <= bedrockProbability)  :   chunk.walls[j][i]   =   bedrock
-                else                                    :   chunk.walls[j][i]   =   obsidian
-
-            absouluteIndex  +=  1
-
 
 class ChunkBuffer:
 
@@ -67,8 +34,13 @@ class ChunkBuffer:
 
         for i in range(self.leftIndex,  self.rightIndex + 1):
 
-            retrieved           =   self.serializer[i]
-            retrieved           =   Chunk(index = i, noiseGenerator = self.noiseGenerator) if(retrieved is None) else pickle.loads(retrieved)
+            retrieved   =   self.serializer[i]
+
+            if(retrieved is None):                
+                retrieved   =   Chunk(index = i)
+                self.populateChunk(retrieved)
+            else:
+                pickle.loads(retrieved)
 
             self.chunks.append(retrieved)          
             self.surfaces.append(None)            
@@ -86,8 +58,12 @@ class ChunkBuffer:
 
         self.rightIndex         +=  1
         self.chunks[self.len]   =   self.serializer[self.rightIndex] # take next left chunk from serializer and move into buffer        
-
-        self.chunks[self.len]   =   Chunk(index=self.rightIndex, noiseGenerator=self.noiseGenerator) if(self.chunks[self.len] is None) else pickle.loads(self.chunks[self.len])                
+        
+        if(self.chunks[self.len] is None):
+            self.chunks[self.len] = Chunk(index=self.rightIndex)
+            self.populateChunk(self.chunks[self.len])
+        else:
+            self.chunks[self.len] = pickle.loads(self.chunks[self.len])
 
     def shiftRight(self):              
 
@@ -102,12 +78,38 @@ class ChunkBuffer:
 
         self.leftIndex -= 1
         self.chunks[0] = self.serializer[self.leftIndex] # take next left chunk from serializer and move into buffer        
-
-        self.chunks[0] = Chunk(index=self.leftIndex, noiseGenerator=self.noiseGenerator) if(self.chunks[0] is None) else pickle.loads(self.chunks[0])
+        
+        if(self.chunks[0] is None):
+            self.chunks[0] = Chunk(index=self.leftIndex)
+            self.populateChunk(self.chunks[0])
+        else:
+            self.chunks[0] = pickle.loads(self.chunks[0])
 
     def saveComplete(self):
         for chunk in self.chunks:
             self.serializer[chunk.index] = pickle.dumps(chunk)
+    
+    def populateChunk(self, chunk):
+
+        absouluteIndex  =   chunk.index * CHUNK_WIDTH
+
+        for i in range(0, CHUNK_WIDTH):
+            
+            for j in range(0, 10): # Lower bedrock wastes
+                bedrockProbability = (10-j)*10                
+                frontVal    =   (self.noiseGenerator.noise3d(x = absouluteIndex, y = j, z = -1) + 1) * 50
+                backVal     =   (self.noiseGenerator.noise3d(x = absouluteIndex, y = j, z = 1) + 1) * 50
+
+                if(0 <= frontVal <= bedrockProbability) :   chunk[j,i] = bedrock
+                else                                    :   chunk[j,i] = obsidian
+
+                if(0 <= backVal <= bedrockProbability)  :   chunk.walls[j][i] = bedrock
+                else                                    :   chunk.walls[j][i] = obsidian
+
+            for j in range(10, 25): # Upper bedrock wastes
+                pass
+
+            absouluteIndex  +=  1
 
     def __getitem__(self, key):
         return self.chunks[key]
