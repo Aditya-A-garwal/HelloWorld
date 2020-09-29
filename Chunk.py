@@ -40,7 +40,7 @@ class ChunkBuffer:
                 retrieved   =   Chunk(index = i)
                 self.populateChunk(retrieved)
             else:
-                pickle.loads(retrieved)
+                retrieved = pickle.loads(retrieved)
 
             self.chunks.append(retrieved)          
             self.surfaces.append(None)            
