@@ -11,14 +11,14 @@ displaySize = [400, 300]  #[pygame.display.Info().current_w//2, pygame.display.I
 prevFramerate = framerate = 0
 
 # Camera variables
-camera = [0, CHUNK_HEIGHT_P//2]
+camera = pygame.math.Vector2([0, CHUNK_HEIGHT_P//2])
 prevCamera = [0, 0]
 
 # Player variables
-player = [0, 0]
+player = pygame.math.Vector2([0, 0])
 playerInc = [0,0]
 currChunk = prevChunk = deltaChunk = 0
-speed = 24 * TILE_WIDTH #number of tiles to move per second
+speed = 20 * TILE_WIDTH #number of tiles to move per second
 
 #Create noise object
 gen = OpenSimplex()
@@ -67,14 +67,15 @@ while running:
             Renderer.render()
 
     # camera movement handling
-    camera[0] += (player[0]-camera[0]) * 0.05
-    camera[1] += (player[1]-camera[1]) * 0.05
+    # camera[0] += (player[0]-camera[0]) * 0.05
+    # camera[1] += (player[1]-camera[1]) * 0.05
+    camera[0], camera[1] = camera.lerp(player, 0.05)
 
     if(int(prevCamera[0]) != int(camera[0]) or int(prevCamera[1]) != int(camera[1])):
         Renderer.updateCam()
         Renderer.render()
 
-    prevCamera = camera.copy()
+    prevCamera[0], prevCamera[1] = camera
     currChunk = math.floor(camera[0]/CHUNK_WIDTH_P)
 
     # Updating screen

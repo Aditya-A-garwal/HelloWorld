@@ -71,7 +71,7 @@ TILE_TABLE = {
 
     bedrock     :   pygame.image.load("Resources/Default/bedrock2.png"),
     obsidian    :   pygame.image.load("Resources/Default/obsidian.png"),
-    hellstone   :   pygame.image.load("Resources/Default/hellstone2.png"),
+    hellstone   :   pygame.image.load("Resources/Default/hellstone.png"),
 
     greystone   :   pygame.image.load("Resources/Default/greystone.png")
 
