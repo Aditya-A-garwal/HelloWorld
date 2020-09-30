@@ -25,12 +25,12 @@ class Serializer:
         c = self.conn.cursor()
         try:
             # Save string at new key location
-            c.execute('''INSERT INTO terrain VALUES (?,?)''', (key, zlib.compress(chunkObj)))
+            c.execute('''INSERT INTO terrain VALUES (?,?)''', (key, zlib.compress(chunkObj, level = 9)))
             self.conn.commit()
 
         except:
             # Update string at existing key
-            c.execute('UPDATE terrain SET binry =?  WHERE keys=?', (zlib.compress(chunkObj), key))
+            c.execute('UPDATE terrain SET binry =?  WHERE keys=?', (zlib.compress(chunkObj, level = 9), key))
             self.conn.commit()
 
     # Load magic method
