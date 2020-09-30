@@ -63,10 +63,10 @@ TILE_NAMES = {
 
 TILE_TABLE = {
 
-    bedrock:   pygame.image.load("Resources/Default/bedrock.png"),
-    obsidian:   pygame.image.load("Resources/Mock/obsidian.png"),
-    hellstone:   pygame.image.load("Resources/Mock/hellstone.png"),
+    bedrock:   pygame.image.load("Resources/Default/bedrock2.png"),
+    obsidian:   pygame.image.load("Resources/Default/obsidian.png"),
+    hellstone:   pygame.image.load("Resources/Default/hellstone.png"),
 
-    greystone: pygame.image.load("Resources/Default/ironblock.png")
+    greystone: pygame.image.load("Resources/Default/greystone.png")
 
 }
