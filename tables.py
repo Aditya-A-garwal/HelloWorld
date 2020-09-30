@@ -26,6 +26,12 @@ limestone       =   12
 greystone       =   13
 sandstone       =   14
 
+gravel          =   15
+coke            =   16
+
+clay            =   17
+redClay         =   18
+
 # Tile table with names
 TILE_NAMES = {
     # air
@@ -52,12 +58,12 @@ TILE_NAMES = {
     "sandstone"     : sandstone,
 
     # transition blocks
-    "gravel"        : 15,
-    "coke"          : 16,
+    "gravel"        : gravel,
+    "coke"          : coke,
 
     # clays
-    "clay"          : 17,
-    "red clay"      : 18
+    "clay"          : clay,
+    "red clay"      : redClay
 
 }
 
@@ -65,7 +71,7 @@ TILE_TABLE = {
 
     bedrock:   pygame.image.load("Resources/Default/bedrock2.png"),
     obsidian:   pygame.image.load("Resources/Default/obsidian.png"),
-    hellstone:   pygame.image.load("Resources/Default/hellstone.png"),
+    hellstone:   pygame.image.load("Resources/Default/hellstone2.png"),
 
     greystone: pygame.image.load("Resources/Default/greystone.png")
 
