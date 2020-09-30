@@ -46,6 +46,7 @@ class Renderer:
         currChunkRef                    =   cls.chunkBuffer[index]
         coors                           =   [0, 0]
 
+        # ! NEEDS TO BE CHECKED (UPDATES THE COMPLETE CHUNK INSTEAD OF PORTION)
         cls.chunkBuffer.surfaces[index].fill((30, 150, 240))
 
         for i in range(rect[1],   rect[3],   1):

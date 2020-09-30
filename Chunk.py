@@ -96,18 +96,34 @@ class ChunkBuffer:
         for i in range(0, CHUNK_WIDTH):
 
             for j in range(0, 10): # Lower bedrock wastes
-                bedrockProbability = (10-j)*10
-                frontVal    =   (self.noiseGenerator.noise3d(x = absouluteIndex, y = j, z = -1) + 1) * 50
-                backVal     =   (self.noiseGenerator.noise3d(x = absouluteIndex, y = j, z = 1) + 1) * 50
 
-                if(0 <= frontVal <= bedrockProbability) :   chunk[j,i] = bedrock
-                else                                    :   chunk[j,i] = obsidian
+                bedrockProb =   j
+                frontVal    =   (self.noiseGenerator.noise3d(x = absouluteIndex * BEDROCK_LOWER_X, y = j * BEDROCK_LOWER_Y, z = -1) + 1) * 5
+                backVal     =   (self.noiseGenerator.noise3d(x = absouluteIndex * BEDROCK_LOWER_X, y = j * BEDROCK_LOWER_Y, z = 1) + 1) * 5
 
-                if(0 <= backVal <= bedrockProbability)  :   chunk.walls[j][i] = bedrock
-                else                                    :   chunk.walls[j][i] = obsidian
+                if(0 <= frontVal <= j):   chunk[j,i] = obsidian
+                else                  :   chunk[j,i] = bedrock
+
+                if(0 <= backVal <= j) :   chunk.walls[j][i] = obsidian
+                else                  :   chunk.walls[j][i] = bedrock
 
             for j in range(10, 25): # Upper bedrock wastes
-                pass
+
+                #hellstoneProb
+                frontVal   =   (self.noiseGenerator.noise3d(x = absouluteIndex * BEDROCK_UPPER_X, y = j * BEDROCK_UPPER_Y, z = -1) + 1) * 5
+                backVal    =   (self.noiseGenerator.noise3d(x = absouluteIndex * BEDROCK_UPPER_X, y = j * BEDROCK_UPPER_Y, z = 1) + 1) * 5
+
+                if(0 <= frontVal <= j-10):   chunk[j,i] = greystone
+                else                     :   chunk[j,i] = obsidian
+
+                if(0 <= backVal <= j-10):   chunk.walls[j][i] = greystone
+                else                    :   chunk.walls[j][i] = obsidian
+
+                # if(frontVal > 9):
+                #     chunk[j, i] = hellstone
+
+                # if(backVal > 9):
+                #     chunk.walls[j][i] = hellstone
 
             absouluteIndex  +=  1
 

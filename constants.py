@@ -11,5 +11,9 @@ CHUNK_HEIGHT        =   512
 CHUNK_HEIGHT_P      =   CHUNK_HEIGHT * TILE_WIDTH
 CHUNK_WIDTH_P       =   CHUNK_WIDTH * TILE_WIDTH
 
-# Arbitrary constant for chunk generation
-WALKING_CONSTANT    =   0.0075
+# Constants for chunk generation
+BEDROCK_LOWER_X     =   0.1
+BEDROCK_LOWER_Y     =   0.2
+
+BEDROCK_UPPER_X     =   0.1
+BEDROCK_UPPER_Y     =   0.2

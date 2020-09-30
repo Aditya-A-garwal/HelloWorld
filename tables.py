@@ -1,29 +1,55 @@
 import pygame
 
+# List of attributes (constants)
+ID              =   0
+HEALTH          =   1
+LUMINOSITY      =   2
+
+# Tile names along with their IDs
+
+air             =   0
+
+bedrock         =   1
+obsidian        =   2
+hellstone       =   3
+
+unobtanium      =   4
+diamondOre      =   5
+platinumOre     =   6
+goldOre         =   7
+ironOre         =   8
+copperOre       =   9
+
+granite         =   10
+quartz          =   11
+limestone       =   12
+greystone       =   13
+sandstone       =   14
+
 # Tile table with names
 TILE_NAMES = {
     # air
-    "air"           : 0,
+    "air"           : air,
 
     # bedrock wastes blocks
-    "bedrock"       : 1,
-    "obsidian"      : 2,
-    "hellstone"     : 3,
+    "bedrock"       : bedrock,
+    "obsidian"      : obsidian,
+    "hellstone"     : hellstone,
 
     # ores
-    "unobtanium"    : 4,
-    "diamond ore"   : 5,
-    "platinum ore"  : 6,
-    "gold ore"      : 7,
-    "iron ore"      : 8,
-    "copper ore"    : 9,
+    "unobtanium"    : unobtanium,
+    "diamond ore"   : diamondOre,
+    "platinum ore"  : platinumOre,
+    "gold ore"      : goldOre,
+    "iron ore"      : ironOre,
+    "copper ore"    : copperOre,
 
     # stones
-    "granite"       : 10,
-    "quartz"        : 11,
-    "limestone"     : 12,
-    "stone"         : 13,
-    "sandstone"     : 14,
+    "granite"       : granite,
+    "quartz"        : quartz,
+    "limestone"     : limestone,
+    "stone"         : greystone,
+    "sandstone"     : sandstone,
 
     # transition blocks
     "gravel"        : 15,
@@ -37,7 +63,10 @@ TILE_NAMES = {
 
 TILE_TABLE = {
 
-    1:   pygame.image.load("Resources/Default/bedrock.png"),
-    2:   pygame.image.load("Resources/Mock/obsidian.png"),
-    3:   pygame.image.load("Resources/Mock/hellstone.png")
+    bedrock:   pygame.image.load("Resources/Default/bedrock.png"),
+    obsidian:   pygame.image.load("Resources/Mock/obsidian.png"),
+    hellstone:   pygame.image.load("Resources/Mock/hellstone.png"),
+
+    greystone: pygame.image.load("Resources/Default/ironblock.png")
+
 }
