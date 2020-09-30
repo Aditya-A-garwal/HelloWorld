@@ -34,7 +34,7 @@ class ChunkBuffer:
 
         for i in range(self.leftIndex,  self.rightIndex + 1):
 
-            retrieved   =   self.serializer[i]
+            retrieved           =   self.serializer[i]
 
             if(retrieved is None):
                 retrieved   =   Chunk(index = i)

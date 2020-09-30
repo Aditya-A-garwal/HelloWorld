@@ -1,7 +1,7 @@
 import pygame
 
 # Width of an individual tile unit (in points)
-TILE_WIDTH      =   24
+TILE_WIDTH          =   24
 
 # Width, height of chunk (in tiles)
 CHUNK_WIDTH         =   16

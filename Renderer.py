@@ -46,26 +46,25 @@ class Renderer:
         currChunkRef                    =   cls.chunkBuffer[index]
         coors                           =   [0, 0]
 
-        # ! NEEDS TO BE CHECKED (UPDATES THE COMPLETE CHUNK INSTEAD OF PORTION)
-        cls.chunkBuffer.surfaces[index].fill((30, 150, 240))
+        cls.chunkBuffer.surfaces[index].fill((30, 150, 240), [i * TILE_WIDTH for i in rect])
 
-        for i in range(rect[1],   rect[3],   1):
+        for i in range( rect[1], rect[3], 1 ):
 
-            coors[1]    =   (CHUNK_HEIGHT - i - 1) * TILE_WIDTH
-            for j in range(rect[0],   rect[2],    1):
+            coors[1]    =   ( CHUNK_HEIGHT - i - 1 ) * TILE_WIDTH
+            for j in range( rect[0], rect[2], 1 ):
 
-                currTileRef =   currChunkRef[i, j]
+                currTileRef =   currChunkRef[i,j]
                 currWallRef =   currChunkRef.walls[i][j]
 
                 coors[0]    =   j * TILE_WIDTH
 
-                if(currTileRef > 0):
-                    cls.chunkBuffer.surfaces[index].blit(TILE_TABLE[currTileRef], coors)
-                elif(currTileRef < 0):
+                if( currTileRef > 0 ):
+                    cls.chunkBuffer.surfaces[index].blit( TILE_TABLE[currTileRef], coors )
+                elif( currTileRef < 0 ):
                     pass
-                elif(currWallRef > 0):
-                    cls.chunkBuffer.surfaces[index].blit(TILE_TABLE[currWallRef], coors)
-                elif(currWallRef < 0):
+                elif( currWallRef > 0 ):
+                    cls.chunkBuffer.surfaces[index].blit( TILE_TABLE[currWallRef], coors )
+                elif( currWallRef < 0 ):
                     pass
 
 
@@ -75,45 +74,45 @@ class Renderer:
         rightWalker     =   cls.midChunk
         leftWalker      =   cls.midChunk - 1
 
-        while(rightWalker < cls.length):
+        while( rightWalker < cls.length ):
 
-            tileWalker = 0
-            while(tileWalker < CHUNK_WIDTH):
+            tileWalker      =   0
+            while( tileWalker < CHUNK_WIDTH ):
 
-                sliceInd    =   (cls.chunkBuffer[rightWalker].index * CHUNK_WIDTH) + tileWalker
-                slicePos    =   [sliceInd * TILE_WIDTH - cls.camera[0] + cls.numHorz, 0]
+                sliceInd        =   ( cls.chunkBuffer[rightWalker].index * CHUNK_WIDTH ) + tileWalker
+                slicePos        =   [sliceInd * TILE_WIDTH - cls.camera[0] + cls.numHorz, 0]
 
-                sliceRect   =   [tileWalker * TILE_WIDTH, cls.upIndex, TILE_WIDTH, cls.downIndex]
-                sliceSurf   =   cls.chunkBuffer.surfaces[rightWalker].subsurface(sliceRect)
+                sliceRect       =   [tileWalker * TILE_WIDTH, cls.upIndex, TILE_WIDTH, cls.downIndex]
+                sliceSurf       =   cls.chunkBuffer.surfaces[rightWalker].subsurface( sliceRect )
 
-                if(slicePos[0] > cls.displaySize[0]):
-                    rightWalker = cls.length
+                if( slicePos[0] > cls.displaySize[0] ):
+                    rightWalker     =   cls.length
                     break
 
-                cls.screen.blit(sliceSurf, slicePos)
-                tileWalker += 1
+                cls.screen.blit( sliceSurf, slicePos )
+                tileWalker      += 1
 
-            rightWalker += 1
+            rightWalker     += 1
 
-        while(leftWalker >= 0):
+        while( leftWalker >= 0 ):
 
-            tileWalker = CHUNK_WIDTH - 1
+            tileWalker      =   CHUNK_WIDTH - 1
             while(tileWalker >= 0):
 
-                sliceInd    =   (cls.chunkBuffer[leftWalker].index * CHUNK_WIDTH) + tileWalker
-                slicePos    =   [sliceInd * TILE_WIDTH - cls.camera[0] + cls.numHorz, 0]
+                sliceInd        =   (cls.chunkBuffer[leftWalker].index * CHUNK_WIDTH) + tileWalker
+                slicePos        =   [sliceInd * TILE_WIDTH - cls.camera[0] + cls.numHorz, 0]
 
-                sliceRect   =   [tileWalker * TILE_WIDTH, cls.upIndex, TILE_WIDTH, cls.downIndex]
-                sliceSurf   =   cls.chunkBuffer.surfaces[leftWalker].subsurface(sliceRect)
+                sliceRect       =   [tileWalker * TILE_WIDTH, cls.upIndex, TILE_WIDTH, cls.downIndex]
+                sliceSurf       =   cls.chunkBuffer.surfaces[leftWalker].subsurface(sliceRect)
 
-                if(slicePos[0] < -TILE_WIDTH):
-                    leftWalker = -1
+                if( slicePos[0] < -TILE_WIDTH ):
+                    leftWalker      =   -1
                     break
 
                 cls.screen.blit(sliceSurf, slicePos)
-                tileWalker -= 1
+                tileWalker      -= 1
 
-            leftWalker -= 1
+            leftWalker      -= 1
 
         # Temporary player crosshair rendering
         playerCoors = cls.player.copy()
