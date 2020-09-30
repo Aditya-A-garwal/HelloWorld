@@ -25,9 +25,9 @@ class ChunkBuffer:
         self.noiseGenerator =   noiseGenerator
 
         self.len            =   length-1
-        self.middleIndex    =   int(middleIndex)
-        self.leftIndex      =   int(self.middleIndex - self.len * 0.5)
-        self.rightIndex     =   int(self.middleIndex + self.len * 0.5)
+        self.middleIndex    =   middleIndex
+        self.leftIndex      =   self.middleIndex - self.len // 2
+        self.rightIndex     =   self.middleIndex + self.len // 2
 
         self.chunks         =   []
         self.surfaces       =   []

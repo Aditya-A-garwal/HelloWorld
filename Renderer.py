@@ -27,7 +27,7 @@ class Renderer:
 
         # Index of the middle chunk in the chunk buffer
         cls.length          =   len(cls.chunkBuffer)
-        cls.midChunk        =   int((cls.length - 1) * 0.5)
+        cls.midChunk        =   (cls.length - 1) // 2
 
         # Update constants to reflect new References
         cls.updateRefs()
@@ -132,8 +132,8 @@ class Renderer:
     def updateSize(cls):
 
         # Number of pixels to be rendered on the top and side halves of the camera
-        cls.numHorz         =   cls.displaySize[0] * 0.5
-        cls.numVert         =   cls.displaySize[1] * 0.5
+        cls.numHorz         =   cls.displaySize[0] // 2
+        cls.numVert         =   cls.displaySize[1] // 2
 
     @classmethod
     def updateCam(cls):
@@ -177,8 +177,8 @@ class Renderer:
     @classmethod
     def cameraToScreen(cls, coor):
         # From camera-space to screen-space
-        coor[0] += cls.displaySize[0] * 0.5
-        coor[1] = cls.displaySize[1] * 0.5 - coor[1]
+        coor[0] += cls.displaySize[0] // 2
+        coor[1] = cls.displaySize[1] // 2 - coor[1]
 
     @classmethod
     def chunkToScreen(cls, coor, chunkInd):
