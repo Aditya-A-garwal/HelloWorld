@@ -3,11 +3,16 @@ from Tile import *
 
 class Chunk:
 
-    def __init__(self, index = 0, blocks = [[0 for i in range(0,   CHUNK_WIDTH)] for i in range(0, CHUNK_HEIGHT)], walls = [[0 for i in range(0,   CHUNK_WIDTH)] for i in range(0, CHUNK_HEIGHT)], loc = {}):
+    def __init__(self, index = 0, blocks = None, walls = None, loc = {}):
 
         self.index              =   index
-        self.blocks             =   blocks
-        self.walls              =   walls
+
+        if(blocks is None):
+            self.blocks             =   [[0 for i in range(0,   CHUNK_WIDTH)] for i in range(0, CHUNK_HEIGHT)]
+            self.walls              =   [[0 for i in range(0,   CHUNK_WIDTH)] for i in range(0, CHUNK_HEIGHT)]
+        else:
+            self.blocks             =   blocks
+            self.walls              =   walls
 
         self.TILE_TABLE_LOCAL   = loc
 
