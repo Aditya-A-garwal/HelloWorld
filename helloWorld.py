@@ -24,7 +24,7 @@ speed = 20 * TILE_WIDTH #number of tiles to move per second
 gen = OpenSimplex()
 
 # Create a database object
-serializer = Serializer("world1")
+serializer = Serializer("world2")
 
 # Initialize pygame and start clock
 pygame.init()
