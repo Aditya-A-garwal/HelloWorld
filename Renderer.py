@@ -18,18 +18,18 @@ class Renderer:
     @classmethod
     def initialize(cls, chunkBuffer, camera, player, displaySize, screen):
 
-        # Create references to global objects
+        ## Create references to global objects
         cls.chunkBuffer     =   chunkBuffer
         cls.player          =   player
         cls.camera          =   camera
         cls.displaySize     =   displaySize
         cls.screen          =   screen
 
-        # Index of the middle chunk in the chunk buffer
+        ## Index of the middle chunk in the chunk buffer
         cls.length          =   len(cls.chunkBuffer)
         cls.midChunk        =   (cls.length - 1) // 2
 
-        # Update constants to reflect new References
+        ## Update constants to reflect new References
         cls.updateRefs()
         cls.renderChunks()
 
@@ -53,7 +53,7 @@ class Renderer:
             coors[1]    =   ( CHUNK_HEIGHT - i - 1 ) * TILE_WIDTH
             for j in range( rect[0], rect[2], 1 ):
 
-                currTileRef =   currChunkRef[i,j]
+                currTileRef =   currChunkRef[i][j]
                 currWallRef =   currChunkRef.walls[i][j]
 
                 coors[0]    =   j * TILE_WIDTH
@@ -114,14 +114,14 @@ class Renderer:
 
             leftWalker      -= 1
 
-        # Temporary player crosshair rendering
+        ## Temporary player crosshair rendering
         playerCoors = [cls.player[0], cls.player[1]]
 
-        # Translate to be in camera space
+        ## Translate to be in camera space
         playerCoors[0] -= cls.camera[0]
         playerCoors[1] -= cls.camera[1]
 
-        # Translate to be in screen space
+        ## Translate to be in screen space
         playerCoors[0] += cls.numHorz
         playerCoors[1] = cls.numVert - playerCoors[1]
 
@@ -130,15 +130,15 @@ class Renderer:
     @classmethod
     def updateSize(cls):
 
-        # Number of pixels to be rendered on the top and side halves of the camera
+        ## Number of pixels to be rendered on the top and side halves of the camera
         cls.numHorz         =   cls.displaySize[0] // 2
         cls.numVert         =   cls.displaySize[1] // 2
 
     @classmethod
     def updateCam(cls):
 
-        # Indexes of the top and bottom-most pixels of the chunk to be rendered
-        # W.R.T to the origin of the chunk-surface
+        ## Indexes of the top and bottom-most pixels of the chunk to be rendered
+        ## W.R.T to the origin of the chunk-surface
 
         cls.upIndex         =   CHUNK_HEIGHT_P - (cls.camera[1] + cls.numVert)
         if(cls.upIndex < 0):
@@ -154,7 +154,7 @@ class Renderer:
         cls.updateSize()
         cls.updateCam()
 
-# REDUNDANT METHODS
+# ! REDUNDANT METHODS
     @classmethod
     def arrayToChunk(cls, coor):
         # From array-space to chunk-space

@@ -17,7 +17,7 @@ class Chunk:
         self.TILE_TABLE_LOCAL   = loc
 
     def __getitem__(self, key):
-        return self.blocks[key[0]][key[1]]
+        return self.blocks[key]
 
     def __setitem__(self, key, value):
         self.blocks[key[0]][key[1]] = value
@@ -112,8 +112,8 @@ class ChunkBuffer:
                 frontVal    =   (self.noiseGenerator.noise3d(x = absouluteIndex * BEDROCK_LOWER_X, y = j * BEDROCK_LOWER_Y, z = -1) + 1) * 5
                 backVal     =   (self.noiseGenerator.noise3d(x = absouluteIndex * BEDROCK_LOWER_X, y = j * BEDROCK_LOWER_Y, z = 1) + 1) * 5
 
-                if(0 <= frontVal < obsidianProb):   chunk[j,i] = obsidian
-                else                  :   chunk[j,i] = bedrock
+                if(0 <= frontVal < obsidianProb):   chunk[j][i] = obsidian
+                else                  :   chunk[j][i] = bedrock
 
                 if(0 <= backVal < obsidianProb) :   chunk.walls[j][i] = obsidian
                 else                  :   chunk.walls[j][i] = bedrock
@@ -126,11 +126,11 @@ class ChunkBuffer:
                 backVal         =   (self.noiseGenerator.noise3d(x = absouluteIndex * BEDROCK_UPPER_X, y = j * BEDROCK_UPPER_Y, z = 1) + 1) * 5
 
                 if(0 <= frontVal < obsidianProb):
-                    chunk[j,i] = obsidian
+                    chunk[j][i] = obsidian
                 elif(obsidianProb <= frontVal < hellStoneProb):
-                    chunk[j,i] = hellstone
+                    chunk[j][i] = hellstone
                 else:
-                    chunk[j,i] = greystone
+                    chunk[j][i] = greystone
 
                 if(0 <= backVal < obsidianProb):
                     chunk.walls[j][i] = obsidian
