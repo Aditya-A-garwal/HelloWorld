@@ -50,8 +50,9 @@ class Serializer:
         try:
             li = zlib.decompress(li[0])
             lo = zlib.decompress(lo[0])
-            return tuple(li, lo)
-        except: return None
+            return (li, lo)
+        except:
+            return None
 
     def savePlayer(self, name, pickled):
 
@@ -82,8 +83,10 @@ class Serializer:
         res = c.fetchone()
         self.conn.commit()
 
-        try: return zlib.decompress(res[0])
-        except: return res
+        try:
+            return zlib.decompress(res[0])
+        except:
+            return res
 
     # Close the connection
     def stop(self):

@@ -37,19 +37,20 @@ class ChunkBuffer:
             retrieved           =   self.serializer[i]
 
             if(retrieved is None):
-                retrieved   =   Chunk(index = i)
+                retrieved   =   Chunk(i)
                 self.populateChunk(retrieved)
             else:
-                retrieved = pickle.loads(retrieved[0])
-                temp = pickle.loads(retrieved[1])
-                retrieved = Chunk(i, retrieved[0], retrieved[1], temp)
+                li = pickle.loads(retrieved[0])
+                lo = pickle.loads(retrieved[1])
+                retrieved = Chunk(i, li[0], li[1], lo)
 
             self.chunks.append(retrieved)
             self.surfaces.append(None)
 
     def shiftLeft(self):
 
-        self.serializer[self.leftIndex]   =   pickle.dumps([self.chunks[0].blocks, self.chunks[1].walls]), pickle.dumps(self.chunks[0].TILE_TABLE_LOCAL) # move leftmost chunk into serializer
+        li, lo = [self.chunks[0].blocks, self.chunks[0].walls], self.chunks[0].TILE_TABLE_LOCAL
+        self.serializer[self.leftIndex]   =   pickle.dumps(li), pickle.dumps(lo) # move leftmost chunk into serializer
         self.leftIndex += 1
 
         for i in range(0, self.len):
@@ -62,16 +63,16 @@ class ChunkBuffer:
         self.chunks[self.len]   =   self.serializer[self.rightIndex] # take next left chunk from serializer and move into buffer
 
         if(self.chunks[self.len] is None):
-            self.chunks[self.len] = Chunk(index=self.rightIndex)
+            self.chunks[self.len] = Chunk(self.rightIndex)
             self.populateChunk(self.chunks[self.len])
         else:
-            self.chunks[self.len] = pickle.loads(self.chunks[self.len][0])
-            temp = pickle.loads(self.chunks[self.len][1])
-            self.chunks[self.len] = Chunk(self.rightIndex, self.chunks[self.len][0], self.chunks[self.len][1], temp)
+            li, lo = pickle.loads(self.chunks[self.len][0]), pickle.loads(self.chunks[self.len][1])
+            self.chunks[self.len] = Chunk(self.rightIndex, li[0], li[1], lo)
 
     def shiftRight(self):
 
-        self.serializer[self.rightIndex] = pickle.dumps([self.chunks[self.len].blocks, self.chunks[self.len].walls]), pickle.dumps(self.chunks[self.len].TILE_TABLE_LOCAL) # move rightmost chunk into serializer
+        li, lo = [self.chunks[self.len].blocks, self.chunks[self.len].walls], self.chunks[self.len].TILE_TABLE_LOCAL
+        self.serializer[self.rightIndex] = pickle.dumps(li), pickle.dumps(lo) # move rightmost chunk into serializer
         self.rightIndex -= 1
 
         for i in range(self.len, 0, -1):
@@ -84,12 +85,11 @@ class ChunkBuffer:
         self.chunks[0] = self.serializer[self.leftIndex] # take next left chunk from serializer and move into buffer
 
         if(self.chunks[0] is None):
-            self.chunks[0] = Chunk(index=self.leftIndex)
+            self.chunks[0] = Chunk(self.leftIndex)
             self.populateChunk(self.chunks[0])
         else:
-            self.chunks[0] = pickle.loads(self.chunks[0][0])
-            temp = pickle.loads(self.chunks[0][1])
-            self.chunks[0] = Chunk(self.leftIndex, self.chunks[0][0], self.chunks[0][1], temp)
+            li, lo = pickle.loads(self.chunks[0][0]), pickle.loads(self.chunks[0][1])
+            self.chunks[0] = Chunk(self.leftIndex, li[0], li[1], lo)
 
     def saveComplete(self):
         for chunk in self.chunks:

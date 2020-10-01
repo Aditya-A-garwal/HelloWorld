@@ -24,14 +24,14 @@ speed = 20 * TILE_WIDTH #number of tiles to move per second
 gen = OpenSimplex()
 
 # Create a database object
-serializer = Serializer("world3")
+serializer = Serializer("world1")
 
 # Initialize pygame and start clock
 pygame.init()
 clock = pygame.time.Clock()
 
 # Create chunk buffer and chunk-position buffer
-bufferSize = int(pygame.display.Info().current_w/CHUNK_WIDTH_P)+2
+bufferSize = int(pygame.display.Info().current_w/CHUNK_WIDTH_P)+4
 if(bufferSize % 2 == 0): bufferSize += 1
 chunkBuffer = ChunkBuffer(bufferSize, 0, serializer, gen)
 del bufferSize
