@@ -73,6 +73,23 @@ TILE_TABLE = {
     obsidian    :   pygame.image.load("Resources/Default/obsidian.png"),
     hellstone   :   pygame.image.load("Resources/Default/hellstone.png"),
 
-    greystone   :   pygame.image.load("Resources/Default/greystone.png")
+    #unobtanium  :   pygame.image.load("Resources/Default/unobtainium.png"),
+    diamondOre  :   pygame.image.load("Resources/Default/diamondOre.png"),
+    #platinumOre :   pygame.image.load("Resources/Default/platinumOre.png"),
+    goldOre     :   pygame.image.load("Resources/Default/goldOre.png"),
+    ironOre     :   pygame.image.load("Resources/Default/ironOre.png"),
+    copperOre   :   pygame.image.load("Resources/Default/copperOre.png"),
+
+    granite     :   pygame.image.load("Resources/Default/granite.png"),
+    quartz      :   pygame.image.load("Resources/Default/quartz.png"),
+    limestone   :   pygame.image.load("Resources/Default/limestone.png"),
+    greystone   :   pygame.image.load("Resources/Default/greystone.png"),
+    #sandstone   :   pygame.image.load("Resources/Default/sandstone.png"),
+
+    #gravel      :   pygame.image.load("Resources/Default/gravel.png"),
+    #coke        :   pygame.image.load("Resources/Default/coke.png"),
+
+    clay        :   pygame.image.load("Resources/Default/clay.png"),
+    redClay     :   pygame.image.load("Resources/Default/redClay.png")
 
 }

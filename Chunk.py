@@ -40,8 +40,9 @@ class ChunkBuffer:
                 retrieved   =   Chunk(index = i)
                 self.populateChunk(retrieved)
             else:
-                #retrieved = pickle.loads(retrieved)
-                retrieved = Chunk(i, pickle.loads(retrieved[0]), pickle.loads(retrieved[1]), pickle.loads(retrieved[2]))
+                retrieved = pickle.loads(retrieved)
+                temp = pickle.loads(retrieved[0])
+                retrieved = Chunk(i, temp[0], temp[1], pickle.loads(retrieved[1]))
 
             self.chunks.append(retrieved)
             self.surfaces.append(None)
@@ -64,7 +65,8 @@ class ChunkBuffer:
             self.chunks[self.len] = Chunk(index=self.rightIndex)
             self.populateChunk(self.chunks[self.len])
         else:
-            self.chunks[self.len] = Chunk(self.rightIndex, pickle.loads(self.chunks[self.len][0]), pickle.loads(self.chunks[self.len][1]), pickle.loads(self.chunks[self.len][2]))
+            temp = pickle.loads(self.chunks[self.len][0])
+            self.chunks[self.len] = Chunk(self.rightIndex, temp[0], temp[1], pickle.loads(self.chunks[self.len][1]))
 
     def shiftRight(self):
 
@@ -84,11 +86,12 @@ class ChunkBuffer:
             self.chunks[0] = Chunk(index=self.leftIndex)
             self.populateChunk(self.chunks[0])
         else:
-            self.chunks[0] = Chunk(self.leftIndex, pickle.loads(self.chunks[0][0]), pickle.loads(self.chunks[0][1]), pickle.loads(self.chunks[0][2]))
+            temp = pickle.loads(self.chunks[0][0])
+            self.chunks[0] = Chunk(self.leftIndex, temp[0], temp[1], pickle.loads(self.chunks[0][1]))
 
     def saveComplete(self):
         for chunk in self.chunks:
-            self.serializer[chunk.index] = pickle.dumps(chunk.blocks), pickle.dumps(chunk.walls), pickle.dumps(chunk.TILE_TABLE_LOCAL)
+            self.serializer[chunk.index] = pickle.dumps([chunk.blocks, chunks.walls]), pickle.dumps(chunk.TILE_TABLE_LOCAL)
 
     def populateChunk(self, chunk):
 
