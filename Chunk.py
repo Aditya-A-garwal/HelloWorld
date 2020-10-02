@@ -1,6 +1,8 @@
 import pickle
 from Tile import *
 
+from random import randint
+
 class Chunk:
 
     def __init__(  self, index = 0, blocks = None, walls = None, localTable = {}  ):
@@ -16,6 +18,9 @@ class Chunk:
 
         self.index            =  index
         self.TILE_TABLE_LOCAL =  localTable
+        for i in range(0, CHUNK_HEIGHT):
+            for j in range(0, CHUNK_WIDTH):
+                self.TILE_TABLE_LOCAL.setdefault( (i,j), [randint(-256, i) for i in range(0, 256)] )
 
         if(blocks is None):
             self.blocks         =  [[0 for i in range(0,   CHUNK_WIDTH)] for i in range(0, CHUNK_HEIGHT)]
@@ -25,10 +30,24 @@ class Chunk:
             self.walls          =  walls
 
     def __getitem__(  self, key  ):
+        """[summary]
+
+        Args:
+            key ([type]): [description]
+
+        Returns:
+            [type]: [description]
+        """
         return self.blocks[key]
 
     def __setitem__(  self, key, value  ):
-        self.blocks[key[0]][key[1]] = value
+        """[summary]
+
+        Args:
+            key ([type]): [description]
+            value ([type]): [description]
+        """
+        self.blocks[key] = value
 
 class ChunkBuffer:
 
@@ -122,11 +141,17 @@ class ChunkBuffer:
             self.chunks[0]  =  Chunk( self.leftIndex, li[0], li[1], lo )
 
     def saveComplete(self):
+        """[summary]
+        """
         for chunk in self.chunks:
             self.serializer[chunk.index] = pickle.dumps( [chunk.blocks, chunk.walls] ), pickle.dumps( chunk.TILE_TABLE_LOCAL )
 
     def populateChunk(self, chunk):
+        """[summary]
 
+        Args:
+            chunk ([type]): [description]
+        """
         absouluteIndex  =   chunk.index * CHUNK_WIDTH
 
         for i in range(0, CHUNK_WIDTH):
@@ -167,10 +192,29 @@ class ChunkBuffer:
             absouluteIndex  +=  1
 
     def __getitem__( self, key ):
+        """[summary]
+
+        Args:
+            key ([type]): [description]
+
+        Returns:
+            [type]: [description]
+        """
         return self.chunks[key]
 
     def __setitem__( self, key, value ):
+        """[summary]
+
+        Args:
+            key ([type]): [description]
+            value ([type]): [description]
+        """
         self.chunks[key] = value
 
     def __len__( self ):
+        """[summary]
+
+        Returns:
+            [type]: [description]
+        """
         return len( self.chunks )
