@@ -18,9 +18,9 @@ class Chunk:
 
         self.index            =  index
         self.TILE_TABLE_LOCAL =  localTable
-        for i in range(0, CHUNK_HEIGHT):
-            for j in range(0, CHUNK_WIDTH):
-                self.TILE_TABLE_LOCAL.setdefault( (i,j), [randint(-256, i) for i in range(0, 256)] )
+        # for i in range(0, CHUNK_HEIGHT):
+        #     for j in range(0, CHUNK_WIDTH):
+        #         self.TILE_TABLE_LOCAL.setdefault( (i,j), [randint(-256, i) for i in range(0, 256)] )
 
         if(blocks is None):
             self.blocks         =  [[0 for i in range(0,   CHUNK_WIDTH)] for i in range(0, CHUNK_HEIGHT)]
