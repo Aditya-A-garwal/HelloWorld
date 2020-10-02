@@ -168,12 +168,12 @@ class ChunkBuffer:
             for j in range(10, 15): ## Upper bedrock wastes
 
                 hellStoneProb       =  12.5 #** Always 12.5%
-                frontVal            =  (self.noiseGenerator.noise3d(x = absouluteIndex * BEDROCK_UPPER_X, y = j * BEDROCK_UPPER_Y, z = -1) * 50) + 50
+                frontVal, backVal   =  self.noiseGenerator.getLowerBedrockWastes( absouluteIndex, j )
 
                 chunk[j][i]         =  obsidian
                 chunk.walls[j][i]   =  obsidian
 
-                if(0 <= frontVal <= hellStoneProb):
+                if(frontVal <= hellStoneProb):
                     chunk[j][i]     =  hellstone
 
             for j in range(15, 40):    ## Lower Caves

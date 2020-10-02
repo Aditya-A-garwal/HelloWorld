@@ -20,3 +20,6 @@ BEDROCK_UPPER_Y     =  0.2
 
 CAVE_X              =  0.05
 CAVE_Y              =  0.1
+
+UNDERGROUND_X       =  0.05
+UNDERGROUND_Y       =  0.1
