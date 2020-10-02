@@ -18,9 +18,9 @@ class Chunk:
 
         self.index            =  index
         self.TILE_TABLE_LOCAL =  localTable
-        for i in range(0, CHUNK_HEIGHT):
-            for j in range(0, CHUNK_WIDTH):
-                self.TILE_TABLE_LOCAL.setdefault( (i,j), [randint(-256, i) for i in range(0, 256)] )
+        # for i in range(0, CHUNK_HEIGHT):
+        #     for j in range(0, CHUNK_WIDTH):
+        #         self.TILE_TABLE_LOCAL.setdefault( (i,j), [randint(-256, i) for i in range(0, 256)] )
 
         if(blocks is None):
             self.blocks         =  [[0 for i in range(0,   CHUNK_WIDTH)] for i in range(0, CHUNK_HEIGHT)]
@@ -156,11 +156,11 @@ class ChunkBuffer:
 
         for i in range(0, CHUNK_WIDTH):
 
-            for j in range(0, 10): # Lower bedrock wastes
+            for j in range(0, 10): ## Lower bedrock wastes
 
-                obsidianProb =   j   # Goes from 0 to 100 (0% to 100%)
-                frontVal    =   (self.noiseGenerator.noise3d(x = absouluteIndex * BEDROCK_LOWER_X, y = j * BEDROCK_LOWER_Y, z = -1) + 1) * 5
-                backVal     =   (self.noiseGenerator.noise3d(x = absouluteIndex * BEDROCK_LOWER_X, y = j * BEDROCK_LOWER_Y, z = 1) + 1) * 5
+                obsidianProb =   j * 10   #** Goes from 0% to 100%
+                frontVal    =  50 + self.noiseGenerator.noise3d(x = absouluteIndex * BEDROCK_LOWER_X, y = j * BEDROCK_LOWER_Y, z = -1) * 50
+                backVal     =  50 + self.noiseGenerator.noise3d(x = absouluteIndex * BEDROCK_LOWER_X, y = j * BEDROCK_LOWER_Y, z = 1) * 50
 
                 if(0 <= frontVal < obsidianProb):   chunk[j][i] = obsidian
                 else                  :   chunk[j][i] = bedrock
@@ -168,26 +168,72 @@ class ChunkBuffer:
                 if(0 <= backVal < obsidianProb) :   chunk.walls[j][i] = obsidian
                 else                  :   chunk.walls[j][i] = bedrock
 
-            for j in range(10, 25): # Upper bedrock wastes
+            for j in range(10, 15): ## Upper bedrock wastes
 
-                obsidianProb    =   2*(25-j)/3  # Goes from 0 to 10 (0% to 10%)
-                hellStoneProb   =   obsidianProb + 0.015 # Always 0.015 (0.15%)
-                frontVal        =   (self.noiseGenerator.noise3d(x = absouluteIndex * BEDROCK_UPPER_X, y = j * BEDROCK_UPPER_Y, z = -1) + 1) * 5
-                backVal         =   (self.noiseGenerator.noise3d(x = absouluteIndex * BEDROCK_UPPER_X, y = j * BEDROCK_UPPER_Y, z = 1) + 1) * 5
+                hellStoneProb       =  12.5 #** Always 12.5%
+                frontVal            =  (self.noiseGenerator.noise3d(x = absouluteIndex * BEDROCK_UPPER_X, y = j * BEDROCK_UPPER_Y, z = -1) * 50) + 50
 
-                if(0 <= frontVal < obsidianProb):
-                    chunk[j][i] = obsidian
-                elif(obsidianProb <= frontVal < hellStoneProb):
-                    chunk[j][i] = hellstone
+                chunk[j][i]         =  obsidian
+                chunk.walls[j][i]   =  obsidian
+
+                if(0 <= frontVal <= hellStoneProb):
+                    chunk[j][i]     =  hellstone
+
+            for j in range(15, 40):    ## Lower Caves
+
+                quartzProb  =  25    #** Always 25%
+                stoneProb   =  100*(j-15)/20   #** Always 33%
+
+                frontVal    =  (self.noiseGenerator.noise3d(x = absouluteIndex * CAVE_X, y = j * CAVE_Y, z = -1) * 50) + 50
+                backVal     =  (self.noiseGenerator.noise3d(x = absouluteIndex * CAVE_X, y = j * CAVE_Y, z = 1) * 50) + 50
+
+                if( frontVal <= stoneProb ):
+                    chunk[j][i]  =  greystone
+
                 else:
-                    chunk[j][i] = greystone
+                    chunk[j][i]  =  obsidian
 
-                if(0 <= backVal < obsidianProb):
+                if( backVal <= stoneProb ):
+                    chunk.walls[j][i]  =  greystone
+
+                else:
                     chunk.walls[j][i] = obsidian
-                elif(obsidianProb <= backVal < hellStoneProb):
-                    chunk.walls[j][i] = hellstone
+
+            for j in range(40, 80):    ## Middle Caves
+
+                stoneProb      =  60                  #** Always 50%
+                graniteProb    =  stoneProb + 20      #** Always 25%
+                limestoneProb  =  graniteProb + 20    #** Always 25%
+
+                frontVal    =  (self.noiseGenerator.noise3d(x = absouluteIndex * CAVE_X, y = j * CAVE_Y, z = -1) * 50) + 50
+
+                if( frontVal <= stoneProb ):
+                    chunk[j][i]  =  greystone
+
+                elif( frontVal <= graniteProb ):
+                    chunk[j][i]  =  granite
+
                 else:
-                    chunk.walls[j][i] = greystone
+                    chunk[j][i]  =  limestone
+
+            for j in range(80, 127):    ## Upper Caves
+
+                stoneProb      =  60                    #** Always 50%
+                limestoneProb  =  stoneProb + 20        #** Always 25%
+                graniteProb    =  limestoneProb + 20    #** Always 25%
+
+                frontVal    =  (self.noiseGenerator.noise3d(x = absouluteIndex * CAVE_X, y = j * CAVE_Y, z = -1) * 50) + 50
+                backVal     =  (self.noiseGenerator.noise3d(x = absouluteIndex * CAVE_X, y = j * CAVE_Y, z = 1) * 50) + 50
+
+                if( frontVal <= stoneProb ):
+                    chunk[j][i]  =  greystone
+
+                elif( frontVal <= limestoneProb ):
+                    chunk[j][i]  =  limestone
+
+                else:
+                    chunk[j][i]  =  granite
+
 
             absouluteIndex  +=  1
 
