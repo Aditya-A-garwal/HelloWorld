@@ -18,9 +18,6 @@ class Chunk:
 
         self.index            =  index
         self.TILE_TABLE_LOCAL =  localTable
-        # for i in range(0, CHUNK_HEIGHT):
-        #     for j in range(0, CHUNK_WIDTH):
-        #         self.TILE_TABLE_LOCAL.setdefault( (i,j), [randint(-256, i) for i in range(0, 256)] )
 
         if(blocks is None):
             self.blocks         =  [[0 for i in range(0,   CHUNK_WIDTH)] for i in range(0, CHUNK_HEIGHT)]
@@ -181,8 +178,14 @@ class ChunkBuffer:
 
             for j in range(15, 40):    ## Lower Caves
 
-                quartzProb  =  25    #** Always 25%
-                stoneProb   =  100*(j-15)/20   #** Always 33%
+                quartzProb   =  25    #** Always 25%
+                stoneProb    =  100*(j-15)/20   #** Always 33%
+
+                unobProb     =  17.5
+                diaomnProb   =  22.5
+                platinumProb =  22.5
+                goldProb     =  27.5
+                ironProg     =  27.5
 
                 frontVal    =  (self.noiseGenerator.noise3d(x = absouluteIndex * CAVE_X, y = j * CAVE_Y, z = -1) * 50) + 50
                 backVal     =  (self.noiseGenerator.noise3d(x = absouluteIndex * CAVE_X, y = j * CAVE_Y, z = 1) * 50) + 50

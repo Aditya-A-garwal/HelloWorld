@@ -1,9 +1,8 @@
 import sys
 from pygame.locals import *
-from opensimplex import OpenSimplex
 
 from Renderer import *
-
+from noiseGenerator import *
 from Serializer import *
 
 # Screen variables
@@ -31,7 +30,7 @@ pygame.init()
 clock = pygame.time.Clock()
 
 # Create chunk buffer and chunk-position buffer
-bufferSize = int(pygame.display.Info().current_w/CHUNK_WIDTH_P)+4
+bufferSize = int(pygame.display.Info().current_w/CHUNK_WIDTH_P)+2
 if(bufferSize % 2 == 0): bufferSize += 1
 chunkBuffer = ChunkBuffer(bufferSize, 0, serializer, gen)
 del bufferSize
