@@ -40,6 +40,7 @@ del bufferSize
 screen = pygame.display.set_mode(displaySize, pygame.RESIZABLE)
 pygame.display.set_caption("Hello World!")
 pygame.display.set_icon(pygame.image.load("Resources/Default/gameIcon.png"))
+loadImageTable()
 
 # Initialize the renderer
 Renderer.initialize(chunkBuffer, camera, player, displaySize, screen)

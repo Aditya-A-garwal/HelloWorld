@@ -93,3 +93,7 @@ TILE_TABLE = {
     redClay     :   pygame.image.load("Resources/Default/redClay.png")
 
 }
+
+def loadImageTable():
+    for key in TILE_TABLE:
+        TILE_TABLE[key] = TILE_TABLE[key].convert_alpha()
