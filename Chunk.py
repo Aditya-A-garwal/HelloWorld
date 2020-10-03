@@ -48,18 +48,18 @@ class Chunk:
 
 class ChunkBuffer:
 
-    def __init__(  self, length, middleIndex, serializer, noiseGenerator  ):
+    def __init__(  self, length, middleIndex, serializer, chunkGenerator  ):
         """Contructor for a chunk buffer
 
         Args:
             length (int): The number of chunks in the chunk buffer (Always an odd integer)
             middleIndex (int): The absoulute index of the middle chunk of the chunk buffer
             serializer (Serializer): The serializer used by the chunk buffer
-            noiseGenerator (noiseGenerator): The noise generator used to generate chunks for the first time
+            chunkGenerator (chunkGenerator): The noise generator used to generate chunks for the first time
         """
 
         self.serializer     =  serializer
-        self.noiseGenerator =  noiseGenerator
+        self.chunkGenerator =  chunkGenerator
 
         self.len            =  length-1
         self.middleIndex    =  middleIndex
@@ -160,49 +160,49 @@ class ChunkBuffer:
             ## Lower bedrock wastes
             for j in range(0, 10):
 
-                front, back  =  self.noiseGenerator.getLowerBedrockWastes( absouluteIndex, j )
+                front, back  =  self.chunkGenerator.getLowerBedrockWastes( absouluteIndex, j )
                 chunk[j][i]  = front
                 chunk.walls[j][i]  = back
 
             ## Upper bedrock wastes
             for j in range(10, 20):
 
-                front, back   =  self.noiseGenerator.getUpperBedrockWastes( absouluteIndex, j )
+                front, back   =  self.chunkGenerator.getUpperBedrockWastes( absouluteIndex, j )
                 chunk[j][i]  = front
                 chunk.walls[j][i]  = back
 
             ## Lower Caves
             for j in range(20, 50):
 
-                front, back   =  self.noiseGenerator.getLowerCaves( absouluteIndex, j )
+                front, back   =  self.chunkGenerator.getLowerCaves( absouluteIndex, j )
                 chunk[j][i]  = front
                 chunk.walls[j][i]  = back
 
             ## Middle Caves
             for j in range(50, 90):
 
-                front, back    =  self.noiseGenerator.getMiddleCaves( absouluteIndex, j )
+                front, back    =  self.chunkGenerator.getMiddleCaves( absouluteIndex, j )
                 chunk[j][i]  = front
                 chunk.walls[j][i]  = back
 
             ## Upper Caves
             for j in range(90, 120):
 
-                front, back    =  self.noiseGenerator.getUpperCaves( absouluteIndex, j )
+                front, back    =  self.chunkGenerator.getUpperCaves( absouluteIndex, j )
                 chunk[j][i]  = front
                 chunk.walls[j][i]  = back
 
             ## Lower Undergrounds
             for j in range(120, 140):
 
-                front, back    =  self.noiseGenerator.getUpperUnderground( absouluteIndex, j )
+                front, back    =  self.chunkGenerator.getUpperUnderground( absouluteIndex, j )
                 chunk[j][i]  = front
                 chunk.walls[j][i]  = back
 
             ## Upper Undergrounds
             for j in range(140, 170):
 
-                front, back    =  self.noiseGenerator.getUpperUnderground( absouluteIndex, j )
+                front, back    =  self.chunkGenerator.getUpperUnderground( absouluteIndex, j )
                 chunk[j][i]  = front
                 chunk.walls[j][i]  = back
 

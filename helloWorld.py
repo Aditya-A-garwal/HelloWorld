@@ -2,7 +2,7 @@ import sys
 from pygame.locals import *
 
 from Renderer import *
-from noiseGenerator import *
+from chunkGenerator import *
 from Serializer import *
 
 # Screen variables
@@ -20,7 +20,7 @@ currChunk = prevChunk = deltaChunk = 0
 speed = 20 * TILE_WIDTH #number of tiles to move per second
 
 #Create noise object
-gen = noiseGenerator()
+gen = chunkGenerator()
 
 # Create a database object
 serializer = Serializer("world1")
