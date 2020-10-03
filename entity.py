@@ -3,9 +3,8 @@
 import tables
 from constants import *
 
-class Entity:
 
-    GRAVITY = 9.8
+class Entity:
 
     def __init__(self, i, sp, p, f, h=100, g=True):
 
@@ -48,10 +47,29 @@ class Entity:
         else:
             self.acc[0] = 0
 
-        if abs(self.vel[0])<1:
+        if self.acc[0] > 1:
+            self.acc[0] = 1
+        elif self.acc[0] < -1:
+            self.acc[0] = -1
+        if self.acc[1] > 1:
+            self.acc[1] = 1
+        elif self.acc[1] < -1:
+            self.acc[1] = -1
+
+        if abs(self.vel[0]+self.acc[0]*dt)<1:
             self.vel[0] += self.acc[0]*dt
-        if abs(self.vel[1]) < 1:
+        else:
+            if self.vel[0] < 0:
+                self.vel[0] = -1
+            else:
+                self.vel[0] = 1
+        if abs(self.vel[1]+self.acc[1]*dt) < 1:
             self.vel[1] += self.acc[1]*dt
+        else:
+            if self.vel[1] < 0:
+                self.vel[1] = -1
+            else:
+                self.vel[1] = 1
         self.pos[0] += self.vel[0]*dt*SCALE_SPEED
         self.pos[1] += self.vel[1]*dt*SCALE_SPEED
 
