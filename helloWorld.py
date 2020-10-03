@@ -20,7 +20,7 @@ currChunk = prevChunk = deltaChunk = 0
 speed = 20 * TILE_WIDTH #number of tiles to move per second
 
 #Create noise object
-gen = OpenSimplex()
+gen = noiseGenerator()
 
 # Create a database object
 serializer = Serializer("world1")

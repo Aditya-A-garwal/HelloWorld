@@ -13,7 +13,7 @@ bedrock         =   1
 obsidian        =   2
 hellstone       =   3
 
-unobtanium      =   4
+unobtaniumOre   =   4
 diamondOre      =   5
 platinumOre     =   6
 goldOre         =   7
@@ -31,9 +31,11 @@ coke            =   16
 
 clay            =   17
 redClay         =   18
+brownDirt       =   19
 
 # Tile table with names
 TILE_NAMES = {
+
     # air
     "air"           : air,
 
@@ -43,7 +45,7 @@ TILE_NAMES = {
     "hellstone"     : hellstone,
 
     # ores
-    "unobtanium"    : unobtanium,
+    "unobtanium"    : unobtaniumOre,
     "diamond ore"   : diamondOre,
     "platinum ore"  : platinumOre,
     "gold ore"      : goldOre,
@@ -69,28 +71,33 @@ TILE_NAMES = {
 
 TILE_TABLE = {
 
-    bedrock     :   pygame.image.load("Resources/Default/bedrock2.png"),
-    obsidian    :   pygame.image.load("Resources/Default/obsidian.png"),
-    hellstone   :   pygame.image.load("Resources/Default/hellstone.png"),
+    bedrock         :   pygame.image.load("Resources/Default/bedrock2.png"),
+    obsidian        :   pygame.image.load("Resources/Default/obsidian.png"),
+    hellstone       :   pygame.image.load("Resources/Default/hellstone.png"),
 
-    #unobtanium  :   pygame.image.load("Resources/Default/unobtainium.png"),
-    diamondOre  :   pygame.image.load("Resources/Default/diamondOre.png"),
-    #platinumOre :   pygame.image.load("Resources/Default/platinumOre.png"),
-    goldOre     :   pygame.image.load("Resources/Default/goldOre.png"),
-    ironOre     :   pygame.image.load("Resources/Default/ironOre.png"),
-    copperOre   :   pygame.image.load("Resources/Default/copperOre.png"),
+    unobtaniumOre   :   pygame.image.load("Resources/Default/unobtaniumOre.png"),
+    diamondOre      :   pygame.image.load("Resources/Default/diamondOre.png"),
+    platinumOre     :   pygame.image.load("Resources/Default/ironOre.png"),
+    goldOre         :   pygame.image.load("Resources/Default/goldOre.png"),
+    ironOre         :   pygame.image.load("Resources/Default/ironOre.png"),
+    copperOre       :   pygame.image.load("Resources/Default/copperOre.png"),
 
-    granite     :   pygame.image.load("Resources/Default/granite.png"),
-    quartz      :   pygame.image.load("Resources/Default/quartz.png"),
-    limestone   :   pygame.image.load("Resources/Default/limestone.png"),
-    greystone   :   pygame.image.load("Resources/Default/greystone.png"),
-    #sandstone   :   pygame.image.load("Resources/Default/sandstone.png"),
+    granite         :   pygame.image.load("Resources/Default/granite.png"),
+    quartz          :   pygame.image.load("Resources/Default/quartz.png"),
+    limestone       :   pygame.image.load("Resources/Default/limestone.png"),
+    greystone       :   pygame.image.load("Resources/Default/greystone.png"),
+    sandstone       :   pygame.image.load("Resources/Default/sandstone.png"),
 
-    #gravel      :   pygame.image.load("Resources/Default/gravel.png"),
-    #coke        :   pygame.image.load("Resources/Default/coke.png"),
+    gravel          :   pygame.image.load("Resources/Default/gravel.png"),
+    coke            :   pygame.image.load("Resources/Default/coalOre.png"),
 
-    clay        :   pygame.image.load("Resources/Default/clay.png"),
-    redClay     :   pygame.image.load("Resources/Default/redClay.png")
+    clay            :   pygame.image.load("Resources/Default/clay.png"),
+    redClay         :   pygame.image.load("Resources/Default/redClay.png"),
+    brownDirt       :   pygame.image.load("Resources/Default/brownDirt.png")
+
+}
+
+LIGHT_TABLE = {
 
 }
 

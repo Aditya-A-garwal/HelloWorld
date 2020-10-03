@@ -7,13 +7,13 @@ class Chunk:
 
     def __init__(  self, index = 0, blocks = None, walls = None, localTable = {}  ):
 
-        """[summary]
+        """Constructor for the chunk
 
         Args:
-            index ([type]): [description]
-            blocks ([type]): [description]
-            walls ([type]): [description]
-            localTable ([type]): [description]
+            index (int): The absoulute index of the chunk
+            blocks (list): A container to hold the blocks in the chunjk
+            walls (list): A container to hold the blocks in the chunjk
+            localTable (dictionary): Table containing Local chunk-specific data
         """
 
         self.index            =  index
@@ -49,13 +49,13 @@ class Chunk:
 class ChunkBuffer:
 
     def __init__(  self, length, middleIndex, serializer, noiseGenerator  ):
-        """[summary]
+        """Contructor for a chunk buffer
 
         Args:
-            length ([type]): [description]
-            middleIndex ([type]): [description]
-            serializer ([type]): [description]
-            noiseGenerator ([type]): [description]
+            length (int): The number of chunks in the chunk buffer (Always an odd integer)
+            middleIndex (int): The absoulute index of the middle chunk of the chunk buffer
+            serializer (Serializer): The serializer used by the chunk buffer
+            noiseGenerator (noiseGenerator): The noise generator used to generate chunks for the first time
         """
 
         self.serializer     =  serializer
@@ -68,6 +68,7 @@ class ChunkBuffer:
 
         self.chunks         =  []
         self.surfaces       =  []
+        self.lightSurfs     =  []
 
         for i in range( self.leftIndex,  self.rightIndex + 1 ):
 
@@ -85,6 +86,7 @@ class ChunkBuffer:
 
             self.chunks.append( retrieved )
             self.surfaces.append( pygame.Surface( ( CHUNK_WIDTH_P, CHUNK_HEIGHT_P ) ) )
+            self.lightSurfs.append( pygame.Surface( ( CHUNK_WIDTH_P, CHUNK_HEIGHT_P ) ) )
 
     def shiftLeft(self):
 
@@ -93,13 +95,16 @@ class ChunkBuffer:
         self.leftIndex                   += 1
 
         surfRef                          =  self.surfaces[0]
+        lightSurfRef                     =  self.lightSurfs[0]
 
         for i in range( 0, self.len ):
 
             self.chunks[i]      =  self.chunks[i+1]    # move all chunks one space left
             self.surfaces[i]    =  self.surfaces[i+1]
+            self.lightSurfs[i]  =  self.lightSurfs[i+1]
 
         self.surfaces[self.len]          =  surfRef
+        self.lightSurfs[self.len]        =  lightSurfRef
         self.middleIndex                 += 1
 
         self.rightIndex                  += 1
@@ -119,12 +124,15 @@ class ChunkBuffer:
         self.rightIndex                   -= 1
 
         surfRef                           =  self.surfaces[self.len]
+        lightSurfRef                      =  self.lightSurfs[self.len]
 
-        for i in range(self.len, 0, -1):
+        for i in range( self.len, 0, -1 ):
             self.chunks[i]      =   self.chunks[i-1]    # move all chunks one space right
             self.surfaces[i]    =   self.surfaces[i-1]
+            self.lightSurfs[i]  =   self.lightSurfs[i-1]
 
         self.surfaces[0]                  =  surfRef
+        self.lightSurfs[0]                =  lightSurfRef
         self.middleIndex                  -= 1
 
         self.leftIndex -= 1
@@ -144,98 +152,59 @@ class ChunkBuffer:
             self.serializer[chunk.index] = pickle.dumps( [chunk.blocks, chunk.walls] ), pickle.dumps( chunk.TILE_TABLE_LOCAL )
 
     def populateChunk(self, chunk):
-        """[summary]
 
-        Args:
-            chunk ([type]): [description]
-        """
         absouluteIndex  =   chunk.index * CHUNK_WIDTH
 
         for i in range(0, CHUNK_WIDTH):
 
-            for j in range(0, 10): ## Lower bedrock wastes
+            ## Lower bedrock wastes
+            for j in range(0, 10):
 
-                obsidianProb =   j * 10   #** Goes from 0% to 100%
-                frontVal    =  50 + self.noiseGenerator.noise3d(x = absouluteIndex * BEDROCK_LOWER_X, y = j * BEDROCK_LOWER_Y, z = -1) * 50
-                backVal     =  50 + self.noiseGenerator.noise3d(x = absouluteIndex * BEDROCK_LOWER_X, y = j * BEDROCK_LOWER_Y, z = 1) * 50
+                front, back  =  self.noiseGenerator.getLowerBedrockWastes( absouluteIndex, j )
+                chunk[j][i]  = front
+                chunk.walls[j][i]  = back
 
-                if(0 <= frontVal < obsidianProb):   chunk[j][i] = obsidian
-                else                  :   chunk[j][i] = bedrock
+            ## Upper bedrock wastes
+            for j in range(10, 20):
 
-                if(0 <= backVal < obsidianProb) :   chunk.walls[j][i] = obsidian
-                else                  :   chunk.walls[j][i] = bedrock
+                front, back   =  self.noiseGenerator.getUpperBedrockWastes( absouluteIndex, j )
+                chunk[j][i]  = front
+                chunk.walls[j][i]  = back
 
-            for j in range(10, 15): ## Upper bedrock wastes
+            ## Lower Caves
+            for j in range(20, 50):
 
-                hellStoneProb       =  12.5 #** Always 12.5%
-                frontVal, backVal   =  self.noiseGenerator.getLowerBedrockWastes( absouluteIndex, j )
+                front, back   =  self.noiseGenerator.getLowerCaves( absouluteIndex, j )
+                chunk[j][i]  = front
+                chunk.walls[j][i]  = back
 
-                chunk[j][i]         =  obsidian
-                chunk.walls[j][i]   =  obsidian
+            ## Middle Caves
+            for j in range(50, 90):
 
-                if(frontVal <= hellStoneProb):
-                    chunk[j][i]     =  hellstone
+                front, back    =  self.noiseGenerator.getMiddleCaves( absouluteIndex, j )
+                chunk[j][i]  = front
+                chunk.walls[j][i]  = back
 
-            for j in range(15, 40):    ## Lower Caves
+            ## Upper Caves
+            for j in range(90, 120):
 
-                quartzProb   =  25    #** Always 25%
-                stoneProb    =  100*(j-15)/20   #** Always 33%
+                front, back    =  self.noiseGenerator.getUpperCaves( absouluteIndex, j )
+                chunk[j][i]  = front
+                chunk.walls[j][i]  = back
 
-                unobProb     =  17.5
-                diaomnProb   =  22.5
-                platinumProb =  22.5
-                goldProb     =  27.5
-                ironProg     =  27.5
+            ## Lower Undergrounds
+            for j in range(120, 140):
 
-                frontVal    =  (self.noiseGenerator.noise3d(x = absouluteIndex * CAVE_X, y = j * CAVE_Y, z = -1) * 50) + 50
-                backVal     =  (self.noiseGenerator.noise3d(x = absouluteIndex * CAVE_X, y = j * CAVE_Y, z = 1) * 50) + 50
+                front, back    =  self.noiseGenerator.getUpperUnderground( absouluteIndex, j )
+                chunk[j][i]  = front
+                chunk.walls[j][i]  = back
 
-                if( frontVal <= stoneProb ):
-                    chunk[j][i]  =  greystone
+            ## Upper Undergrounds
+            for j in range(140, 170):
 
-                else:
-                    chunk[j][i]  =  obsidian
-
-                if( backVal <= stoneProb ):
-                    chunk.walls[j][i]  =  greystone
-
-                else:
-                    chunk.walls[j][i] = obsidian
-
-            for j in range(40, 80):    ## Middle Caves
-
-                stoneProb      =  60                  #** Always 50%
-                graniteProb    =  stoneProb + 20      #** Always 25%
-                limestoneProb  =  graniteProb + 20    #** Always 25%
-
-                frontVal    =  (self.noiseGenerator.noise3d(x = absouluteIndex * CAVE_X, y = j * CAVE_Y, z = -1) * 50) + 50
-
-                if( frontVal <= stoneProb ):
-                    chunk[j][i]  =  greystone
-
-                elif( frontVal <= graniteProb ):
-                    chunk[j][i]  =  granite
-
-                else:
-                    chunk[j][i]  =  limestone
-
-            for j in range(80, 127):    ## Upper Caves
-
-                stoneProb      =  60                    #** Always 50%
-                limestoneProb  =  stoneProb + 20        #** Always 25%
-                graniteProb    =  limestoneProb + 20    #** Always 25%
-
-                frontVal    =  (self.noiseGenerator.noise3d(x = absouluteIndex * CAVE_X, y = j * CAVE_Y, z = -1) * 50) + 50
-                backVal     =  (self.noiseGenerator.noise3d(x = absouluteIndex * CAVE_X, y = j * CAVE_Y, z = 1) * 50) + 50
-
-                if( frontVal <= stoneProb ):
-                    chunk[j][i]  =  greystone
-
-                elif( frontVal <= limestoneProb ):
-                    chunk[j][i]  =  limestone
-
-                else:
-                    chunk[j][i]  =  granite
+                front, back    =  self.noiseGenerator.getUpperUnderground( absouluteIndex, j )
+                chunk[j][i]  = front
+                chunk.walls[j][i]  = back
 
 
             absouluteIndex  +=  1

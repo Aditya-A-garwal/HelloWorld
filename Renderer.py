@@ -68,6 +68,9 @@ class Renderer:
 
         ## Create a reference to the chunk currently being rendered (for convenience)
         currChunkRef                    =  cls.chunkBuffer[index]
+        currSurfRef                     =  cls.chunkBuffer.surfaces[index]
+        currLightRef                    =  cls.chunkBuffer.lightSurfs[index]
+
         coors                           =  [0, 0]
 
         ## Fill the to-be-updated region of the surface to "clear" it
@@ -78,22 +81,26 @@ class Renderer:
         ## Start looping from the bottom-most supplied tile to the top-most
         for i in range( rect[1], rect[3], 1 ):
 
-            coors[0]  =  rect[0] * TILE_WIDTH    # x coordinate starts from 0
+            coors[0]  =  rect[0] * TILE_WIDTH    ## x coordinate starts from 0
             for j in range( rect[0], rect[2] ):
 
                 currTileRef =  currChunkRef[i][j]
                 currWallRef =  currChunkRef.walls[i][j]
 
-                if( currTileRef > 0 ):      ## Tile in global tile table
-                    cls.chunkBuffer.surfaces[index].blit( TILE_TABLE[currTileRef], coors )
+                if( currTileRef > 0 ):
+                    ## Tile in global tile table
+                    currSurfRef.blit( TILE_TABLE[currTileRef], coors )
 
-                elif( currTileRef < 0 ):    ## Tile in local tile table
+                elif( currTileRef < 0 ):
+                    ## Tile in local tile table
                     pass
 
-                elif( currWallRef > 0 ):    ## Wall in global tile table
-                    cls.chunkBuffer.surfaces[index].blit( TILE_TABLE[currWallRef], coors )
+                elif( currWallRef > 0 ):
+                    ## Wall in global tile table
+                    currSurfRef.blit( TILE_TABLE[currWallRef], coors )
 
-                elif( currWallRef < 0 ):    ## Wall in local tile table
+                elif( currWallRef < 0 ):
+                    ## Wall in local tile table
                     pass
 
                 coors[0]    += TILE_WIDTH    ## Every Iteration, increase the x-coordinate by tile-width
