@@ -20,3 +20,14 @@ BEDROCK_UPPER_Y     =  0.2
 
 CAVE_X              =  0.05
 CAVE_Y              =  0.1
+
+UNDERGROUND_X       =  0.05
+UNDERGROUND_Y       =  0.1
+
+## Constants for entity and physics (time_unit = seconds, length_unit = points)
+GRAVITY_ACC = 9.8
+SCALE_SPEED = TILE_WIDTH*6    # 6 is number of tiles to move
+AIR_FRICTION = 0.2
+UP_ACC = 0.8
+DOWN_ACC = 0.8
+DEFAULT_FRICTION = 0.5

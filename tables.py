@@ -22,7 +22,7 @@ bedrock         =   1
 obsidian        =   2
 hellstone       =   3
 
-unobtanium      =   4
+unobtaniumOre   =   4
 diamondOre      =   5
 platinumOre     =   6
 goldOre         =   7
@@ -87,10 +87,11 @@ rottenmeat      =   57
 
 berry           =   58
 apple           =   59
-
+brownDirt       =   19
 
 # Tile table with names
 TILE_NAMES = {
+
     # air
     air            : "air",
 
@@ -100,12 +101,13 @@ TILE_NAMES = {
     hellstone      : "hellstone",
 
     # ores
-    unobtanium     : "unobtanium",
-    diamondOre     : "diamond ore",
-    platinumOre    : "platinum ore",
-    goldOre        : "gold ore",
-    ironOre        : "iron ore",
-    copperOre      : "copper ore",
+    unobtaniumOre   : "unobtanium",
+    diamondOre      : "diamond ore",
+    platinumOre     : "platinum ore",
+    goldOre         : "gold ore",
+    ironOre         : "iron ore",
+    copperOre       : "copper ore",
+
 
     # stones
     granite        : "granite",
@@ -167,28 +169,32 @@ TILE_NAMES = {
 
 TILE_TABLE = {
 
-    bedrock     :   pygame.image.load("Resources/Default/bedrock2.png"),
-    obsidian    :   pygame.image.load("Resources/Default/obsidian.png"),
-    hellstone   :   pygame.image.load("Resources/Default/hellstone.png"),
+    bedrock         :   pygame.image.load("Resources/Default/bedrock2.png"),
+    obsidian        :   pygame.image.load("Resources/Default/obsidian.png"),
+    hellstone       :   pygame.image.load("Resources/Default/hellstone.png"),
 
-    #unobtanium  :   pygame.image.load("Resources/Default/unobtainium.png"),
-    diamondOre  :   pygame.image.load("Resources/Default/diamondOre.png"),
-    #platinumOre :   pygame.image.load("Resources/Default/platinumOre.png"),
-    goldOre     :   pygame.image.load("Resources/Default/goldOre.png"),
-    ironOre     :   pygame.image.load("Resources/Default/ironOre.png"),
-    copperOre   :   pygame.image.load("Resources/Default/copperOre.png"),
+    unobtaniumOre   :   pygame.image.load("Resources/Default/unobtaniumOre.png"),
+    diamondOre      :   pygame.image.load("Resources/Default/diamondOre.png"),
+    platinumOre     :   pygame.image.load("Resources/Default/ironOre.png"),
+    goldOre         :   pygame.image.load("Resources/Default/goldOre.png"),
+    ironOre         :   pygame.image.load("Resources/Default/ironOre.png"),
+    copperOre       :   pygame.image.load("Resources/Default/copperOre.png"),
 
-    granite     :   pygame.image.load("Resources/Default/granite.png"),
-    quartz      :   pygame.image.load("Resources/Default/quartz.png"),
-    limestone   :   pygame.image.load("Resources/Default/limestone.png"),
-    greystone   :   pygame.image.load("Resources/Default/greystone.png"),
-    #sandstone   :   pygame.image.load("Resources/Default/sandstone.png"),
+    granite         :   pygame.image.load("Resources/Default/granite.png"),
+    quartz          :   pygame.image.load("Resources/Default/quartz.png"),
+    limestone       :   pygame.image.load("Resources/Default/limestone.png"),
+    greystone       :   pygame.image.load("Resources/Default/greystone.png"),
+    sandstone       :   pygame.image.load("Resources/Default/sandstone.png"),
 
-    #gravel      :   pygame.image.load("Resources/Default/gravel.png"),
-    #coke        :   pygame.image.load("Resources/Default/coke.png"),
+    gravel          :   pygame.image.load("Resources/Default/gravel.png"),
+    coke            :   pygame.image.load("Resources/Default/coalOre.png"),
 
-    brownClay   :   pygame.image.load("Resources/Default/clay.png"),
-    redClay     :   pygame.image.load("Resources/Default/redClay.png")
+    brownClay        :   pygame.image.load("Resources/Default/clay.png"),
+    redClay         :   pygame.image.load("Resources/Default/redClay.png"),
+    brownDirt       :   pygame.image.load("Resources/Default/brownDirt.png")
+}
+LIGHT_TABLE = {
+
 
 }
 
@@ -199,7 +205,7 @@ TILE_ATTR={
     bedrock:{ID:1,WEIGHT:100,FRICTION:0.4,LUMINOSITY:0,BREAKTIME:None,PLACEABLE:False,DAMAGE:None,HEALTH:10**10,INFLAMMABLE:None,LIGHTPERMEABILITY:0,ILLUMINATION:0},
     obsidian:{ID:2,WEIGHT:99,FRICTION:0.4,LUMINOSITY:0,BREAKTIME:10,PLACEABLE:True,DAMAGE:10,HEALTH:100,INFLAMMABLE:0,LIGHTPERMEABILITY:0,ILLUMINATION:0},
     hellstone:{ID:3,WEIGHT:99,FRICTION:0.4,LUMINOSITY:150,BREAKTIME:10,PLACEABLE:True,DAMAGE:10,HEALTH:100,INFLAMMABLE:0,LIGHTPERMEABILITY:0,ILLUMINATION:0},
-    unobtanium:{ID:4,WEIGHT:85,FRICTION:0.7,LUMINOSITY:0,BREAKTIME:8,PLACEABLE:True,DAMAGE:10,HEALTH:90,INFLAMMABLE:None,LIGHTPERMEABILITY:0,ILLUMINATION:0},
+    unobtaniumOre:{ID:4,WEIGHT:85,FRICTION:0.7,LUMINOSITY:0,BREAKTIME:8,PLACEABLE:True,DAMAGE:10,HEALTH:90,INFLAMMABLE:None,LIGHTPERMEABILITY:0,ILLUMINATION:0},
     diamondOre:{ID:5,WEIGHT:80,FRICTION:0.4,LUMINOSITY:0,BREAKTIME:7,PLACEABLE:True,DAMAGE:10,HEALTH:90,INFLAMMABLE:None,LIGHTPERMEABILITY:0,ILLUMINATION:0},
     platinumOre:{ID:6,WEIGHT:75,FRICTION:0.4,LUMINOSITY:0,BREAKTIME:7,PLACEABLE:True,DAMAGE:10,HEALTH:80,INFLAMMABLE:None,LIGHTPERMEABILITY:0,ILLUMINATION:0},
     goldOre:{ID:7,WEIGHT:70,FRICTION:0.4,LUMINOSITY:0,BREAKTIME:5,PLACEABLE:True,DAMAGE:10,HEALTH:70,INFLAMMABLE:None,LIGHTPERMEABILITY:0,ILLUMINATION:0},

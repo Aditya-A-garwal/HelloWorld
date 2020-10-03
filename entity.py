@@ -1,96 +1,102 @@
 ## Entity class
 
 import tables
-import constants
+from constants import *
+
 
 class Entity:
 
-    GRAVITY = 9.8
-
-    def __init__(self, i, w, sp, p, f, g = True):
+    def __init__(self, i, sp, p, f, h=100, g=True):
 
         self.id             =   i
-        self.weight         =   w
         self.spawnPoint     =   sp
         self.pos            =   p
         self.friction       =   f
+        self.health         =   h
         self.grounded       =   g
         self.prevkp         =   None
         self.vel            =   [0, 0]
-        self.driftVel       =   0
+        self.acc            =   [0, 0]
 
-    def run(self, kp, kr, cl, el, pl, dt):
-
+    def run(self, kp, kr, dt):
         if self.prevkp is None:
             self.prevkp = kp
 
-        if (kr is kp is pygame.K_a) or (kr is kp is pygame.K_d) or (self.prevkp is not kp):
+        if kr is kp:
+            kp = self.prevkp = None
 
-            self.driftVel = self.vel[0]
-            if kr is kp:
-                kp = None
-
-        if self.driftVel - self.friction*dt > 0:
-            self.driftVel -= self.friction*dt
-
-        elif self.driftVel + self.friction*dt < 0:
-            self.driftVel += self.friction*dt
-
-        else:
-            self.driftVel = 0
-
+        ## Key handling for movement
         if kp is pygame.K_a:
-
-            if self.vel[0] - self.friction*dt >= -6:
-                self.vel[0] -= self.friction*dt
-
-            else:
-                self.vel[0] = 6
-
+            self.moveLeft()
         elif kp is pygame.K_d:
-
-            if self.vel[0] + self.friction*dt <= 6:
-                self.vel[0] += self.friction*dt
-
-            else:
-                self.vel[0] = 6
-
+            self.moveRight()
         elif kp is pygame.K_w:
-            self.jump()
+            self.moveUp()
+        elif kp is pygame.K_s:
+            self.moveDown()
 
-        if not self.isObstacle(self.pos[0] + self.vel[0]*dt):
-            self.pos[0] += self.vel[0]*dt
-
-        else:
-            pass    # set position of player such that right/left edge of hitbox just touches the obstacle
-
-        if not self.isObstacle(self.pos[1] + self.vel[1]*dt):
-            self.pos[1] += self.vel[1]*dt
-
-        else:
-            pass    # set position of player such that upper edge of hitbox just touches the obstacle
-
-        if not self.groundBelow():
-            pass
+        self.update(dt)
 
         self.prevkp = kp
 
+    def update(self, dt):
+        if self.acc[0] - self.friction > 0:
+            self.acc[0] -= self.friction
+        elif self.acc[0] + self.friction < 0:
+            self.acc[0] += self.friction
+        else:
+            self.acc[0] = 0
+
+        if self.acc[0] > 1:
+            self.acc[0] = 1
+        elif self.acc[0] < -1:
+            self.acc[0] = -1
+        if self.acc[1] > 1:
+            self.acc[1] = 1
+        elif self.acc[1] < -1:
+            self.acc[1] = -1
+
+        if abs(self.vel[0]+self.acc[0]*dt)<1:
+            self.vel[0] += self.acc[0]*dt
+        else:
+            if self.vel[0] < 0:
+                self.vel[0] = -1
+            else:
+                self.vel[0] = 1
+        if abs(self.vel[1]+self.acc[1]*dt) < 1:
+            self.vel[1] += self.acc[1]*dt
+        else:
+            if self.vel[1] < 0:
+                self.vel[1] = -1
+            else:
+                self.vel[1] = 1
+        self.pos[0] += self.vel[0]*dt*SCALE_SPEED
+        self.pos[1] += self.vel[1]*dt*SCALE_SPEED
+
     def moveLeft(self):
-        pass
+        self.acc[0] -= self.friction*2
 
     def moveRight(self):
+        self.acc[0] += self.friction*2
+
+    def moveUp(self):    # only temporary to adjust to current usage. Will be changed to jump
+        # self.vel[1] = JUMP_VEL
+        # self.acc[1] = max(0, self.acc[1] - AIR_FRICTION)
+        self.acc[1] += UP_ACC
+
+    def moveDown(self):    # only temporary to adjust to current usage. Will be changed/removed
+        self.acc[1] -= DOWN_ACC
+
+    def calcFriction(self, c):
         pass
 
-    def jump(self):
-        pass
-
-    def groundBelow(self):
+    def notGround(self, c):
         pass
 
     def damage(self):
         pass
 
-    def isObstacle(self, c):
+    def notObstacle(self, c):
         pass
 
 

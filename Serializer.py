@@ -1,4 +1,4 @@
-import sqlite3,  zlib
+import sqlite3,  bz2
 
 class Serializer:
 
@@ -27,12 +27,12 @@ class Serializer:
         c = self.conn.cursor()
         try:
             ## Save string at new key location
-            c.execute( '''INSERT INTO terrain VALUES (?,?,?)''', ( key, zlib.compress( t[0], level = 9 ), zlib.compress( t[1], level = 9 ) ) )
+            c.execute( '''INSERT INTO terrain VALUES (?,?,?)''', ( key, bz2.compress( t[0] ), bz2.compress( t[1] ) ) )
             self.conn.commit()
 
         except:
             ## Update string at existing key
-            c.execute( 'UPDATE terrain SET list =?, local =?  WHERE keys=?', ( zlib.compress( t[0], level = 9 ), zlib.compress( t[1], level = 9 ), key ) )
+            c.execute( 'UPDATE terrain SET list =?, local =?  WHERE keys=?', ( bz2.compress( t[0] ), bz2.compress( t[1] ), key ) )
             self.conn.commit()
 
     ## Load method
@@ -50,8 +50,8 @@ class Serializer:
         self.conn.commit()
 
         try:
-            li = zlib.decompress( li[0] )
-            lo = zlib.decompress( lo[0] )
+            li = bz2.decompress( li[0] )
+            lo = bz2.decompress( lo[0] )
             return li, lo
         except:
             return None
@@ -65,12 +65,12 @@ class Serializer:
         c = self.conn.cursor()
         try:
             ## Save pickledplayer at new playername
-            c.execute( '''INSERT INTO player VALUES (?,?)''', ( name, zlib.compress( pickled ) ) )
+            c.execute( '''INSERT INTO player VALUES (?,?)''', ( name, bz2.compress( pickled ) ) )
             self.conn.commit()
 
         except:
             ## Update pickledplayer at existing playername
-            c.execute( 'UPDATE player SET pickledplayer =?  WHERE playername=?', ( zlib.compress( pickled ), name ) )
+            c.execute( 'UPDATE player SET pickledplayer =?  WHERE playername=?', ( bz2.compress( pickled ), name ) )
             self.conn.commit()
 
     def loadPlayer( self, name ):
@@ -86,7 +86,7 @@ class Serializer:
         self.conn.commit()
 
         try:
-            return zlib.decompress( res[0] )
+            return bz2.decompress( res[0] )
         except:
             return res
 
