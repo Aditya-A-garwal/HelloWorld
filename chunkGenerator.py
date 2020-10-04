@@ -1,4 +1,5 @@
-from noiseModules import RidgedMulti, Voronoi, OpenSimplex
+#from noiseModules import RidgedMulti, Voronoi, OpenSimplex
+from opensimplex import OpenSimplex
 from tables import *
 from constants import *
 
@@ -12,9 +13,10 @@ class chunkGenerator:
             seed (int, optional): The seed of the noise generator. Defaults to None.
         """
 
-        self.gen = OpenSimplex()
-        self.voronoi = Voronoi()
-        self.ridgedMulti = RidgedMulti()
+        # self.simp = OpenSimplex()
+        # self.voronoi = Voronoi()
+        # self.ridgedMulti = RidgedMulti()
+        self.simp = OpenSimplex()
 
     def frontVal(self, x, y):
 
@@ -28,7 +30,8 @@ class chunkGenerator:
             float: Value on the noise plane at (x,y), normalized between 0 and 100
         """
 
-        return (self.gen[x, y, 1.0] * 100), (self.voronoi[x, y, 1.0] * 100), (self.ridgedMulti[x, y, 1.0] * 100)
+        #return (self.simp[x, y, 0.1] * 50)
+        return ( self.simp.noise3d( x, y, 0.1 ) + 1 ) * 50
 
     def backVal(self, x, y):
 
@@ -42,7 +45,8 @@ class chunkGenerator:
             float: Value on the noise plane at (x,y), normalized between 0 and 100
         """
 
-        return (self.gen[x, y, -1.0] * 100), (self.voronoi[x, y, -1.0] * 100), (self.ridgedMulti[x, y, -1.0] * 100)
+        #return (self.simp[x, y, -0.1] * 50)
+        return ( self.simp.noise3d(x, y, -0.1) + 1 ) * 50
 
     def getLowerBedrockWastes(self, x, y):
 
@@ -50,8 +54,8 @@ class chunkGenerator:
             return bedrock, bedrock
 
         else:
-            front,a,b  =  self.frontVal(x * BEDROCK_LOWER_X, y * BEDROCK_LOWER_Y)
-            back,a,b   =  self.backVal(x * BEDROCK_LOWER_X, y * BEDROCK_LOWER_Y)
+            front  =  self.frontVal(x * BEDROCK_LOWER_X, y * BEDROCK_LOWER_Y)
+            back   =  self.backVal(x * BEDROCK_LOWER_X, y * BEDROCK_LOWER_Y)
 
             bedrockProbability = 50
 
@@ -67,15 +71,12 @@ class chunkGenerator:
 
     def getUpperBedrockWastes(self, x, y):
 
-        front,a,b  =  self.frontVal(x * BEDROCK_UPPER_X, y * BEDROCK_UPPER_Y)
-        back,a,b   =  self.backVal(x * BEDROCK_UPPER_X, y * BEDROCK_UPPER_Y)
+        front  =  self.frontVal(x * BEDROCK_UPPER_X, y * BEDROCK_UPPER_Y)
+        back   =  self.backVal(x * BEDROCK_UPPER_X, y * BEDROCK_UPPER_Y)
 
         obsidianProbability = 70
         stoneProbability = 20 + obsidianProbability
         hellStoneProbability = 12.5 + stoneProbability
-
-        back = obsidian
-        front  = obsidian
 
         if(front <= obsidianProbability):
             front = obsidian
@@ -93,8 +94,8 @@ class chunkGenerator:
 
     def getLowerCaves(self, x, y):
 
-        front,a,b  =  self.frontVal(x * CAVE_X, y * CAVE_Y)
-        back,a,b   =  self.backVal(x * CAVE_X, y * CAVE_Y)
+        front  =  self.frontVal(x * CAVE_X, y * CAVE_Y)
+        back   =  self.backVal(x * CAVE_X, y * CAVE_Y)
 
         obsidianProbability   =  20
         stoneProbability      =  obsidianProbability + 20
@@ -130,8 +131,8 @@ class chunkGenerator:
 
     def getMiddleCaves(self, x, y):
 
-        front,a,b  =  self.frontVal(x * CAVE_X, y * CAVE_Y)
-        back,a,b   =  self.backVal(x * CAVE_X, y * CAVE_Y)
+        front  =  self.frontVal(x * CAVE_X, y * CAVE_Y)
+        back   =  self.backVal(x * CAVE_X, y * CAVE_Y)
 
         stoneProbability = 30
         graniteProbability = 20 + stoneProbability
@@ -166,8 +167,8 @@ class chunkGenerator:
 
     def getUpperCaves(self, x, y):
 
-        front,a,b  =  self.frontVal(x * CAVE_X, y * CAVE_Y)
-        back,a,b   =  self.backVal(x * CAVE_X, y * CAVE_Y)
+        front  =  self.frontVal(x * CAVE_X, y * CAVE_Y)
+        back   =  self.backVal(x * CAVE_X, y * CAVE_Y)
 
         stoneProbability = 75
         ironProbability = 12.5 + stoneProbability
@@ -186,8 +187,8 @@ class chunkGenerator:
 
     def getLowerUnderground(self, x, y):
 
-        front,a,b  =  self.frontVal(x * UNDERGROUND_X, y * UNDERGROUND_Y)
-        back,a,b   =  self.backVal(x * UNDERGROUND_X, y * UNDERGROUND_Y)
+        front  =  self.frontVal(x * UNDERGROUND_X, y * UNDERGROUND_Y)
+        back   =  self.backVal(x * UNDERGROUND_X, y * UNDERGROUND_Y)
 
         gravelProbability = 20
         dirtProbability = 20 + gravelProbability
@@ -217,8 +218,8 @@ class chunkGenerator:
 
     def getUpperUnderground(self, x, y):
 
-        front,a,b  =  self.frontVal(x * UNDERGROUND_X, y * UNDERGROUND_Y)
-        back,a,b   =  self.backVal(x * UNDERGROUND_X, y * UNDERGROUND_Y)
+        front  =  self.frontVal(x * UNDERGROUND_X, y * UNDERGROUND_Y)
+        back   =  self.backVal(x * UNDERGROUND_X, y * UNDERGROUND_Y)
 
         gravelProbability = 20
         dirtProbability = 20 + gravelProbability

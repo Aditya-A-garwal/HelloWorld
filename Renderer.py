@@ -165,7 +165,7 @@ class Renderer:
             leftWalker      -= 1
 
         #** Temporary player crosshair rendering
-        playerCoors = [cls.player[0], cls.player[1]]
+        playerCoors = [cls.player.pos[0], cls.player.pos[1]]
 
         #** Translate to be in camera space
         playerCoors[0] -= cls.camera[0]

@@ -7,18 +7,30 @@ from constants import *
 class Entity:
 
     def __init__(self, i, sp, p, f, h=100, g=True):
+        """[summary]
 
-        self.id             =   i
-        self.spawnPoint     =   sp
-        self.pos            =   p
-        self.friction       =   f
-        self.health         =   h
-        self.grounded       =   g
-        self.prevkp         =   None
-        self.vel            =   [0, 0]
-        self.acc            =   [0, 0]
+        Args:
+            i (int): [description]
+            sp (list): [description]
+            p (list): [description]
+            f (float): [description]
+            h (double, optional): [description]. Defaults to 100.
+            g (boolean, optional): [description]. Defaults to True.
+        """
+
+        self.id             =  i
+        self.spawnPoint     =  sp
+        self.pos            =  p
+        self.friction       =  f
+        self.health         =  h
+        self.grounded       =  g
+
+        self.prevkp         =  None
+        self.vel            =  [0, 0]
+        self.acc            =  [0, 0]
 
     def run(self, kp, kr, dt):
+
         if self.prevkp is None:
             self.prevkp = kp
 

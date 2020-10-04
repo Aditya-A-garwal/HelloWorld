@@ -5,6 +5,8 @@ from Renderer import *
 from chunkGenerator import *
 from Serializer import *
 
+import entity
+
 # Screen variables
 displaySize = [400, 300]  #[pygame.display.Info().current_w//2, pygame.display.Info().current_h//2]
 prevFramerate = framerate = 0
@@ -14,7 +16,7 @@ camera = pygame.math.Vector2([0, CHUNK_HEIGHT_P//2])
 prevCamera = [0, 0]
 
 # Player variables
-player = pygame.math.Vector2([0, 0])
+player = entity.Entity(0, [0, 0], [0, 0], 0.25)
 playerInc = [0,0]
 currChunk = prevChunk = deltaChunk = 0
 speed = 20 * TILE_WIDTH #number of tiles to move per second
@@ -67,9 +69,9 @@ while running:
             Renderer.render()
 
     # camera movement handling
-    # camera[0] += (player[0]-camera[0]) * 0.05
-    # camera[1] += (player[1]-camera[1]) * 0.05
-    camera[0], camera[1] = camera.lerp(player, 0.05)
+    camera[0] += (player.pos[0]-camera[0]) * 0.05
+    camera[1] += (player.pos[1]-camera[1]) * 0.05
+    #camera[0], camera[1] = camera.lerp(player, 0.05)
 
     if(int(prevCamera[0]) != int(camera[0]) or int(prevCamera[1]) != int(camera[1])):
         Renderer.updateCam()
@@ -99,9 +101,9 @@ while running:
     prevFramerate = 1000 / frameTime
 
     # Player movement handling
-    player[0] += (speed / prevFramerate) * playerInc[0]
-    player[1] += (speed / prevFramerate) * playerInc[1]
-    if not(0 < player[1] < CHUNK_HEIGHT_P): player[1] -= (speed / prevFramerate) * playerInc[1]
+    player.pos[0] += (speed / prevFramerate) * playerInc[0]
+    player.pos[1] += (speed / prevFramerate) * playerInc[1]
+    if not(0 < player.pos[1] < CHUNK_HEIGHT_P): player.pos[1] -= (speed / prevFramerate) * playerInc[1]
 
     deltaChunk = currChunk-prevChunk
     prevChunk = currChunk
