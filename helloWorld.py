@@ -1,4 +1,4 @@
-import sys
+import sys, time
 from pygame.locals import *
 
 from Renderer import *
@@ -16,7 +16,7 @@ camera = pygame.math.Vector2([0, CHUNK_HEIGHT_P//2])
 prevCamera = [0, 0]
 
 # Player variables
-player = entity.Entity(0, [0, 0], [0, 0], 0.25)
+player = entity.Entity(0, [0, 0], [0, 0], DEFAULT_FRICTION)
 playerInc = [0,0]
 currChunk = prevChunk = deltaChunk = 0
 speed = 20 * TILE_WIDTH #number of tiles to move per second
@@ -48,18 +48,23 @@ Renderer.initialize(chunkBuffer, camera, player, displaySize, screen)
 
 # game loop
 running = True
+keyRelease, keyPress = None, None
+now = prev = time.time()
 while running:
 
     # Client-side
 
-    keyRelease, keyPress = None, None
+
 
     # event handling loop
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False #quit game if user leaves
 
-        elif event.type == pygame.KEYDOWN: keyPress = event.key
+        elif event.type == pygame.KEYDOWN:
+            keyPress = event.key
+            if keyPress==keyRelease:
+                keyRelease=None
         elif event.type == pygame.KEYUP: keyRelease = event.key
 
         elif event.type == pygame.VIDEORESIZE:
@@ -87,23 +92,27 @@ while running:
     # Server-side
 
     # Key to movement translation
-    if(keyPress is pygame.K_a): playerInc[0] = -1
-    elif(keyPress is pygame.K_d): playerInc[0] = 1
-
-    if(keyPress is pygame.K_w): playerInc[1] = 1
-    elif(keyPress is pygame.K_s): playerInc[1] = -1
-
-    if(keyRelease is pygame.K_a or keyRelease is pygame.K_d): playerInc[0] = 0
-    elif(keyRelease is pygame.K_w or keyRelease is pygame.K_s): playerInc[1] = 0
+    # if(keyPress is pygame.K_a): playerInc[0] = -1
+    # elif(keyPress is pygame.K_d): playerInc[0] = 1
+    #
+    # if(keyPress is pygame.K_w): playerInc[1] = 1
+    # elif(keyPress is pygame.K_s): playerInc[1] = -1
+    #
+    # if(keyRelease is pygame.K_a or keyRelease is pygame.K_d): playerInc[0] = 0
+    # elif(keyRelease is pygame.K_w or keyRelease is pygame.K_s): playerInc[1] = 0
 
     # Framerate calculation
     frameTime = clock.tick(framerate) + 1
     prevFramerate = 1000 / frameTime
 
     # Player movement handling
-    player.pos[0] += (speed / prevFramerate) * playerInc[0]
-    player.pos[1] += (speed / prevFramerate) * playerInc[1]
-    if not(0 < player.pos[1] < CHUNK_HEIGHT_P): player.pos[1] -= (speed / prevFramerate) * playerInc[1]
+    # player.pos[0] += (speed / prevFramerate) * playerInc[0]
+    # player.pos[1] += (speed / prevFramerate) * playerInc[1]
+    # if not(0 < player.pos[1] < CHUNK_HEIGHT_P): player.pos[1] -= (speed / prevFramerate) * playerInc[1]
+
+    now = time.time()
+    dt = now - prev
+    player.run(keyPress, keyRelease, dt)
 
     deltaChunk = currChunk-prevChunk
     prevChunk = currChunk
@@ -117,6 +126,7 @@ while running:
         # Player has moved left
         chunkBuffer.shiftRight()
         Renderer.renderChunk(0)
+    prev = now
 
 chunkBuffer.saveComplete()
 chunkBuffer.serializer.stop()
