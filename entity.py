@@ -25,20 +25,16 @@ class Entity:
         self.health         =  h
         self.grounded       =  g
 
-        self.prevkp         =  None
         self.vel            =  [0.0, 0.0]
         self.acc            =  [0.0, 0.0]
 
     def run(self, kp, kr, dt):
-        if self.prevkp is None:
-            self.prevkp = kp
 
         if kr is kp:
             if (kp == pygame.K_a) or (kp == pygame.K_d):
                 self.acc[0] = 0
             elif (kp == pygame.K_s) or (kp == pygame.K_w):
                 self.acc[1] = 0
-            kp = self.prevkp = None
 
         ## Key handling for movement
         if kp is pygame.K_a:
@@ -52,52 +48,51 @@ class Entity:
 
         self.update(dt)
 
-        self.prevkp = kp
-
     def update(self, dt):
-        # if self.acc[0]>0:
-        #     self.acc[0] -= self.friction
-        # elif self.acc[0]<0:
-        #     self.acc[0] += self.friction
 
-        # if self.acc[0] > 1:
-        #     self.acc[0] = 1
-        # elif self.acc[0] < -1:
-        #     self.acc[0] = -1
-        # if self.acc[1] > 1:
-        #     self.acc[1] = 1
-        # elif self.acc[1] < -1:
-        #     self.acc[1] = -1
-
-        if (self.vel[0] + self.acc[0] * dt) >= 0 >= (self.vel[0] + self.acc[0] * dt - self.friction * dt):
-            self.vel[0] = 0
-        elif (self.vel[0] + self.acc[0] * dt) <= 0 <= (self.vel[0] + self.acc[0] * dt + self.friction * dt):
-            self.vel[0] = 0
-        elif 0 <= self.vel[0] + self.acc[0] * dt - self.friction * dt < 1:
-            self.vel[0] += self.acc[0] * dt - self.friction * dt
-        elif 0 >= self.vel[0] + self.acc[0] * dt + self.friction * dt > -1:
-            self.vel[0] += self.acc[0] * dt + self.friction * dt
+        if abs(self.vel[0] + self.acc[0]*dt) >= abs(self.friction*dt):
+            if self.vel[0] + self.acc[0]*dt > 0:
+                self.acc[0] -= self.friction
+            elif self.vel[0] + self.acc[0]*dt < 0:
+                self.acc[0] += self.friction
         else:
-            if self.vel[0] < 0:
-                self.vel[0] = -1
-            else:
-                self.vel[0] = 1
-        if (self.vel[1] + self.acc[1] * dt) >= 0 >= (self.vel[1] + self.acc[1] * dt - self.friction * dt):
-            self.vel[1] = 0
-        elif (self.vel[1] + self.acc[1] * dt) <= 0 <= (self.vel[1] + self.acc[1] * dt + self.friction * dt):
-            self.vel[1] = 0
-        elif 0 <= self.vel[1] + self.acc[1] * dt - self.friction * dt < 1:
-            self.vel[1] += self.acc[1] * dt - self.friction * dt
-        elif 0 >= self.vel[1] + self.acc[1] * dt + self.friction * dt > -1:
-            self.vel[1] += self.acc[1] * dt + self.friction * dt
+            self.vel[0] = 0
+            self.acc[0] = 0
+        if abs(self.vel[1] + self.acc[1]*dt) >= abs(self.friction*dt):
+            if self.vel[1] + self.acc[1]*dt > 0:
+                self.acc[1] -= self.friction
+            elif self.vel[1] + self.acc[1]*dt < 0:
+                self.acc[1] += self.friction
         else:
-            if self.vel[1] < 0:
-                self.vel[1] = -1
-            else:
-                self.vel[1] = 1
+            self.vel[1] = 0
+            self.acc[1] = 0
 
-        self.pos[0] += self.vel[0] * dt * SCALE_SPEED
-        self.pos[1] += self.vel[1] * dt * SCALE_SPEED
+        if self.acc[0] > MAX_ACC:
+            self.acc[0] = MAX_ACC
+        elif self.acc[0] < -MAX_ACC:
+            self.acc[0] = -MAX_ACC
+        if self.acc[1] > MAX_ACC:
+            self.acc[1] = MAX_ACC
+        elif self.acc[1] < -MAX_ACC:
+            self.acc[1] = -MAX_ACC
+
+        if -MAX_VEL <= self.vel[0] + self.acc[0] * dt <= MAX_VEL:
+            self.vel[0] += self.acc[0] * dt
+        else:
+            if self.vel[0] + self.acc[0] * dt < 0:
+                self.vel[0] = -MAX_VEL
+            elif self.vel[0] + self.acc[0] * dt > 0:
+                self.vel[0] = MAX_VEL
+        if -MAX_VEL <= self.vel[1] + self.acc[1] * dt <= MAX_VEL:
+            self.vel[1] += self.acc[1] * dt
+        else:
+            if self.vel[1] + self.acc[1] * dt < 0:
+                self.vel[1] = -MAX_VEL
+            elif self.vel[1] + self.acc[1] * dt > 0:
+                self.vel[1] = MAX_VEL
+
+        self.pos[0] += self.vel[0] * dt * SCALE_VEL
+        self.pos[1] += self.vel[1] * dt * SCALE_VEL
 
     def moveLeft(self):
         self.acc[0] = -self.friction * 2
