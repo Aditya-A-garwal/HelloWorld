@@ -35,6 +35,7 @@ class Entity:
                 self.acc[0] = 0
             elif (kp == pygame.K_s) or (kp == pygame.K_w):
                 self.acc[1] = 0
+            kp = None
 
         ## Key handling for movement
         if kp is pygame.K_a:

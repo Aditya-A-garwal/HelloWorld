@@ -31,6 +31,5 @@ AIR_FRICTION        =  0.2
 UP_ACC              =  0.8
 DOWN_ACC            =  0.8
 DEFAULT_FRICTION    =  0.5
-DEFAULT_FRICTION    =  0.5
 MAX_ACC             =  1
 MAX_VEL             =  1
