@@ -26,15 +26,18 @@ class Entity:
         self.grounded       =  g
 
         self.prevkp         =  None
-        self.vel            =  [0, 0]
-        self.acc            =  [0, 0]
+        self.vel            =  [0.0, 0.0]
+        self.acc            =  [0.0, 0.0]
 
     def run(self, kp, kr, dt):
-
         if self.prevkp is None:
             self.prevkp = kp
 
         if kr is kp:
+            if (kp == pygame.K_a) or (kp == pygame.K_d):
+                self.acc[0] = 0
+            elif (kp == pygame.K_s) or (kp == pygame.K_w):
+                self.acc[1] = 0
             kp = self.prevkp = None
 
         ## Key handling for movement
@@ -52,52 +55,63 @@ class Entity:
         self.prevkp = kp
 
     def update(self, dt):
-        if self.acc[0] - self.friction > 0:
-            self.acc[0] -= self.friction
-        elif self.acc[0] + self.friction < 0:
-            self.acc[0] += self.friction
-        else:
-            self.acc[0] = 0
+        # if self.acc[0]>0:
+        #     self.acc[0] -= self.friction
+        # elif self.acc[0]<0:
+        #     self.acc[0] += self.friction
 
-        if self.acc[0] > 1:
-            self.acc[0] = 1
-        elif self.acc[0] < -1:
-            self.acc[0] = -1
-        if self.acc[1] > 1:
-            self.acc[1] = 1
-        elif self.acc[1] < -1:
-            self.acc[1] = -1
+        # if self.acc[0] > 1:
+        #     self.acc[0] = 1
+        # elif self.acc[0] < -1:
+        #     self.acc[0] = -1
+        # if self.acc[1] > 1:
+        #     self.acc[1] = 1
+        # elif self.acc[1] < -1:
+        #     self.acc[1] = -1
 
-        if abs(self.vel[0]+self.acc[0]*dt)<1:
-            self.vel[0] += self.acc[0]*dt
+        if (self.vel[0] + self.acc[0] * dt) >= 0 >= (self.vel[0] + self.acc[0] * dt - self.friction * dt):
+            self.vel[0] = 0
+        elif (self.vel[0] + self.acc[0] * dt) <= 0 <= (self.vel[0] + self.acc[0] * dt + self.friction * dt):
+            self.vel[0] = 0
+        elif 0 <= self.vel[0] + self.acc[0] * dt - self.friction * dt < 1:
+            self.vel[0] += self.acc[0] * dt - self.friction * dt
+        elif 0 >= self.vel[0] + self.acc[0] * dt + self.friction * dt > -1:
+            self.vel[0] += self.acc[0] * dt + self.friction * dt
         else:
             if self.vel[0] < 0:
                 self.vel[0] = -1
             else:
                 self.vel[0] = 1
-        if abs(self.vel[1]+self.acc[1]*dt) < 1:
-            self.vel[1] += self.acc[1]*dt
+        if (self.vel[1] + self.acc[1] * dt) >= 0 >= (self.vel[1] + self.acc[1] * dt - self.friction * dt):
+            self.vel[1] = 0
+        elif (self.vel[1] + self.acc[1] * dt) <= 0 <= (self.vel[1] + self.acc[1] * dt + self.friction * dt):
+            self.vel[1] = 0
+        elif 0 <= self.vel[1] + self.acc[1] * dt - self.friction * dt < 1:
+            self.vel[1] += self.acc[1] * dt - self.friction * dt
+        elif 0 >= self.vel[1] + self.acc[1] * dt + self.friction * dt > -1:
+            self.vel[1] += self.acc[1] * dt + self.friction * dt
         else:
             if self.vel[1] < 0:
                 self.vel[1] = -1
             else:
                 self.vel[1] = 1
-        self.pos[0] += self.vel[0]*dt*SCALE_SPEED
-        self.pos[1] += self.vel[1]*dt*SCALE_SPEED
+
+        self.pos[0] += self.vel[0] * dt * SCALE_SPEED
+        self.pos[1] += self.vel[1] * dt * SCALE_SPEED
 
     def moveLeft(self):
-        self.acc[0] -= self.friction*2
+        self.acc[0] = -self.friction * 2
 
     def moveRight(self):
-        self.acc[0] += self.friction*2
+        self.acc[0] = self.friction * 2
 
-    def moveUp(self):    # only temporary to adjust to current usage. Will be changed to jump
+    def moveUp(self):  # only temporary to adjust to current usage. Will be changed to jump
         # self.vel[1] = JUMP_VEL
         # self.acc[1] = max(0, self.acc[1] - AIR_FRICTION)
-        self.acc[1] += UP_ACC
+        self.acc[1] = self.friction * 2
 
-    def moveDown(self):    # only temporary to adjust to current usage. Will be changed/removed
-        self.acc[1] -= DOWN_ACC
+    def moveDown(self):  # only temporary to adjust to current usage. Will be changed/removed
+        self.acc[1] = -self.friction * 2
 
     def calcFriction(self, c):
         pass
@@ -110,7 +124,6 @@ class Entity:
 
     def notObstacle(self, c):
         pass
-
 
 # class EntityBuffer:
 #     pass
