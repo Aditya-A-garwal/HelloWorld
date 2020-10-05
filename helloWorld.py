@@ -62,10 +62,14 @@ while running:
             running = False #quit game if user leaves
 
         elif event.type == pygame.KEYDOWN:
+            player.keyPress(event.key)
             keyPress = event.key
             if keyPress==keyRelease:
                 keyRelease=None
-        elif event.type == pygame.KEYUP: keyRelease = event.key
+
+        elif event.type == pygame.KEYUP:
+            player.keyRelease(event.key)
+            keyRelease = event.key
 
         elif event.type == pygame.VIDEORESIZE:
             displaySize[0], displaySize[1] = screen.get_width(), screen.get_height()
@@ -109,10 +113,8 @@ while running:
     # player.pos[0] += (speed / prevFramerate) * playerInc[0]
     # player.pos[1] += (speed / prevFramerate) * playerInc[1]
     # if not(0 < player.pos[1] < CHUNK_HEIGHT_P): player.pos[1] -= (speed / prevFramerate) * playerInc[1]
-
-    now = time.time()
-    dt = now - prev
-    player.run(keyPress, keyRelease, dt)
+    #player.run(keyPress, keyRelease, frameTime/1000)
+    player.update(frameTime)
 
     deltaChunk = currChunk-prevChunk
     prevChunk = currChunk
@@ -126,7 +128,6 @@ while running:
         # Player has moved left
         chunkBuffer.shiftRight()
         Renderer.renderChunk(0)
-    prev = now
 
 chunkBuffer.saveComplete()
 chunkBuffer.serializer.stop()
