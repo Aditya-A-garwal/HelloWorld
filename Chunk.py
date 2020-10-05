@@ -66,6 +66,8 @@ class ChunkBuffer:
         self.leftIndex      =  self.middleIndex - self.len // 2
         self.rightIndex     =  self.middleIndex + self.len // 2
 
+        self.positions      =  [middleIndex - self.len // 2, middleIndex, middleIndex + self.len // 2]
+
         self.chunks         =  []
         self.surfaces       =  []
         self.lightSurfs     =  []
@@ -121,7 +123,7 @@ class ChunkBuffer:
 
         li, lo                            =  [self.chunks[self.len].blocks, self.chunks[self.len].walls], self.chunks[self.len].TILE_TABLE_LOCAL
         self.serializer[self.rightIndex]  =  pickle.dumps(li), pickle.dumps(lo) # move rightmost chunk into serializer
-        self.rightIndex                   -= 1
+        self.rightIndex                   += -1
 
         surfRef                           =  self.surfaces[self.len]
         lightSurfRef                      =  self.lightSurfs[self.len]
@@ -133,9 +135,9 @@ class ChunkBuffer:
 
         self.surfaces[0]                  =  surfRef
         self.lightSurfs[0]                =  lightSurfRef
-        self.middleIndex                  -= 1
+        self.middleIndex                  += -1
 
-        self.leftIndex -= 1
+        self.leftIndex                    += -1
         self.chunks[0] = self.serializer[self.leftIndex] # take next left chunk from serializer and move into buffer
 
         if( self.chunks[0] is None ):
@@ -144,6 +146,13 @@ class ChunkBuffer:
         else:
             li, lo          =  pickle.loads( self.chunks[0][0]), pickle.loads(self.chunks[0][1] )
             self.chunks[0]  =  Chunk( self.leftIndex, li[0], li[1], lo )
+
+
+        def shiftBuffer(self, deltaChunk):
+            pass
+
+        def notter(self, num):
+            return -1 - num
 
     def saveComplete(self):
         """[summary]
