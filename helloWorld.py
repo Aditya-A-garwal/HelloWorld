@@ -2,13 +2,12 @@ import sys, time
 from pygame.locals import *
 
 from Renderer import *
-from chunkGenerator import *
 from Serializer import *
 
 import entity
 
 # Screen variables
-displaySize = [400, 300]  #[pygame.display.Info().current_w//2, pygame.display.Info().current_h//2]
+displaySize = [400, 300]
 prevFramerate = framerate = 0
 
 # Camera variables
@@ -17,43 +16,34 @@ prevCamera = [0, 0]
 
 # Player variables
 player = entity.Entity(0, [0, 0], [0, 0], DEFAULT_FRICTION)
-playerInc = [0,0]
 currChunk = prevChunk = deltaChunk = 0
-speed = 20 * TILE_WIDTH #number of tiles to move per second
-
-#Create noise object
-gen = chunkGenerator()
-
-# Create a database object
-serializer = Serializer("world1")
 
 # Initialize pygame and start clock
 pygame.init()
 clock = pygame.time.Clock()
 
 # Create chunk buffer and chunk-position buffer
-bufferSize = int(pygame.display.Info().current_w/CHUNK_WIDTH_P)+2
-if(bufferSize % 2 == 0): bufferSize += 1
-chunkBuffer = ChunkBuffer(bufferSize, 0, serializer, gen)
-del bufferSize
+chunkBuffer = ChunkBuffer(13, 0, Serializer("world1"), chunkGenerator())
 
 # Create and display window
 screen = pygame.display.set_mode(displaySize, pygame.RESIZABLE)
 pygame.display.set_caption("Hello World!")
 pygame.display.set_icon(pygame.image.load("Resources/Default/gameIcon.png"))
+
+# Convert all images to optimize for blitting
 loadImageTable()
 
 # Initialize the renderer
 Renderer.initialize(chunkBuffer, camera, player, displaySize, screen)
 
+keyRelease = keyPress = None
+
 # game loop
+
 running = True
-keyRelease, keyPress = None, None
-now = prev = time.time()
 while running:
 
     # Client-side
-
 
 
     # event handling loop
@@ -62,13 +52,9 @@ while running:
             running = False #quit game if user leaves
 
         elif event.type == pygame.KEYDOWN:
-            player.keyPress(event.key)
             keyPress = event.key
-            if keyPress==keyRelease:
-                keyRelease=None
 
         elif event.type == pygame.KEYUP:
-            player.keyRelease(event.key)
             keyRelease = event.key
 
         elif event.type == pygame.VIDEORESIZE:
@@ -95,25 +81,21 @@ while running:
 
     # Server-side
 
-    # Key to movement translation
-    # if(keyPress is pygame.K_a): playerInc[0] = -1
-    # elif(keyPress is pygame.K_d): playerInc[0] = 1
-    #
-    # if(keyPress is pygame.K_w): playerInc[1] = 1
-    # elif(keyPress is pygame.K_s): playerInc[1] = -1
-    #
-    # if(keyRelease is pygame.K_a or keyRelease is pygame.K_d): playerInc[0] = 0
-    # elif(keyRelease is pygame.K_w or keyRelease is pygame.K_s): playerInc[1] = 0
-
     # Framerate calculation
     frameTime = clock.tick(framerate) + 1
     prevFramerate = 1000 / frameTime
 
     # Player movement handling
-    # player.pos[0] += (speed / prevFramerate) * playerInc[0]
-    # player.pos[1] += (speed / prevFramerate) * playerInc[1]
-    # if not(0 < player.pos[1] < CHUNK_HEIGHT_P): player.pos[1] -= (speed / prevFramerate) * playerInc[1]
-    #player.run(keyPress, keyRelease, frameTime/1000)
+    #player.run(keyPress, keyRelease, frameTime)
+
+    if(keyPress is not None):
+        player.keyPress(keyPress)
+        keyPress = None
+
+    if(keyRelease is not None):
+        player.keyRelease(keyRelease)
+        keyRelease = None
+
     player.update(frameTime)
 
     deltaChunk = currChunk-prevChunk
