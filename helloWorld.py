@@ -62,13 +62,13 @@ while running:
             running = False #quit game if user leaves
 
         elif event.type == pygame.KEYDOWN:
-            player.keyPress(event.key)
+            #player.keyPress(event.key)
             keyPress = event.key
             if keyPress==keyRelease:
                 keyRelease=None
 
         elif event.type == pygame.KEYUP:
-            player.keyRelease(event.key)
+            #player.keyRelease(event.key)
             keyRelease = event.key
 
         elif event.type == pygame.VIDEORESIZE:
@@ -113,7 +113,7 @@ while running:
     # player.pos[0] += (speed / prevFramerate) * playerInc[0]
     # player.pos[1] += (speed / prevFramerate) * playerInc[1]
     # if not(0 < player.pos[1] < CHUNK_HEIGHT_P): player.pos[1] -= (speed / prevFramerate) * playerInc[1]
-    #player.run(keyPress, keyRelease, frameTime/1000)
+    player.run(keyPress, keyRelease, frameTime/1000)
     player.update(frameTime)
 
     deltaChunk = currChunk-prevChunk

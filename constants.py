@@ -26,7 +26,7 @@ UNDERGROUND_Y       =  0.1
 
 ## Constants for entity and physics (time_unit = seconds, length_unit = points)
 GRAVITY_ACC         =  9.8
-SCALE_VEL         = TILE_WIDTH * 12    # 6 is number of tiles to move
+SCALE_VEL           = TILE_WIDTH * 12    # 6 is number of tiles to move
 AIR_FRICTION        =  0.2
 UP_ACC              =  0.8
 DOWN_ACC            =  0.8
