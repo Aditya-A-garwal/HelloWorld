@@ -22,11 +22,13 @@ class Chunk:
         self.TILE_TABLE_LOCAL =  localTable
 
         if(blocks is None):
-            self.blocks         =  [[0 for i in range(0,   CHUNK_WIDTH)] for i in range(0, CHUNK_HEIGHT)]
-            self.walls          =  [[0 for i in range(0,   CHUNK_WIDTH)] for i in range(0, CHUNK_HEIGHT)]
+            self.blocks         =  [[air for i in range(0,   CHUNK_WIDTH)] for i in range(0, CHUNK_HEIGHT)]
+            self.walls          =  [[air for i in range(0,   CHUNK_WIDTH)] for i in range(0, CHUNK_HEIGHT)]
         else:
             self.blocks         =  blocks
             self.walls          =  walls
+
+        self.lightMap           =  [[air for i in range(0,   CHUNK_WIDTH)] for i in range(0, CHUNK_HEIGHT)]
 
     def __getitem__(  self, key  ):
         """[summary]
@@ -152,38 +154,52 @@ class ChunkBuffer:
             self.chunks[0]  =  Chunk( self.leftIndex, li[0], li[1], lo )
 
 
-        # def shiftBuffer(self, deltaChunk):
+    def shiftBuffer(self, deltaChunk):
 
-        #     rev = lambda num : -1-num
-        #     rep = lambda num : (num-1)//2
+        rep = lambda num : (num-1)//2
 
-        #     li                                                          =  [self.chunks[deltaChunk].blocks, self.chunks[deltaChunk].walls]
-        #     lo                                                          =  self.chunks[deltaChunk].TILE_TABLE_LOCAL
-        #     self.serializer[self.positions[rep(deltaChunk)]]   =  pickle.dumps(li), pickle.dumps(lo)
+        li                                                  =  [self.chunks[rep(deltaChunk)].blocks, self.chunks[rep(deltaChunk)].walls]
+        lo                                                  =  self.chunks[rep(deltaChunk)].TILE_TABLE_LOCAL
+        self.serializer[self.positions[rep(deltaChunk)]]    =  pickle.dumps(li), pickle.dumps(lo)
 
-        #     self.positions[rep(deltaChunk)]                    += deltaChunk
+        self.positions[rep(deltaChunk)]                     += deltaChunk
 
-        #     surfRef                                                     =  self.surfaces[rep(deltaChunk)]
-        #     lightSurfRef                                                =  self.lightSurfs[rep(deltaChunk)]
+        if(deltaChunk == 1):
+            surfRef                           =  self.surfaces[rep(deltaChunk)]
+            lightSurfRef                      =  self.lightSurfs[rep(deltaChunk)]
 
-        #     for i in range( self.len, 0, -1 ):
-        #         self.chunks[i]      =   self.chunks[i-1]
-        #         self.surfaces[i]    =   self.surfaces[i-1]
-        #         self.lightSurfs[i]  =   self.lightSurfs[i-1]
+            for i in range( 0, self.len ):
 
-        #     self.surfaces[rep(rev(deltaChunk))]       =  surfRef
-        #     self.lightSurfs[rep(rev(deltaChunk))]     =  lightSurfRef
-        #     self.positions[1]                  += deltaChunk
+                self.chunks[i]      =  self.chunks[i+1]
+                self.surfaces[i]    =  self.surfaces[i+1]
+                self.lightSurfs[i]  =  self.lightSurfs[i+1]
 
-        #     self.positions[rep(rev(deltaChunk))]      += -1
-        #     self.chunks[0] = self.serializer[self.leftIndex]
+            self.surfaces[rep(-deltaChunk)]   =  surfRef
+            self.lightSurfs[rep(-deltaChunk)] =  lightSurfRef
 
-        #     if( self.chunks[0] is None ):
-        #         self.chunks[0] = Chunk( self.leftIndex )
-        #         self.populateChunk( self.chunks[0] )
-        #     else:
-        #         li, lo          =  pickle.loads( self.chunks[0][0]), pickle.loads(self.chunks[0][1] )
-        #         self.chunks[0]  =  Chunk( self.leftIndex, li[0], li[1], lo )
+        else:
+            surfRef                           =  self.surfaces[rep(deltaChunk)]
+            lightSurfRef                      =  self.lightSurfs[rep(deltaChunk)]
+
+            for i in range( self.len, 0, -1 ):
+                self.chunks[i]      =   self.chunks[i-1]
+                self.surfaces[i]    =   self.surfaces[i-1]
+                self.lightSurfs[i]  =   self.lightSurfs[i-1]
+
+            self.surfaces[rep(-deltaChunk)]   =  surfRef
+            self.lightSurfs[rep(-deltaChunk)] =  lightSurfRef
+
+        self.positions[1]                               += deltaChunk
+
+        self.positions[rep(-deltaChunk)]                += deltaChunk
+        self.chunks[rep(-deltaChunk)]                   = self.serializer[self.positions[rep(-deltaChunk)]]
+
+        if( self.chunks[rep(-deltaChunk)] is None ):
+            self.chunks[rep(-deltaChunk)] = Chunk( self.positions[rep(-deltaChunk)] )
+            self.populateChunk( self.chunks[rep( -deltaChunk )] )
+        else:
+            li, lo          =  pickle.loads( self.chunks[rep(-deltaChunk)][0] ), pickle.loads( self.chunks[rep(-deltaChunk)][1] )
+            self.chunks[0]  =  Chunk( self.positions[rep(-deltaChunk)], li[0], li[1], lo )
 
     def saveComplete(self):
         """[summary]

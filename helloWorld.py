@@ -52,10 +52,14 @@ while running:
             running = False #quit game if user leaves
 
         elif event.type == pygame.KEYDOWN:
-            keyPress = event.key
+            if(event.key is pygame.K_c):
+                Renderer.setShaders()
+            else:
+                keyPress = event.key
 
         elif event.type == pygame.KEYUP:
-            keyRelease = event.key
+            if(event.key is not pygame.K_c):
+                keyRelease = event.key
 
         elif event.type == pygame.VIDEORESIZE:
             displaySize[0], displaySize[1] = screen.get_width(), screen.get_height()
@@ -66,7 +70,6 @@ while running:
     # camera movement handling
     camera[0] += (player.pos[0]-camera[0]) * 0.05
     camera[1] += (player.pos[1]-camera[1]) * 0.05
-    #camera[0], camera[1] = camera.lerp(player, 0.05)
 
     if(int(prevCamera[0]) != int(camera[0]) or int(prevCamera[1]) != int(camera[1])):
         Renderer.updateCam()
@@ -104,11 +107,17 @@ while running:
     if(deltaChunk > 0):
         # Player has moved right
         chunkBuffer.shiftLeft()
+        #chunkBuffer.shiftBuffer(1)
+        # for i in range(0, 13): print(chunkBuffer.chunks[i].index, end='    ')
+        # print()
         Renderer.renderChunk(-1)
 
     elif(deltaChunk < 0):
         # Player has moved left
         chunkBuffer.shiftRight()
+        #chunkBuffer.shiftBuffer(-1)
+        # for i in range(0, 13): print(chunkBuffer.chunks[i].index, end='    ')
+        # print()
         Renderer.renderChunk(0)
 
 chunkBuffer.saveComplete()
