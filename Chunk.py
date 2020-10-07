@@ -175,45 +175,38 @@ class ChunkBuffer:
             self.chunks[0]  =  Chunk( self.leftIndex, li[0], li[1], lo )
 
 
-    def shiftBuffer(self, deltaChunk):
+    def shiftBuffer( self, deltaChunk ):
 
-        rep = lambda num : (num-1)//2
+        rep = lambda num : ( num-1 )//2
 
-        li                                                  =  [self.chunks[rep(deltaChunk)].blocks, self.chunks[rep(deltaChunk)].walls]
-        lo                                                  =  self.chunks[rep(deltaChunk)].TILE_TABLE_LOCAL
-        self.serializer[self.positions[rep(deltaChunk)]]    =  pickle.dumps(li), pickle.dumps(lo)
+        li                                                  =  [self.chunks[rep( deltaChunk )].blocks, self.chunks[rep( deltaChunk )].walls]
+        lo                                                  =  self.chunks[rep( deltaChunk )].TILE_TABLE_LOCAL
+        self.serializer[self.positions[rep(deltaChunk)]]    =  pickle.dumps( li ), pickle.dumps( lo )
 
         self.positions[rep(deltaChunk)]                     += deltaChunk
 
-        if(deltaChunk == 1):
-            surfRef                           =  self.surfaces[rep(deltaChunk)]
-            lightSurfRef                      =  self.lightSurfs[rep(deltaChunk)]
+        surfRef                                             =  self.surfaces[rep( deltaChunk )]
+        lightSurfRef                                        =  self.lightSurfs[rep( deltaChunk )]
 
+        if( deltaChunk > 0 ):
             for i in range( 0, self.len ):
-
                 self.chunks[i]      =  self.chunks[i+1]
                 self.surfaces[i]    =  self.surfaces[i+1]
                 self.lightSurfs[i]  =  self.lightSurfs[i+1]
 
-            self.surfaces[rep(-deltaChunk)]   =  surfRef
-            self.lightSurfs[rep(-deltaChunk)] =  lightSurfRef
-
-        else:
-            surfRef                           =  self.surfaces[rep(deltaChunk)]
-            lightSurfRef                      =  self.lightSurfs[rep(deltaChunk)]
-
+        elif( deltaChunk < 0 ):
             for i in range( self.len, 0, -1 ):
                 self.chunks[i]      =   self.chunks[i-1]
                 self.surfaces[i]    =   self.surfaces[i-1]
                 self.lightSurfs[i]  =   self.lightSurfs[i-1]
 
-            self.surfaces[rep(-deltaChunk)]   =  surfRef
-            self.lightSurfs[rep(-deltaChunk)] =  lightSurfRef
+        self.surfaces[rep(-deltaChunk)]                     =  surfRef
+        self.lightSurfs[rep(-deltaChunk)]                   =  lightSurfRef
 
-        self.positions[1]                               += deltaChunk
+        self.positions[1]                                   += deltaChunk
+        self.positions[rep(-deltaChunk)]                    += deltaChunk
 
-        self.positions[rep(-deltaChunk)]                += deltaChunk
-        self.chunks[rep(-deltaChunk)]                   = self.serializer[self.positions[rep(-deltaChunk)]]
+        self.chunks[rep(-deltaChunk)]                       = self.serializer[self.positions[rep(-deltaChunk)]]
 
         if( self.chunks[rep(-deltaChunk)] is None ):
             self.chunks[rep(-deltaChunk)] = Chunk( self.positions[rep(-deltaChunk)] )
