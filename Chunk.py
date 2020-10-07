@@ -30,6 +30,27 @@ class Chunk:
 
         self.lightMap           =  [[air for i in range(0,   CHUNK_WIDTH)] for i in range(0, CHUNK_HEIGHT)]
 
+
+    def formLightMap( self ):
+
+        for i in range(0, CHUNK_HEIGHT):
+            for j in range(0, CHUNK_WIDTH):
+
+                self.lightMap[i][j] = TILE_ATTR[self[i][j]][LUMINOSITY]
+                # if(currTileRef >= 0):
+                #     currLightMap[i][j] = TILE_ATTR[currTileRef][LUMINOSITY]
+                # elif(currWallRef >= 0):
+                #     currLightMap[i][j] = TILE_ATTR[currTileRef][LUMINOSITY]
+
+    # def propogate( cls, index, x, y ):
+
+    #     currChunkRef = cls.chunkBuffer[index]
+    #     currLightMap = currChunkRef.lightMap
+
+    #     if(currLightMap[y][x] > 0):
+    #         pass
+
+
     def __getitem__(  self, key  ):
         """[summary]
 

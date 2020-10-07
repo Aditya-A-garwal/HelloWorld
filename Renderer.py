@@ -43,7 +43,7 @@ class Renderer:
         cls.length          =  len(cls.chunkBuffer)
         cls.midChunk        =  (cls.length - 1) // 2
 
-        cls.isShader         = True
+        cls.isShader         = False
 
         # Update constants to reflect new References
         cls.updateRefs()
@@ -57,7 +57,7 @@ class Renderer:
 
         # Render each chunk
         for c in range( 0, cls.length ):
-            cls.formLightMap( index = c )
+            cls.chunkBuffer[c].formLightMap()
             cls.renderChunk( index = c )
 
     @classmethod
@@ -92,19 +92,17 @@ class Renderer:
                 currWallRef =  currChunkRef.walls[i][j]
                 currLightVal = currChunkRef.lightMap[i][j]
 
+                lightBox.fill( ( currLightVal, currLightVal, currLightVal ) )
+                currLightRef.blit( lightBox, coors )
+
                 if( currTileRef > 0 ):
                     currSurfRef.blit( TILE_TABLE[currTileRef], coors )
-                    currLightRef.blit( lightBox, coors )
-
-                    lightBox.fill( ( currLightVal, currLightVal, currLightVal ) )
 
                 elif( currTileRef < 0 ):
                     pass
 
                 elif( currWallRef > 0 ):
                     currSurfRef.blit( TILE_TABLE[currWallRef], coors )
-                    currLightRef.blit( lightBox, coors )
-                    #lightBox.fill( ( TILE_ATTR[currWallRef][LUMINOSITY], TILE_ATTR[currWallRef][LUMINOSITY], TILE_ATTR[currWallRef][LUMINOSITY] ) )
 
                 elif( currWallRef < 0 ):
                     pass
@@ -113,34 +111,6 @@ class Renderer:
 
             # Every Iteration, decrease the y-coordinate by tile-width
             coors[1]  -= TILE_WIDTH
-
-    @classmethod
-    def formLightMap( cls, index ):
-
-        """[summary]
-
-        Args:
-            index (int): Index of the chunk to render
-        """
-
-        currChunkRef = cls.chunkBuffer[index]
-        currLightMap = currChunkRef.lightMap
-
-        for i in range(0, CHUNK_HEIGHT):
-            for j in range(0, CHUNK_WIDTH):
-                currTileRef = currChunkRef[i][j]
-                currLightMap[i][j] = TILE_ATTR[currTileRef][LUMINOSITY]
-
-
-    # @classmethod
-    # def propogate( cls, index, x, y ):
-
-    #     currChunkRef = cls.chunkBuffer[index]
-    #     currLightMap = currChunkRef.lightMap
-
-    #     if(currLightMap[y][x] > 0):
-    #         pass
-
 
     @classmethod
     def render(  cls  ):
