@@ -86,10 +86,8 @@ class ChunkBuffer:
         self.serializer     =  serializer
         self.chunkGenerator =  chunkGenerator
 
+        self.length         =  length
         self.len            =  length-1
-        self.middleIndex    =  middleIndex
-        self.leftIndex      =  self.middleIndex - self.len // 2
-        self.rightIndex     =  self.middleIndex + self.len // 2
 
         self.positions      =  [middleIndex - self.len // 2, middleIndex, middleIndex + self.len // 2]
 
@@ -97,9 +95,7 @@ class ChunkBuffer:
         self.surfaces       =  []
         self.lightSurfs     =  []
 
-        self.length         =  length
-
-        for i in range( self.leftIndex,  self.rightIndex + 1 ):
+        for i in range( self.positions[0],  self.positions[-1] + 1 ):
 
             retrieved           =   self.serializer[i]
 
@@ -117,104 +113,63 @@ class ChunkBuffer:
             self.surfaces.append( pygame.Surface( ( CHUNK_WIDTH_P, CHUNK_HEIGHT_P ) ) )
             self.lightSurfs.append( pygame.Surface( ( CHUNK_WIDTH_P, CHUNK_HEIGHT_P ) ) )
 
-    def shiftLeft(self):
+    def shiftBuffer( self, deltaChunk, callback ):
 
-        li, lo                           =  [self.chunks[0].blocks, self.chunks[0].walls], self.chunks[0].TILE_TABLE_LOCAL
-        self.serializer[self.leftIndex]  =  pickle.dumps( li ), pickle.dumps( lo ) # move leftmost chunk into serializer
-        self.leftIndex                   += 1
+        #rep = lambda num : ( num-1 )//2
+        rep = lambda num : 0 if num is 1 else -1
 
-        surfRef                          =  self.surfaces[0]
-        lightSurfRef                     =  self.lightSurfs[0]
+        # Index of the chunk to be dumped (-1 while shifting left, 0 while shifting right) and the extremity needing to be changed
+        dumpIndex = rep( deltaChunk)
+
+        # Index of the chunk to be loaded (0 while shifting left, -1 while shifting right) and the extremity needing to be changed
+        loadIndex = rep( -deltaChunk )
+
+        # Ready the tiles, walls and local table to be serialized and dump
+        li                                          =  [self.chunks[dumpIndex].blocks, self.chunks[dumpIndex].walls]
+        lo                                          =  self.chunks[dumpIndex].TILE_TABLE_LOCAL
+        self.serializer[self.positions[dumpIndex]]  =  pickle.dumps( li ), pickle.dumps( lo )
+
+        # After dumping, increment the position of the dumped tile by deltaChunk
+        self.positions[dumpIndex]                   += deltaChunk
+
+        # Get references to surfaces which must be recycled
+        recycleSurf                                 =  self.surfaces[dumpIndex]
+        recycleShade                                =  self.lightSurfs[dumpIndex]
+
+        # Start from last if shifting right otherwise from 0
+        moveIndex                                   =  self.len * -dumpIndex
 
         for i in range( 0, self.len ):
 
-            self.chunks[i]      =  self.chunks[i+1]    # move all chunks one space left
-            self.surfaces[i]    =  self.surfaces[i+1]
-            self.lightSurfs[i]  =  self.lightSurfs[i+1]
+            nextMoveIndex               =  moveIndex + deltaChunk
 
-        self.surfaces[self.len]          =  surfRef
-        self.lightSurfs[self.len]        =  lightSurfRef
-        self.middleIndex                 += 1
+            self.chunks[moveIndex]      =  self.chunks[nextMoveIndex]
+            self.surfaces[moveIndex]    =  self.surfaces[nextMoveIndex]
+            self.lightSurfs[moveIndex]  =  self.lightSurfs[nextMoveIndex]
 
-        self.rightIndex                  += 1
-        self.chunks[self.len]            =  self.serializer[self.rightIndex] # take next left chunk from serializer and move into buffer
+            moveIndex += deltaChunk
 
-        if( self.chunks[self.len] is None ):
-            self.chunks[self.len] = Chunk( self.rightIndex )
-            self.populateChunk( self.chunks[self.len] )
+        # Recycle surfaces
+        self.surfaces[loadIndex]                    =  recycleSurf
+        self.lightSurfs[loadIndex]                  =  recycleShade
+
+        # Increment positions of the chunk to be loaded and the middle chunk by deltaChunk
+        self.positions[1]                           += deltaChunk
+        self.positions[loadIndex]                   += deltaChunk
+
+        # Load new chunk and populate if not generated
+        self.chunks[loadIndex]                      =  self.serializer[self.positions[loadIndex]]
+
+        if( self.chunks[loadIndex] is None ):
+            self.chunks[loadIndex]      =  Chunk( self.positions[loadIndex] )
+            self.populateChunk( self.chunks[loadIndex] )
+
         else:
-            li, lo                 = pickle.loads( self.chunks[self.len][0]), pickle.loads(self.chunks[self.len][1] )
-            self.chunks[self.len]  = Chunk( self.rightIndex, li[0], li[1], lo )
+            li                          =  pickle.loads( self.chunks[loadIndex][0] )
+            lo                          =  pickle.loads( self.chunks[loadIndex][1] )
+            self.chunks[loadIndex]      =  Chunk( self.positions[loadIndex], li[0], li[1], lo )
 
-    def shiftRight(self):
-
-        li, lo                            =  [self.chunks[self.len].blocks, self.chunks[self.len].walls], self.chunks[self.len].TILE_TABLE_LOCAL
-        self.serializer[self.rightIndex]  =  pickle.dumps(li), pickle.dumps(lo) # move rightmost chunk into serializer
-        self.rightIndex                   += -1
-
-        surfRef                           =  self.surfaces[self.len]
-        lightSurfRef                      =  self.lightSurfs[self.len]
-
-        for i in range( self.len, 0, -1 ):
-            self.chunks[i]      =   self.chunks[i-1]    # move all chunks one space right
-            self.surfaces[i]    =   self.surfaces[i-1]
-            self.lightSurfs[i]  =   self.lightSurfs[i-1]
-
-        self.surfaces[0]                  =  surfRef
-        self.lightSurfs[0]                =  lightSurfRef
-        self.middleIndex                  += -1
-
-        self.leftIndex                    += -1
-        self.chunks[0] = self.serializer[self.leftIndex] # take next left chunk from serializer and move into buffer
-
-        if( self.chunks[0] is None ):
-            self.chunks[0] = Chunk( self.leftIndex )
-            self.populateChunk( self.chunks[0] )
-        else:
-            li, lo          =  pickle.loads( self.chunks[0][0]), pickle.loads(self.chunks[0][1] )
-            self.chunks[0]  =  Chunk( self.leftIndex, li[0], li[1], lo )
-
-
-    def shiftBuffer( self, deltaChunk ):
-
-        rep = lambda num : ( num-1 )//2
-
-        li                                                  =  [self.chunks[rep( deltaChunk )].blocks, self.chunks[rep( deltaChunk )].walls]
-        lo                                                  =  self.chunks[rep( deltaChunk )].TILE_TABLE_LOCAL
-        self.serializer[self.positions[rep(deltaChunk)]]    =  pickle.dumps( li ), pickle.dumps( lo )
-
-        self.positions[rep(deltaChunk)]                     += deltaChunk
-
-        surfRef                                             =  self.surfaces[rep( deltaChunk )]
-        lightSurfRef                                        =  self.lightSurfs[rep( deltaChunk )]
-
-        if( deltaChunk > 0 ):
-            print("LEFT")
-            for i in range( 0, self.len ):
-                self.chunks[i]      =  self.chunks[i+1]
-                self.surfaces[i]    =  self.surfaces[i+1]
-                self.lightSurfs[i]  =  self.lightSurfs[i+1]
-
-        elif( deltaChunk < 0 ):
-            for i in range( self.len, 0, -1 ):
-                self.chunks[i]      =   self.chunks[i-1]
-                self.surfaces[i]    =   self.surfaces[i-1]
-                self.lightSurfs[i]  =   self.lightSurfs[i-1]
-
-        self.surfaces[rep(-deltaChunk)]                     =  surfRef
-        self.lightSurfs[rep(-deltaChunk)]                   =  lightSurfRef
-
-        self.positions[1]                                   += deltaChunk
-        self.positions[rep(-deltaChunk)]                    += deltaChunk
-
-        self.chunks[rep(-deltaChunk)]                       = self.serializer[self.positions[rep(-deltaChunk)]]
-
-        if( self.chunks[rep(-deltaChunk)] is None ):
-            self.chunks[rep(-deltaChunk)] = Chunk( self.positions[rep(-deltaChunk)] )
-            self.populateChunk( self.chunks[rep( -deltaChunk )] )
-        else:
-            li, lo          =  pickle.loads( self.chunks[rep(-deltaChunk)][0] ), pickle.loads( self.chunks[rep(-deltaChunk)][1] )
-            self.chunks[0]  =  Chunk( self.positions[rep(-deltaChunk)], li[0], li[1], lo )
+        callback.renderChunk(loadIndex)
 
     def saveComplete(self):
         """[summary]
