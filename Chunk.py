@@ -189,6 +189,7 @@ class ChunkBuffer:
         lightSurfRef                                        =  self.lightSurfs[rep( deltaChunk )]
 
         if( deltaChunk > 0 ):
+            print("LEFT")
             for i in range( 0, self.len ):
                 self.chunks[i]      =  self.chunks[i+1]
                 self.surfaces[i]    =  self.surfaces[i+1]

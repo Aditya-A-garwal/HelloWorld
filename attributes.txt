@@ -3,6 +3,12 @@ http://www.minho-kim.com/courses/17sp43.635/pyopencl.html
 https://www.lfd.uci.edu/~gohlke/pythonlibs/#pyopencl
 ignore these links
 
+Threads-
+    1. Main thread (Client-loop ,rendering, querying to and putting back to RAMDB)
+    2. RAMDB thread (Population, renderingchunk, calculating lighttable, rendering lightmap, query, putting back to ROM)
+    3. Server thread
+
+
 Tiles:             Weight    Friction    Luminosity    Breaktime    Burnable
 
 Bedrock:            100        0             0            -            

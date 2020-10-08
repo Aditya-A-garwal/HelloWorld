@@ -23,7 +23,7 @@ pygame.init()
 clock = pygame.time.Clock()
 
 # Create chunk buffer and chunk-position buffer
-chunkBuffer = ChunkBuffer(13, 0, Serializer("world1"), chunkGenerator())
+chunkBuffer = ChunkBuffer(199, 0, Serializer("world1"), chunkGenerator())
 
 # Create and display window
 screen = pygame.display.set_mode(displaySize, pygame.RESIZABLE)
@@ -106,18 +106,18 @@ while running:
 
     if(deltaChunk > 0):
         # Player has moved right
-        #chunkBuffer.shiftLeft()
-        chunkBuffer.shiftBuffer(deltaChunk)
-        for i in range(0, 13): print(chunkBuffer.chunks[i].index, end='    ')
-        print()
+        chunkBuffer.shiftLeft()
+        # chunkBuffer.shiftBuffer(deltaChunk)
+        # for i in range(0, 13): print(chunkBuffer.chunks[i].index, end='    ')
+        # print()
         Renderer.renderChunk(-1)
 
     elif(deltaChunk < 0):
         # Player has moved left
-        #chunkBuffer.shiftRight()
-        chunkBuffer.shiftBuffer(deltaChunk)
-        for i in range(0, 13): print(chunkBuffer.chunks[i].index, end='    ')
-        print()
+        chunkBuffer.shiftRight()
+        # chunkBuffer.shiftBuffer(deltaChunk)
+        # for i in range(0, 13): print(chunkBuffer.chunks[i].index, end='    ')
+        # print()
         Renderer.renderChunk(0)
 
 chunkBuffer.saveComplete()
