@@ -36,11 +36,16 @@ class Chunk:
         for i in range(0, CHUNK_HEIGHT):
             for j in range(0, CHUNK_WIDTH):
 
-                self.lightMap[i][j] = TILE_ATTR[self[i][j]][LUMINOSITY]
-                # if(currTileRef >= 0):
-                #     currLightMap[i][j] = TILE_ATTR[currTileRef][LUMINOSITY]
-                # elif(currWallRef >= 0):
-                #     currLightMap[i][j] = TILE_ATTR[currTileRef][LUMINOSITY]
+                currTileRef = self[i][j]
+                currWallRef = self.walls[i][j]
+
+                #self.lightMap[i][j] = TILE_ATTR[currTileRef][LUMINOSITY]
+                if(currTileRef > 0):
+                    self.lightMap[i][j] = TILE_ATTR[currTileRef][LUMINOSITY]
+                elif(currWallRef > 0):
+                    self.lightMap[i][j] = TILE_ATTR[currTileRef][LUMINOSITY]
+                else:
+                    self.lightMap[i][j] = TILE_ATTR[currTileRef][LUMINOSITY]
 
     # def propogate( cls, index, x, y ):
 
@@ -100,20 +105,29 @@ class ChunkBuffer:
             retrieved           =   self.serializer[i]
 
             if( retrieved is None ):
-                retrieved  =   Chunk( i )
+                retrieved  =  Chunk( i )
                 self.populateChunk( retrieved )
 
             else:
-                li         = pickle.loads( retrieved[0] )
-                lo         = pickle.loads( retrieved[1] )
+                li         =  pickle.loads( retrieved[0] )
+                lo         =  pickle.loads( retrieved[1] )
 
-                retrieved  = Chunk( i, li[0], li[1], lo )
+                retrieved  =  Chunk( i, li[0], li[1], lo )
+
+            retrieved.formLightMap()
 
             self.chunks.append( retrieved )
             self.surfaces.append( pygame.Surface( ( CHUNK_WIDTH_P, CHUNK_HEIGHT_P ) ) )
             self.lightSurfs.append( pygame.Surface( ( CHUNK_WIDTH_P, CHUNK_HEIGHT_P ) ) )
 
-    def shiftBuffer( self, deltaChunk, callback ):
+    def shiftBuffer( self, deltaChunk ):
+
+        """Shifts the chunkBuffer by one on either side
+
+        Args:
+            deltaChunk (int): The change in the player's chunk
+            callback (function): Reference to the renderer to render the newly loaded chunks
+        """
 
         #rep = lambda num : ( num-1 )//2
         rep = lambda num : 0 if num is 1 else -1
@@ -169,10 +183,12 @@ class ChunkBuffer:
             lo                          =  pickle.loads( self.chunks[loadIndex][1] )
             self.chunks[loadIndex]      =  Chunk( self.positions[loadIndex], li[0], li[1], lo )
 
-        callback.renderChunk(loadIndex)
+        self.chunks[loadIndex].formLightMap()
+
+        return loadIndex
 
     def saveComplete(self):
-        """[summary]
+        """Saves the complete chunk buffer
         """
         for chunk in self.chunks:
             self.serializer[chunk.index] = pickle.dumps( [chunk.blocks, chunk.walls] ), pickle.dumps( chunk.TILE_TABLE_LOCAL )

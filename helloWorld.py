@@ -104,8 +104,9 @@ while running:
     deltaChunk = currChunk-prevChunk
     prevChunk = currChunk
 
-    if(deltaChunk is not 0):        # Player has moved
-        chunkBuffer.shiftBuffer(deltaChunk, Renderer)
+    if(deltaChunk != 0):        # Player has moved
+        loadedIndex = chunkBuffer.shiftBuffer(deltaChunk)
+        Renderer.renderChunk(loadedIndex)
 
 chunkBuffer.saveComplete()
 chunkBuffer.serializer.stop()

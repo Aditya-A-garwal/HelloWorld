@@ -20,7 +20,7 @@ import math
 class Renderer:
 
     @classmethod
-    def initialize(cls, chunkBuffer, camera, player, displaySize, screen):
+    def initialize(cls, chunkBuffer, camera, player, windowSize, screen):
 
         """Initializes the class with references to global objects
 
@@ -28,7 +28,7 @@ class Renderer:
             chunkBuffer (chunkBuffer): Reference to the client's chunkBuffer
             camera (list): Reference to the client's camera
             player (list): Reference to the client's player
-            displaySize (list): Reference to a list containing the size of the current window
+            windowSize (list): Reference to a list containing the size of the current window
             screen (Pygame.Surface): Reference to the window's surface
         """
 
@@ -36,7 +36,7 @@ class Renderer:
         cls.chunkBuffer     =  chunkBuffer
         cls.player          =  player
         cls.camera          =  camera
-        cls.displaySize     =  displaySize
+        cls.windowSize     =  windowSize
         cls.screen          =  screen
 
         # Index of the middle chunk in the chunk buffer
@@ -57,7 +57,6 @@ class Renderer:
 
         # Render each chunk
         for c in range( 0, cls.length ):
-            cls.chunkBuffer[c].formLightMap()
             cls.renderChunk( index = c )
 
     @classmethod
@@ -136,7 +135,7 @@ class Renderer:
                 sliceSurf       =  cls.chunkBuffer.surfaces[rightWalker].subsurface( sliceRect )       # Mini-surface containing the visible region of the chunk's surface
                 lightSurf       =  cls.chunkBuffer.lightSurfs[rightWalker].subsurface( sliceRect )      # Mini-surface containing the visible region of the chunk's lightmap
 
-                if( slicePos[0] > cls.displaySize[0] ):     #** Stop blitting if slice is beyond the right edge od the window
+                if( slicePos[0] > cls.windowSize[0] ):     #** Stop blitting if slice is beyond the right edge od the window
                     rightWalker     =  cls.length
                     break
 
@@ -190,8 +189,8 @@ class Renderer:
     def updateSize(  cls  ):
 
         # Number of pixels to be rendered on the top and side halves of the camera
-        cls.numHor         =  cls.displaySize[0] // 2
-        cls.numVer         =  cls.displaySize[1] // 2
+        cls.numHor         =  cls.windowSize[0] // 2
+        cls.numVer         =  cls.windowSize[1] // 2
 
     @classmethod
     def updateCam(  cls  ):
@@ -208,8 +207,8 @@ class Renderer:
         #** Height of the visible region of the slice
         cls.downIndex   =  CHUNK_HEIGHT_P - cls.upIndex
 
-        if( cls.downIndex > cls.displaySize[1] ):    #** If greater than height-of-window, then make height-of-window
-            cls.downIndex   =  cls.displaySize[1]
+        if( cls.downIndex > cls.windowSize[1] ):    #** If greater than height-of-window, then make height-of-window
+            cls.downIndex   =  cls.windowSize[1]
 
     @classmethod
     def updateRefs(  cls  ):
@@ -246,8 +245,8 @@ class Renderer:
     @classmethod
     def cameraToScreen(cls, coor):
         # From camera-space to screen-space
-        coor[0] += cls.displaySize[0] // 2
-        coor[1] = cls.displaySize[1] // 2 - coor[1]
+        coor[0] += cls.windowSize[0] // 2
+        coor[1] = cls.windowSize[1] // 2 - coor[1]
 
     @classmethod
     def chunkToScreen(cls, coor, chunkInd):
