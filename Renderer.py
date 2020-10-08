@@ -130,9 +130,9 @@ class Renderer:
             while( tileWalker < CHUNK_WIDTH ):
 
                 sliceInd        =  ( cls.chunkBuffer[rightWalker].index * CHUNK_WIDTH ) + tileWalker   # Absoulute index of the current vertical slice
-                slicePos        =  [sliceInd * TILE_WIDTH - cls.camera[0] + cls.numHor, 0]             # List containing the coordinates where the slice must be blitted on-screen
+                slicePos        =  [sliceInd * TILE_WIDTH - cls.camera[0] + cls.numHor, cls.displaySize[1] -(CHUNK_HEIGHT_P - cls.camera[1] + cls.displaySize[1]//2)]             # List containing the coordinates where the slice must be blitted on-screen
 
-                sliceRect       =  [tileWalker * TILE_WIDTH, cls.upIndex, TILE_WIDTH, cls.downIndex]   # Rectangular region containing the "visible" area of the chunk's surface
+                sliceRect       =  [tileWalker * TILE_WIDTH, 0, TILE_WIDTH, CHUNK_HEIGHT_P]   # Rectangular region containing the "visible" area of the chunk's surface
                 sliceSurf       =  cls.chunkBuffer.surfaces[rightWalker].subsurface( sliceRect )       # Mini-surface containing the visible region of the chunk's surface
                 lightSurf       =  cls.chunkBuffer.lightSurfs[rightWalker].subsurface( sliceRect )      # Mini-surface containing the visible region of the chunk's lightmap
 
@@ -156,9 +156,9 @@ class Renderer:
             while( tileWalker >= 0 ):
 
                 sliceInd        =  ( cls.chunkBuffer[leftWalker].index * CHUNK_WIDTH ) + tileWalker     # Absoulute index of the current vertical slice
-                slicePos        =  [sliceInd * TILE_WIDTH - cls.camera[0] + cls.numHor, 0]              # List containing the coordinates where the slice must be blitted on-screen
+                slicePos        =  [sliceInd * TILE_WIDTH - cls.camera[0] + cls.numHor, cls.displaySize[1] -(CHUNK_HEIGHT_P - cls.camera[1] + cls.displaySize[1]//2)]              # List containing the coordinates where the slice must be blitted on-screen
 
-                sliceRect       =  [tileWalker * TILE_WIDTH, cls.upIndex, TILE_WIDTH, cls.downIndex]    # Rectangular region containing the "visible" area of the chunk's surface
+                sliceRect       =  [tileWalker * TILE_WIDTH, 0, TILE_WIDTH, CHUNK_HEIGHT_P]    # Rectangular region containing the "visible" area of the chunk's surface
                 sliceSurf       =  cls.chunkBuffer.surfaces[leftWalker].subsurface( sliceRect )         # Mini-surface containing the visible region of the chunk's surface
                 lightSurf       =  cls.chunkBuffer.lightSurfs[leftWalker].subsurface( sliceRect )       # Mini-surface containing the visible region of the chunk's lightmap
 

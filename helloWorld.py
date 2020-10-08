@@ -23,7 +23,7 @@ pygame.init()
 clock = pygame.time.Clock()
 
 # Create chunk buffer and chunk-position buffer
-chunkBuffer = ChunkBuffer(199, 0, Serializer("world1"), chunkGenerator())
+chunkBuffer = ChunkBuffer(9, 0, Serializer("world1"), chunkGenerator())
 
 # Create and display window
 screen = pygame.display.set_mode(displaySize, pygame.RESIZABLE)
