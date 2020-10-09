@@ -293,35 +293,3 @@ class Renderer:
     @classmethod
     def setShaders( cls ):
         cls.isShader = not cls.isShader
-
-# ! REDUNDANT METHODS (ONLY FOR TRANSFORMATION FORMULAE)
-    @classmethod
-    def arrayToChunk(cls, coor):
-        # From array-space to chunk-space
-        coor[0] *= TILE_WIDTH
-        coor[1] *= TILE_WIDTH
-
-    @classmethod
-    def chunkToGraph(cls, coor, chunkInd):
-        # From chunk-space to absolute-space
-        coor[0] += (chunkInd * CHUNK_WIDTH * TILE_WIDTH)
-        coor[1] = coor[1]
-
-    @classmethod
-    def graphToCamera(cls, coor):
-        # From absolute-space to camera-space
-        coor[0] -= cls.camera[0]
-        coor[1] -= cls.camera[1]
-
-    @classmethod
-    def cameraToScreen(cls, coor):
-        # From camera-space to screen-space
-        coor[0] += cls.windowSize[0] // 2
-        coor[1] = cls.windowSize[1] // 2 - coor[1]
-
-    @classmethod
-    def chunkToScreen(cls, coor, chunkInd):
-        cls.arrayToChunk(coor)
-        cls.chunkToGraph(coor, chunkInd)
-        cls.graphToCamera(coor)
-        cls.cameraToScreen(coor)
