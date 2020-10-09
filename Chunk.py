@@ -30,50 +30,6 @@ class Chunk:
 
         self.lightMap           =  [[air for i in range(0,   CHUNK_WIDTH)] for i in range(0, CHUNK_HEIGHT)]
 
-
-    # def formLightMap( self ):
-
-    #     for i in range(0, CHUNK_HEIGHT):
-    #         for j in range(0, CHUNK_WIDTH):
-
-    #             currTileRef = self[i][j]
-    #             currWallRef = self.walls[i][j]
-
-    #             if(currTileRef > 0):    # Front tile is present
-    #                 self.lightMap[i][j] = TILE_ATTR[currTileRef][LUMINOSITY]
-    #             elif(currWallRef > 0):  # Front tile not present but wall present
-    #                 self.lightMap[i][j] = TILE_ATTR[currTileRef][LUMINOSITY]
-    #             else:                   # Use air
-    #                 self.lightMap[i][j] = TILE_ATTR[air][LUMINOSITY]
-
-    #             self.propogate(j, i)
-
-    # def propogate( self, x, y, top=True, right=True, bottom=True, left=True  ):
-
-    #     if(x+1 < CHUNK_WIDTH):
-    #         newVal                  =  self.lightMap[y][x]-16
-    #         if(newVal > self.lightMap[y][x+1] and newVal >= 0):
-    #             self.lightMap[y][x+1]   =  newVal
-    #             self.propogate(x+1, y)
-
-    #     if(x-1 >= 0):
-    #         newVal                  =  self.lightMap[y][x]-16
-    #         if(newVal > self.lightMap[y][x-1] and newVal >= 0):
-    #             self.lightMap[y][x-1]   =  newVal
-    #             self.propogate(x-1, y)
-
-    #     if(y+1 < CHUNK_HEIGHT):
-    #         newVal                  =  self.lightMap[y][x]-16
-    #         if(newVal > self.lightMap[y+1][x] and newVal >= 0):
-    #             self.lightMap[y+1][x]   =  newVal
-    #             self.propogate(x, y+1)
-
-    #     if(y-1 >= 0):
-    #         newVal                  =  self.lightMap[y][x]-16
-    #         if(newVal > self.lightMap[y-1][x] and newVal >= 0):
-    #             self.lightMap[y-1][x]   =  newVal
-    #             self.propogate(x, y-1)
-
     def __getitem__(  self, key  ):
         """[summary]
 
@@ -291,40 +247,49 @@ class ChunkBuffer:
 
         if(index < 0): index = self.length+index
 
-        newVal                  =  self[index].lightMap[y][x]-16
+        topVal                  =  self[index].lightMap[y][x]-16
+        rightVal                =  self[index].lightMap[y][x]-16
+        bottomVal               =  self[index].lightMap[y][x]-16
+        leftVal                 =  self[index].lightMap[y][x]-16
+
+        if(topVal < 0): flags[0] = False
+        if(rightVal < 0): flags[1] = False
+        if(bottomVal < 0): flags[2] = False
+        if(leftVal < 0): flags[3] = False
+
         nextIndex               =  index + 1
         prevIndex               =  index - 1
 
-        if(newVal >= 0):
+        if(flags[1]):
             if(x+1 < CHUNK_WIDTH):
-                if(newVal > self[index].lightMap[y][x+1]):
-                    self[index].lightMap[y][x+1]   =  newVal
+                if(rightVal >= self[index].lightMap[y][x+1]):
+                    self[index].lightMap[y][x+1]   =  rightVal
                     self.propogate(index, x+1, y)
 
             elif(nextIndex < self.length):
-                if(newVal > self[nextIndex].lightMap[y][0]):
-                    self[nextIndex].lightMap[y][0]   =  newVal
+                if(rightVal >= self[nextIndex].lightMap[y][0]):
+                    self[nextIndex].lightMap[y][0]   =  rightVal
                     self.propogate(nextIndex, 0, y)
 
-        if(newVal >= 0):
+        if(flags[3]):
             if(x-1 >= 0):
-                if(newVal > self[index].lightMap[y][x-1]):
-                    self[index].lightMap[y][x-1]   =  newVal
+                if(leftVal >= self[index].lightMap[y][x-1]):
+                    self[index].lightMap[y][x-1]   =  leftVal
                     self.propogate(index, x-1, y)
 
             elif(prevIndex >= 0):
-                if(newVal > self[prevIndex].lightMap[y][CHUNK_WIDTH-1]):
-                    self[prevIndex].lightMap[y][CHUNK_WIDTH-1]   =  newVal
+                if(leftVal >= self[prevIndex].lightMap[y][CHUNK_WIDTH-1]):
+                    self[prevIndex].lightMap[y][CHUNK_WIDTH-1]   =  leftVal
                     self.propogate(prevIndex, CHUNK_WIDTH-1, y)
 
         if(y+1 < CHUNK_HEIGHT):
-            if(newVal > self[index].lightMap[y+1][x] and newVal >= 0):
-                self[index].lightMap[y+1][x]   =  newVal
+            if(topVal >= self[index].lightMap[y+1][x] and flags[0]):
+                self[index].lightMap[y+1][x]   =  topVal
                 self.propogate(index, x, y+1)
 
         if(y-1 >= 0):
-            if(newVal > self[index].lightMap[y-1][x] and newVal >= 0):
-                self[index].lightMap[y-1][x]   =  newVal
+            if(bottomVal >= self[index].lightMap[y-1][x] and flags[2]):
+                self[index].lightMap[y-1][x]   =  bottomVal
                 self.propogate(index, x, y-1)
 
     def __getitem__( self, key ):

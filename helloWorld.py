@@ -107,7 +107,7 @@ while running:
     if(deltaChunk != 0):        # Player has moved
         loadedIndex = chunkBuffer.shiftBuffer(deltaChunk)
         Renderer.renderChunk(loadedIndex)
-        Renderer.renderChunk(loadedIndex-deltaChunk)
+        Renderer.renderLightmap(loadedIndex-deltaChunk)
 
 chunkBuffer.saveComplete()
 chunkBuffer.serializer.stop()

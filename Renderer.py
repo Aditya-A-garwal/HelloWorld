@@ -60,7 +60,7 @@ class Renderer:
             cls.renderChunk( index = c )
 
     @classmethod
-    def renderChunk(  cls, index, rect = [0, 0, CHUNK_WIDTH, CHUNK_HEIGHT]  ):
+    def renderChunk(  cls, index, rect = [0, 0, CHUNK_WIDTH, CHUNK_HEIGHT] ):
 
         """Method to render the chunk (in the active chunk buffer) whose index has been supplied
         Args:
@@ -112,8 +112,75 @@ class Renderer:
             coors[1]  -= TILE_WIDTH
 
     @classmethod
-    def formLightmap(  cls  ):
-        pass
+    def renderChunkOnly(  cls, index, rect = [0, 0, CHUNK_WIDTH, CHUNK_HEIGHT] ):
+
+        """Method to render the chunk (in the active chunk buffer) whose index has been supplied
+        Args:
+            index (int): Index of the chunk to be rendered
+            rect (list): Rectangular region of the chunk which needs to be rendered (optional argument)
+        """
+
+        # Create a reference to the chunk currently being rendered (for convenience)
+        currChunkRef                    =  cls.chunkBuffer[index]
+        currSurfRef                     =  cls.chunkBuffer.surfaces[index]
+
+        coors                           =  [0, 0]
+
+        # Fill the to-be-updated region of the surface to "clear" it
+        cls.chunkBuffer.surfaces[index].fill( ( 30, 150, 240 ), [i * TILE_WIDTH for i in rect] )
+
+        coors[1]    =  ( CHUNK_HEIGHT - rect[1] - 1) * TILE_WIDTH    # y-coordinate starts from bottom (1 is subtracted to acc for rendering from top instead of bottom)
+
+        for i in range( rect[1], rect[3] ):
+
+            coors[0]  =  rect[0] * TILE_WIDTH    # x coordinate starts from 0
+            for j in range( rect[0], rect[2] ):
+
+                currTileRef =  currChunkRef[i][j]
+                currWallRef =  currChunkRef.walls[i][j]
+
+                if( currTileRef > 0 ):
+                    currSurfRef.blit( TILE_TABLE[currTileRef], coors )
+
+                elif( currTileRef < 0 ):
+                    pass
+
+                elif( currWallRef > 0 ):
+                    currSurfRef.blit( TILE_TABLE[currWallRef], coors )
+
+                elif( currWallRef < 0 ):
+                    pass
+
+                coors[0]    += TILE_WIDTH    # Every Iteration, increase the x-coordinate by tile-width
+
+            # Every Iteration, decrease the y-coordinate by tile-width
+            coors[1]  -= TILE_WIDTH
+
+    @classmethod
+    def renderLightmap(  cls, index, rect = [0, 0, CHUNK_WIDTH, CHUNK_HEIGHT] ):
+
+        currChunkRef                    =  cls.chunkBuffer[index]
+        currLightRef                    =  cls.chunkBuffer.lightSurfs[index]
+
+        lightBox                        =  pygame.Surface( ( TILE_WIDTH, TILE_WIDTH ) )
+        coors = [0, 0]
+
+        coors[1]    =  ( CHUNK_HEIGHT - rect[1] - 1) * TILE_WIDTH    # y-coordinate starts from bottom (1 is subtracted to acc for rendering from top instead of bottom)
+
+        for i in range( rect[1], rect[3] ):
+
+            coors[0]  =  rect[0] * TILE_WIDTH    # x coordinate starts from 0
+            for j in range( rect[0], rect[2] ):
+
+                currLightVal = currChunkRef.lightMap[i][j]
+
+                lightBox.fill( ( currLightVal, currLightVal, currLightVal ) )
+                currLightRef.blit( lightBox, coors )
+
+                coors[0]    += TILE_WIDTH    # Every Iteration, increase the x-coordinate by tile-width
+
+            # Every Iteration, decrease the y-coordinate by tile-width
+            coors[1]  -= TILE_WIDTH
 
     @classmethod
     def render(  cls  ):
