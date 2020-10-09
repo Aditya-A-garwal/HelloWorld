@@ -40,10 +40,10 @@ class Renderer:
         cls.screen          =  screen
 
         # Index of the middle chunk in the chunk buffer
-        cls.length          =  len(cls.chunkBuffer)
-        cls.midChunk        =  (cls.length - 1) // 2
+        cls.length          =  cls.chunkBuffer.length
+        cls.midChunk        =  ( cls.length - 1 ) // 2
 
-        cls.isShader         = False
+        cls.isShader        =  False
 
         # Update constants to reflect new References
         cls.updateRefs()
@@ -55,12 +55,10 @@ class Renderer:
         """Method to render all chunks in the active chunk buffer to their corresponding surfaces
         """
 
-        # Render each chunk
-        for c in range( 0, cls.length ):
-            cls.renderChunk( index = c )
+        for c in range( 0, cls.length ):    cls.renderChunk( c )
 
     @classmethod
-    def renderChunk(  cls, index, rect = [0, 0, CHUNK_WIDTH, CHUNK_HEIGHT] ):
+    def renderChunk(  cls, index, rect = [ 0, 0, CHUNK_WIDTH, CHUNK_HEIGHT ] ):
 
         """Method to render the chunk (in the active chunk buffer) whose index has been supplied
         Args:
@@ -71,7 +69,7 @@ class Renderer:
         # Create a reference to the chunk currently being rendered (for convenience)
         currChunkRef                    =  cls.chunkBuffer[index]
         currSurfRef                     =  cls.chunkBuffer.surfaces[index]
-        currLightRef                    =  cls.chunkBuffer.lightSurfs[index]
+        currLightmap                    =  cls.chunkBuffer.lightSurfs[index]
 
         lightBox                        =  pygame.Surface( ( TILE_WIDTH, TILE_WIDTH ) )
 
@@ -89,27 +87,20 @@ class Renderer:
 
                 currTileRef =  currChunkRef[i][j]
                 currWallRef =  currChunkRef.walls[i][j]
-                currLightVal = currChunkRef.lightMap[i][j]
+                ltVal       = currChunkRef.lightMap[i][j]
 
-                lightBox.fill( ( currLightVal, currLightVal, currLightVal ) )
-                currLightRef.blit( lightBox, coors )
+                lightBox.fill( ( ltVal, ltVal, ltVal ) )
+                currLightmap.blit( lightBox, coors )
 
                 if( currTileRef > 0 ):
                     currSurfRef.blit( TILE_TABLE[currTileRef], coors )
 
-                elif( currTileRef < 0 ):
-                    pass
-
                 elif( currWallRef > 0 ):
                     currSurfRef.blit( TILE_TABLE[currWallRef], coors )
 
-                elif( currWallRef < 0 ):
-                    pass
+                coors[0]    += TILE_WIDTH   # Every Iteration, increase the x-coordinate by tile-width
 
-                coors[0]    += TILE_WIDTH    # Every Iteration, increase the x-coordinate by tile-width
-
-            # Every Iteration, decrease the y-coordinate by tile-width
-            coors[1]  -= TILE_WIDTH
+            coors[1]  -= TILE_WIDTH         # Every Iteration, decrease the y-coordinate by tile-width
 
     @classmethod
     def renderChunkOnly(  cls, index, rect = [0, 0, CHUNK_WIDTH, CHUNK_HEIGHT] ):
@@ -142,25 +133,18 @@ class Renderer:
                 if( currTileRef > 0 ):
                     currSurfRef.blit( TILE_TABLE[currTileRef], coors )
 
-                elif( currTileRef < 0 ):
-                    pass
-
                 elif( currWallRef > 0 ):
                     currSurfRef.blit( TILE_TABLE[currWallRef], coors )
 
-                elif( currWallRef < 0 ):
-                    pass
+                coors[0]    += TILE_WIDTH   # Every Iteration, increase the x-coordinate by tile-width
 
-                coors[0]    += TILE_WIDTH    # Every Iteration, increase the x-coordinate by tile-width
-
-            # Every Iteration, decrease the y-coordinate by tile-width
-            coors[1]  -= TILE_WIDTH
+            coors[1]  -= TILE_WIDTH         # Every Iteration, decrease the y-coordinate by tile-width
 
     @classmethod
     def renderLightmap(  cls, index, rect = [0, 0, CHUNK_WIDTH, CHUNK_HEIGHT] ):
 
         currChunkRef                    =  cls.chunkBuffer[index]
-        currLightRef                    =  cls.chunkBuffer.lightSurfs[index]
+        currLightmap                    =  cls.chunkBuffer.lightSurfs[index]
 
         lightBox                        =  pygame.Surface( ( TILE_WIDTH, TILE_WIDTH ) )
         coors = [0, 0]
@@ -172,15 +156,13 @@ class Renderer:
             coors[0]  =  rect[0] * TILE_WIDTH    # x coordinate starts from 0
             for j in range( rect[0], rect[2] ):
 
-                currLightVal = currChunkRef.lightMap[i][j]
+                ltVal = currChunkRef.lightMap[i][j]
+                lightBox.fill( ( ltVal, ltVal, ltVal ) )
+                currLightmap.blit( lightBox, coors )
 
-                lightBox.fill( ( currLightVal, currLightVal, currLightVal ) )
-                currLightRef.blit( lightBox, coors )
+                coors[0]    += TILE_WIDTH   # Every Iteration, increase the x-coordinate by tile-width
 
-                coors[0]    += TILE_WIDTH    # Every Iteration, increase the x-coordinate by tile-width
-
-            # Every Iteration, decrease the y-coordinate by tile-width
-            coors[1]  -= TILE_WIDTH
+            coors[1]  -= TILE_WIDTH         # Every Iteration, decrease the y-coordinate by tile-width
 
     @classmethod
     def render(  cls  ):
@@ -188,8 +170,8 @@ class Renderer:
         """Renders the surfaces of each chunk (in the active chunk buffer) on to the window
         """
 
-        rightWalker     =  cls.midChunk        #** Goes from the index of the middle chunk to the right-most chunk
-        leftWalker      =  cls.midChunk - 1    #** Goes from the index of the chunk one before the middle to the left-most chunk
+        rightWalker     =  cls.midChunk        # Goes from the index of the middle chunk to the right-most chunk
+        leftWalker      =  cls.midChunk - 1    # Goes from the index of the chunk one before the middle to the left-most chunk
 
         # Loop to render chunks on the right of the camera (including the camera's chunk)
         while( rightWalker < cls.length ):
@@ -206,7 +188,7 @@ class Renderer:
                 sliceSurf       =  cls.chunkBuffer.surfaces[rightWalker].subsurface( sliceRect )       # Mini-surface containing the visible region of the chunk's surface
                 lightSurf       =  cls.chunkBuffer.lightSurfs[rightWalker].subsurface( sliceRect )      # Mini-surface containing the visible region of the chunk's lightmap
 
-                if( slicePos[0] > cls.windowSize[0] ):     #** Stop blitting if slice is beyond the right edge od the window
+                if( slicePos[0] > cls.windowSize[0] ):     # Stop blitting if slice is beyond the right edge od the window
                     rightWalker     =  cls.length
                     break
 
@@ -232,7 +214,7 @@ class Renderer:
                 sliceSurf       =  cls.chunkBuffer.surfaces[leftWalker].subsurface( sliceRect )         # Mini-surface containing the visible region of the chunk's surface
                 lightSurf       =  cls.chunkBuffer.lightSurfs[leftWalker].subsurface( sliceRect )       # Mini-surface containing the visible region of the chunk's lightmap
 
-                if( slicePos[0] < -TILE_WIDTH ):    #** Stop blitting if slice is bryond the left edge of the window
+                if( slicePos[0] < -TILE_WIDTH ):    # Stop blitting if slice is bryond the left edge of the window
                     leftWalker      =  -1
                     break
 
@@ -243,14 +225,14 @@ class Renderer:
 
             leftWalker      -= 1
 
-        #** Temporary player crosshair rendering
+        # Temporary player crosshair rendering
         playerCoors = [cls.player.pos[0], cls.player.pos[1]]
 
-        #** Translate to be in camera space
+        # Translate to be in camera space
         playerCoors[0] -= cls.camera[0]
         playerCoors[1] -= cls.camera[1]
 
-        #** Translate to be in screen space
+        # Translate to be in screen space
         playerCoors[0] += cls.numHor
         playerCoors[1] =  cls.numVer - playerCoors[1]
 
@@ -266,19 +248,18 @@ class Renderer:
     @classmethod
     def updateCam(  cls  ):
 
-        # Indexes of the top and bottom-most pixels of the chunk to be rendered
-        # W.R.T to the origin of the chunk-surface
+        # Indexes of the top and bottom-most pixels of the chunk to be rendered W.R.T to the origin of the chunk-surface
 
-        #** Upper index of the visible region of each slice
+        # Upper index of the visible region of each slice
         cls.upIndex     =  CHUNK_HEIGHT_P - ( cls.camera[1] + cls.numVer )
 
-        if( cls.upIndex < 0 ):    #** If lower than zero, then make 0
+        if( cls.upIndex < 0 ):    # If lower than zero, then make 0
             cls.upIndex     =  0
 
-        #** Height of the visible region of the slice
+        # Height of the visible region of the slice
         cls.downIndex   =  CHUNK_HEIGHT_P - cls.upIndex
 
-        if( cls.downIndex > cls.windowSize[1] ):    #** If greater than height-of-window, then make height-of-window
+        if( cls.downIndex > cls.windowSize[1] ):    # If greater than height-of-window, then make height-of-window
             cls.downIndex   =  cls.windowSize[1]
 
     @classmethod
@@ -287,8 +268,8 @@ class Renderer:
         """Method which which re-calculates the internal data of the class to reflect changes in external references
         """
 
-        cls.updateSize()    # Recalculate to account for change in window-size
-        cls.updateCam()     # Recalculate to account for change in camera
+        cls.updateSize()
+        cls.updateCam()
 
     @classmethod
     def setShaders( cls ):

@@ -28,26 +28,12 @@ class Chunk:
             self.blocks         =  blocks
             self.walls          =  walls
 
-        self.lightMap           =  [[air for i in range(0,   CHUNK_WIDTH)] for i in range(0, CHUNK_HEIGHT)]
+        self.lightMap           =  [[0 for i in range(0,   CHUNK_WIDTH)] for i in range(0, CHUNK_HEIGHT)]
 
     def __getitem__(  self, key  ):
-        """[summary]
-
-        Args:
-            key ([type]): [description]
-
-        Returns:
-            [type]: [description]
-        """
         return self.blocks[key]
 
     def __setitem__(  self, key, value  ):
-        """[summary]
-
-        Args:
-            key ([type]): [description]
-            value ([type]): [description]
-        """
         self.blocks[key] = value
 
 class ChunkBuffer:
@@ -62,38 +48,43 @@ class ChunkBuffer:
             chunkGenerator (chunkGenerator): The noise generator used to generate chunks for the first time
         """
 
+        # Create references to required objects
         self.serializer     =  serializer
         self.chunkGenerator =  chunkGenerator
 
+        # Save length and index of last item
         self.length         =  length
-        self.len            =  length-1
+        self.len            =  length - 1
 
-        self.positions      =  [middleIndex - self.len // 2, middleIndex, middleIndex + self.len // 2]
+        # Positions of the left-most, middle and right-most chunks
+        self.positions      =  [ middleIndex - self.len // 2, middleIndex, middleIndex + self.len // 2 ]
 
-        self.chunks         =  []
-        self.surfaces       =  []
-        self.lightSurfs     =  []
+        # Create lists of required objects
+        self.chunks         =  [ ]
+        self.surfaces       =  [ ]
+        self.lightSurfs     =  [ ]
 
-        for i in range( self.positions[0],  self.positions[-1] + 1 ):
+        # Load all objects
+        for i in range( self.positions[ 0 ],  self.positions[ 2 ] + 1 ):
 
-            retrieved           =   self.serializer[i]
+            retrieved           =   self.serializer[ i ]
 
             if( retrieved is None ):
                 retrieved  =  Chunk( i )
                 self.populateChunk( retrieved )
 
             else:
-                li         =  pickle.loads( retrieved[0] )
-                lo         =  pickle.loads( retrieved[1] )
+                li         =  pickle.loads( retrieved[ 0 ] )
+                lo         =  pickle.loads( retrieved[ 1 ] )
 
-                retrieved  =  Chunk( i, li[0], li[1], lo )
+                retrieved  =  Chunk( i, li[ 0 ], li[ 1 ], lo )
 
             self.chunks.append( retrieved )
             self.surfaces.append( pygame.Surface( ( CHUNK_WIDTH_P, CHUNK_HEIGHT_P ) ) )
             self.lightSurfs.append( pygame.Surface( ( CHUNK_WIDTH_P, CHUNK_HEIGHT_P ) ) )
 
-        for i in range(0, self.length):
-            self.formLightMap(i)
+        for i in range( 0, self.length ):
+            self.formLightMap( i )
 
     def shiftBuffer( self, deltaChunk ):
 
@@ -115,52 +106,55 @@ class ChunkBuffer:
         loadIndex = rep( -deltaChunk )
 
         # Ready the tiles, walls and local table to be serialized and dump
-        li                                          =  [self.chunks[dumpIndex].blocks, self.chunks[dumpIndex].walls]
-        lo                                          =  self.chunks[dumpIndex].TILE_TABLE_LOCAL
-        self.serializer[self.positions[dumpIndex]]  =  pickle.dumps( li ), pickle.dumps( lo )
+        li                                              =  [ self.chunks[ dumpIndex ].blocks, self.chunks[ dumpIndex ].walls ]
+        lo                                              =  self.chunks[ dumpIndex ].TILE_TABLE_LOCAL
+        self.serializer[ self.positions[ dumpIndex ] ]  =  pickle.dumps( li ), pickle.dumps( lo )
 
         # After dumping, increment the position of the dumped tile by deltaChunk
-        self.positions[dumpIndex]                   += deltaChunk
+        self.positions[dumpIndex]                       += deltaChunk
 
         # Get references to surfaces which must be recycled
-        recycleSurf                                 =  self.surfaces[dumpIndex]
-        recycleShade                                =  self.lightSurfs[dumpIndex]
+        recycleSurf                                     =  self.surfaces[dumpIndex]
+        recycleShade                                    =  self.lightSurfs[dumpIndex]
 
         # Start from last if shifting right otherwise from 0
-        moveIndex                                   =  self.len * -dumpIndex
+        moveIndex                                       =  self.len * -dumpIndex
 
         for i in range( 0, self.len ):
 
-            nextMoveIndex               =  moveIndex + deltaChunk
+            nextMoveIndex                 =  moveIndex + deltaChunk
 
-            self.chunks[moveIndex]      =  self.chunks[nextMoveIndex]
-            self.surfaces[moveIndex]    =  self.surfaces[nextMoveIndex]
-            self.lightSurfs[moveIndex]  =  self.lightSurfs[nextMoveIndex]
+            self.chunks[ moveIndex ]      =  self.chunks[ nextMoveIndex ]
+            self.surfaces[ moveIndex ]    =  self.surfaces[ nextMoveIndex ]
+            self.lightSurfs[ moveIndex ]  =  self.lightSurfs[ nextMoveIndex ]
 
             moveIndex += deltaChunk
 
         # Recycle surfaces
-        self.surfaces[loadIndex]                    =  recycleSurf
-        self.lightSurfs[loadIndex]                  =  recycleShade
+        self.surfaces [loadIndex ]                      =  recycleSurf
+        self.lightSurfs[ loadIndex ]                    =  recycleShade
 
         # Increment positions of the chunk to be loaded and the middle chunk by deltaChunk
-        self.positions[1]                           += deltaChunk
-        self.positions[loadIndex]                   += deltaChunk
+        self.positions[ 1 ]                             += deltaChunk
+        self.positions[ loadIndex ]                     += deltaChunk
 
         # Load new chunk and populate if not generated
-        self.chunks[loadIndex]                      =  self.serializer[self.positions[loadIndex]]
+        self.chunks[ loadIndex ]                        =  self.serializer[ self.positions[ loadIndex ] ]
 
-        if( self.chunks[loadIndex] is None ):
-            self.chunks[loadIndex]      =  Chunk( self.positions[loadIndex] )
-            self.populateChunk( self.chunks[loadIndex] )
+        if( self.chunks[ loadIndex ] is None ):
+            self.chunks[ loadIndex ]      =  Chunk( self.positions[ loadIndex ] )
+            self.populateChunk( self.chunks[ loadIndex ] )
 
         else:
-            li                          =  pickle.loads( self.chunks[loadIndex][0] )
-            lo                          =  pickle.loads( self.chunks[loadIndex][1] )
-            self.chunks[loadIndex]      =  Chunk( self.positions[loadIndex], li[0], li[1], lo )
+            li                      =  pickle.loads( self.chunks[ loadIndex ][ 0 ] )
+            lo                      =  pickle.loads( self.chunks[ loadIndex ][ 1 ] )
+            self.chunks[loadIndex]  =  Chunk( self.positions[loadIndex], li[ 0 ], li[ 1 ], lo )
 
-        self.formLightMap(loadIndex)
-        self.formLightMap(loadIndex-deltaChunk)
+        # Form light map for newly loaded chunk and the chunk before it
+        # In case of left shift, i=-1,-2 are generated
+        # In case of right shift, i=0, 1 are generated
+        self.formLightMap( loadIndex )
+        self.formLightMap( loadIndex - deltaChunk )
 
         return loadIndex
 
@@ -168,7 +162,83 @@ class ChunkBuffer:
         """Saves the complete chunk buffer
         """
         for chunk in self.chunks:
-            self.serializer[chunk.index] = pickle.dumps( [chunk.blocks, chunk.walls] ), pickle.dumps( chunk.TILE_TABLE_LOCAL )
+            self.serializer[chunk.index] = pickle.dumps( [ chunk.blocks, chunk.walls ] ), pickle.dumps( chunk.TILE_TABLE_LOCAL )
+
+    def formLightMap( self, index ):
+
+        for i in range( 0, CHUNK_HEIGHT ):
+            for j in range( 0, CHUNK_WIDTH ):
+
+                currTileRef = self[index][i][j]
+                currWallRef = self[index].walls[i][j]
+
+                if(currTileRef > 0 or currWallRef <= 0):    # Front tile is present or wall is absent
+                    self[index].lightMap[i][j] = TILE_ATTR[currTileRef][LUMINOSITY]
+                elif(currWallRef > 0):                      # Front tile is absent but wall is present
+                    self[index].lightMap[i][j] = TILE_ATTR[currTileRef][LUMINOSITY]
+
+                self.propagate(index, j, i)
+
+    def propagate( self, index, x, y, top=True, right=True, bottom=True, left=True ):
+
+        if(index < 0): index = self.length+index
+
+        topVal      =  self[index].lightMap[y][x]-16
+        rightVal    =  self[index].lightMap[y][x]-16
+        bottomVal   =  self[index].lightMap[y][x]-16
+        leftVal     =  self[index].lightMap[y][x]-16
+
+        # Top side
+        if(topVal > 0):
+            if(y+1 < CHUNK_HEIGHT):         #check if the next position (1 above) is valid
+                if(topVal >= self[index].lightMap[y+1][x]):
+                    self[index].lightMap[y+1][x]   =  topVal
+                    #self.propagate(index, x, y+1)
+
+        # Right side
+        if(rightVal > 0):
+            if(x+1 < CHUNK_WIDTH):          #check if the next position (1 to the right) is valid
+                if(rightVal >= self[index].lightMap[y][x+1]):
+                    self[index].lightMap[y][x+1]   =  rightVal
+                    #self.propagate(index, x+1, y)
+
+            elif(index+1 < self.length):    #check if next chunk exists in the chunk buffer
+                if(rightVal >= self[index+1].lightMap[y][0]):
+                    self[index+1].lightMap[y][0]   =  rightVal
+                    #self.propagate(index+1, 0, y)
+
+        # Bottom side
+        if(bottomVal > 0):
+            if(y-1 >= 0):                   #check if the next position (1 below) is valid
+                if(bottomVal >= self[index].lightMap[y-1][x]):
+                    self[index].lightMap[y-1][x]   =  bottomVal
+                    #self.propagate(index, x, y-1)
+
+        # Left side
+        if(leftVal > 0):
+            if(x-1 >= 0):                   #check if the next position (1 to the left) is valid
+                if(leftVal >= self[index].lightMap[y][x-1]):
+                    self[index].lightMap[y][x-1]   =  leftVal
+                    #self.propagate(index, x-1, y)
+
+            elif(index-1 >= 0):             #check if previous chunk exists in the chunk buffer
+                if(leftVal >= self[index-1].lightMap[y][CHUNK_WIDTH-1]):
+                    self[index-1].lightMap[y][CHUNK_WIDTH-1]   =  leftVal
+                    #self.propagate(index-1, CHUNK_WIDTH-1, y)
+
+    def __getitem__( self, key ):
+        return self.chunks[key]
+
+    def __setitem__( self, key, value ):
+        self.chunks[key] = value
+
+    def __len__( self ):
+        """Returns the number of active chunks
+
+        Returns:
+            int: Number of active chunks
+        """
+        return self.length
 
     def populateChunk(self, chunk):
 
@@ -227,92 +297,6 @@ class ChunkBuffer:
 
 
             absouluteIndex  +=  1
-
-    def formLightMap( self, index ):
-
-        for i in range(0, CHUNK_HEIGHT):
-            for j in range(0, CHUNK_WIDTH):
-
-                currTileRef = self[index][i][j]
-                currWallRef = self[index].walls[i][j]
-
-                if(currTileRef > 0 or currWallRef <= 0):    # Front tile is present or wall is absent
-                    self[index].lightMap[i][j] = TILE_ATTR[currTileRef][LUMINOSITY]
-                elif(currWallRef > 0):                      # Front tile is absent but wall is present
-                    self[index].lightMap[i][j] = TILE_ATTR[currTileRef][LUMINOSITY]
-
-                self.propagate(index, j, i)
-
-    def propagate( self, index, x, y, top=True, right=True, bottom=True, left=True):
-
-        if(index < 0): index = self.length+index
-
-        topVal                  =  self[index].lightMap[y][x]-16
-        rightVal                =  self[index].lightMap[y][x]-16
-        bottomVal               =  self[index].lightMap[y][x]-16
-        leftVal                 =  self[index].lightMap[y][x]-16
-
-        if(topVal >= 0):       # Top side
-            if(y+1 < CHUNK_HEIGHT):
-                if(topVal >= self[index].lightMap[y+1][x]):
-                    self[index].lightMap[y+1][x]   =  topVal
-                    #self.propagate(index, x, y+1)
-
-        if(rightVal >= 0):       # Right side
-            if(x+1 < CHUNK_WIDTH):
-                if(rightVal >= self[index].lightMap[y][x+1]):
-                    self[index].lightMap[y][x+1]   =  rightVal
-                    #self.propagate(index, x+1, y)
-
-            elif(index+1 < self.length):
-                if(rightVal >= self[index+1].lightMap[y][0]):
-                    self[index+1].lightMap[y][0]   =  rightVal
-                    #self.propagate(index+1, 0, y)
-
-        if(bottomVal >= 0):       # Bottom side
-            if(y-1 >= 0):
-                if(bottomVal >= self[index].lightMap[y-1][x]):
-                    self[index].lightMap[y-1][x]   =  bottomVal
-                    #self.propagate(index, x, y-1)
-
-        if(leftVal >= 0):       # Left side
-            if(x-1 >= 0):
-                if(leftVal >= self[index].lightMap[y][x-1]):
-                    self[index].lightMap[y][x-1]   =  leftVal
-                    #self.propagate(index, x-1, y)
-
-            elif(index-1 >= 0):
-                if(leftVal >= self[index-1].lightMap[y][CHUNK_WIDTH-1]):
-                    self[index-1].lightMap[y][CHUNK_WIDTH-1]   =  leftVal
-                    #self.propagate(index-1, CHUNK_WIDTH-1, y)
-
-    def __getitem__( self, key ):
-        """[summary]
-
-        Args:
-            key ([type]): [description]
-
-        Returns:
-            [type]: [description]
-        """
-        return self.chunks[key]
-
-    def __setitem__( self, key, value ):
-        """[summary]
-
-        Args:
-            key ([type]): [description]
-            value ([type]): [description]
-        """
-        self.chunks[key] = value
-
-    def __len__( self ):
-        """Returns the number of active chunks
-
-        Returns:
-            int: Number of active chunks
-        """
-        return self.length
 
 class chunkGenerator:
 
