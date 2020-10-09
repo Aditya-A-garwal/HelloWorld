@@ -36,7 +36,7 @@ class Renderer:
         cls.chunkBuffer     =  chunkBuffer
         cls.player          =  player
         cls.camera          =  camera
-        cls.windowSize     =  windowSize
+        cls.windowSize      =  windowSize
         cls.screen          =  screen
 
         # Index of the middle chunk in the chunk buffer
@@ -110,6 +110,10 @@ class Renderer:
 
             # Every Iteration, decrease the y-coordinate by tile-width
             coors[1]  -= TILE_WIDTH
+
+    @classmethod
+    def formLightmap(  cls  ):
+        pass
 
     @classmethod
     def render(  cls  ):

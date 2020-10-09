@@ -31,30 +31,48 @@ class Chunk:
         self.lightMap           =  [[air for i in range(0,   CHUNK_WIDTH)] for i in range(0, CHUNK_HEIGHT)]
 
 
-    def formLightMap( self ):
+    # def formLightMap( self ):
 
-        for i in range(0, CHUNK_HEIGHT):
-            for j in range(0, CHUNK_WIDTH):
+    #     for i in range(0, CHUNK_HEIGHT):
+    #         for j in range(0, CHUNK_WIDTH):
 
-                currTileRef = self[i][j]
-                currWallRef = self.walls[i][j]
+    #             currTileRef = self[i][j]
+    #             currWallRef = self.walls[i][j]
 
-                #self.lightMap[i][j] = TILE_ATTR[currTileRef][LUMINOSITY]
-                if(currTileRef > 0):
-                    self.lightMap[i][j] = TILE_ATTR[currTileRef][LUMINOSITY]
-                elif(currWallRef > 0):
-                    self.lightMap[i][j] = TILE_ATTR[currTileRef][LUMINOSITY]
-                else:
-                    self.lightMap[i][j] = TILE_ATTR[currTileRef][LUMINOSITY]
+    #             if(currTileRef > 0):    # Front tile is present
+    #                 self.lightMap[i][j] = TILE_ATTR[currTileRef][LUMINOSITY]
+    #             elif(currWallRef > 0):  # Front tile not present but wall present
+    #                 self.lightMap[i][j] = TILE_ATTR[currTileRef][LUMINOSITY]
+    #             else:                   # Use air
+    #                 self.lightMap[i][j] = TILE_ATTR[air][LUMINOSITY]
 
-    # def propogate( cls, index, x, y ):
+    #             self.propogate(j, i)
 
-    #     currChunkRef = cls.chunkBuffer[index]
-    #     currLightMap = currChunkRef.lightMap
+    # def propogate( self, x, y, top=True, right=True, bottom=True, left=True  ):
 
-    #     if(currLightMap[y][x] > 0):
-    #         pass
+    #     if(x+1 < CHUNK_WIDTH):
+    #         newVal                  =  self.lightMap[y][x]-16
+    #         if(newVal > self.lightMap[y][x+1] and newVal >= 0):
+    #             self.lightMap[y][x+1]   =  newVal
+    #             self.propogate(x+1, y)
 
+    #     if(x-1 >= 0):
+    #         newVal                  =  self.lightMap[y][x]-16
+    #         if(newVal > self.lightMap[y][x-1] and newVal >= 0):
+    #             self.lightMap[y][x-1]   =  newVal
+    #             self.propogate(x-1, y)
+
+    #     if(y+1 < CHUNK_HEIGHT):
+    #         newVal                  =  self.lightMap[y][x]-16
+    #         if(newVal > self.lightMap[y+1][x] and newVal >= 0):
+    #             self.lightMap[y+1][x]   =  newVal
+    #             self.propogate(x, y+1)
+
+    #     if(y-1 >= 0):
+    #         newVal                  =  self.lightMap[y][x]-16
+    #         if(newVal > self.lightMap[y-1][x] and newVal >= 0):
+    #             self.lightMap[y-1][x]   =  newVal
+    #             self.propogate(x, y-1)
 
     def __getitem__(  self, key  ):
         """[summary]
@@ -114,11 +132,12 @@ class ChunkBuffer:
 
                 retrieved  =  Chunk( i, li[0], li[1], lo )
 
-            retrieved.formLightMap()
-
             self.chunks.append( retrieved )
             self.surfaces.append( pygame.Surface( ( CHUNK_WIDTH_P, CHUNK_HEIGHT_P ) ) )
             self.lightSurfs.append( pygame.Surface( ( CHUNK_WIDTH_P, CHUNK_HEIGHT_P ) ) )
+
+        for i in range(0, self.length):
+            self.formLightMap(i)
 
     def shiftBuffer( self, deltaChunk ):
 
@@ -130,7 +149,8 @@ class ChunkBuffer:
         """
 
         #rep = lambda num : ( num-1 )//2
-        rep = lambda num : 0 if num is 1 else -1
+        #rep = lambda num : 0 if num is 1 else -1
+        rep = lambda num : 0 if num == 1 else -1
 
         # Index of the chunk to be dumped (-1 while shifting left, 0 while shifting right) and the extremity needing to be changed
         dumpIndex = rep( deltaChunk)
@@ -183,7 +203,8 @@ class ChunkBuffer:
             lo                          =  pickle.loads( self.chunks[loadIndex][1] )
             self.chunks[loadIndex]      =  Chunk( self.positions[loadIndex], li[0], li[1], lo )
 
-        self.chunks[loadIndex].formLightMap()
+        self.formLightMap(loadIndex)
+        self.formLightMap(loadIndex-deltaChunk)
 
         return loadIndex
 
@@ -250,6 +271,61 @@ class ChunkBuffer:
 
 
             absouluteIndex  +=  1
+
+    def formLightMap( self, index ):
+
+        for i in range(0, CHUNK_HEIGHT):
+            for j in range(0, CHUNK_WIDTH):
+
+                currTileRef = self[index][i][j]
+                currWallRef = self[index].walls[i][j]
+
+                if(currTileRef > 0 or currWallRef <= 0):    # Front tile is present or wall is absent
+                    self[index].lightMap[i][j] = TILE_ATTR[currTileRef][LUMINOSITY]
+                elif(currWallRef > 0):                      # Front tile is absent but wall is present
+                    self[index].lightMap[i][j] = TILE_ATTR[currTileRef][LUMINOSITY]
+
+                self.propogate(index, j, i)
+
+    def propogate( self, index, x, y, flags=[True, True, True, True]):
+
+        if(index < 0): index = self.length+index
+
+        newVal                  =  self[index].lightMap[y][x]-16
+        nextIndex               =  index + 1
+        prevIndex               =  index - 1
+
+        if(newVal >= 0):
+            if(x+1 < CHUNK_WIDTH):
+                if(newVal > self[index].lightMap[y][x+1]):
+                    self[index].lightMap[y][x+1]   =  newVal
+                    self.propogate(index, x+1, y)
+
+            elif(nextIndex < self.length):
+                if(newVal > self[nextIndex].lightMap[y][0]):
+                    self[nextIndex].lightMap[y][0]   =  newVal
+                    self.propogate(nextIndex, 0, y)
+
+        if(newVal >= 0):
+            if(x-1 >= 0):
+                if(newVal > self[index].lightMap[y][x-1]):
+                    self[index].lightMap[y][x-1]   =  newVal
+                    self.propogate(index, x-1, y)
+
+            elif(prevIndex >= 0):
+                if(newVal > self[prevIndex].lightMap[y][CHUNK_WIDTH-1]):
+                    self[prevIndex].lightMap[y][CHUNK_WIDTH-1]   =  newVal
+                    self.propogate(prevIndex, CHUNK_WIDTH-1, y)
+
+        if(y+1 < CHUNK_HEIGHT):
+            if(newVal > self[index].lightMap[y+1][x] and newVal >= 0):
+                self[index].lightMap[y+1][x]   =  newVal
+                self.propogate(index, x, y+1)
+
+        if(y-1 >= 0):
+            if(newVal > self[index].lightMap[y-1][x] and newVal >= 0):
+                self[index].lightMap[y-1][x]   =  newVal
+                self.propogate(index, x, y-1)
 
     def __getitem__( self, key ):
         """[summary]
