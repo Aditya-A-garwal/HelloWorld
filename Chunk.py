@@ -1,8 +1,7 @@
 import pickle
 from constants import *
-#from noiseModules import RidgedMulti, Voronoi, OpenSimplex
 from opensimplex import OpenSimplex
-from Serializer import *
+from gameUtilities import *
 
 from random import randint
 
@@ -312,7 +311,7 @@ class ChunkBuffer:
 
 
 class chunkBufferManager:
-    
+
     def __init__(self):
         pass
 

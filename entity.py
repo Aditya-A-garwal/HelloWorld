@@ -1,6 +1,4 @@
-## Entity class
 from constants import *
-
 
 class Entity:
 
@@ -149,6 +147,29 @@ class Entity:
         pass
 
     def notObstacle(self, c):
+        pass
+
+
+class Inventory:
+
+    def __init__( self, cols, rows ):
+
+        self.items = [ [ 0 for j in range( 0, rows ) ] for i in range( 0, cols ) ]
+        self.count = [ [ 0 for j in range( 0, rows ) ] for i in range( 0, cols ) ]
+        self.positions = { }
+
+    def addItemtoStack( self, item, quantity ):
+        pass
+    def addItemtoPosition( self, item, quantity, position ):
+        pass
+    def addItemtoLast( self, item, quantity ):
+        pass
+
+    def remItemFromStack( self, item, quantity ):
+        pass
+    def remItemFromPosition( self, position, quantity ):
+        pass
+    def remItemFromLast( self, item, quantity ):
         pass
 
 # class EntityBuffer:
