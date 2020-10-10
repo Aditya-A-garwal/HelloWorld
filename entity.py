@@ -26,6 +26,8 @@ class Entity:
         self.vel            =  [0.0, 0.0]
         self.acc            =  [0.0, 0.0]
 
+        self.parentChunkBuffer = None
+
     # def run(self, kp, kr, dt):
 
     #     dt /= 1000
