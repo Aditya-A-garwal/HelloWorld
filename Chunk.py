@@ -2,6 +2,7 @@ import pickle
 from constants import *
 #from noiseModules import RidgedMulti, Voronoi, OpenSimplex
 from opensimplex import OpenSimplex
+from Serializer import *
 
 from random import randint
 
@@ -38,7 +39,7 @@ class Chunk:
 
 class ChunkBuffer:
 
-    def __init__(  self, length, middleIndex, serializer, chunkGenerator  ):
+    def __init__(  self, length, middleIndex, targetWorld, seed=None  ):
         """Contructor for a chunk buffer
 
         Args:
@@ -49,8 +50,8 @@ class ChunkBuffer:
         """
 
         # Create references to required objects
-        self.serializer     =  serializer
-        self.chunkGenerator =  chunkGenerator
+        self.serializer     =  Serializer(targetWorld)
+        self.chunkGenerator =  chunkGenerator()
 
         # Save length and index of last item
         self.length         =  length
@@ -164,20 +165,26 @@ class ChunkBuffer:
         for chunk in self.chunks:
             self.serializer[chunk.index] = pickle.dumps( [ chunk.blocks, chunk.walls ] ), pickle.dumps( chunk.TILE_TABLE_LOCAL )
 
-    def formLightMap( self, index ):
+    def formLightMap( self, index, top=True, down=True, left=True, right=True ):
 
-        for i in range( CHUNK_HEIGHT-1, -1, -1 ):
-            for j in range( CHUNK_WIDTH-1, -1, -1 ):
+        for i in range( 0, CHUNK_HEIGHT ):
+            for j in range( 0, CHUNK_WIDTH ):
 
                 currTileRef = self[index][i][j]
                 currWallRef = self[index].walls[i][j]
 
-                if(currTileRef > 0 or currWallRef == 0):    # Front tile is present or wall is absent
-                    self[index].lightMap[i][j] = TILE_ATTR[currTileRef][LUMINOSITY]
-                elif(currWallRef > 0):                      # Front tile is absent but wall is present
-                    self[index].lightMap[i][j] = TILE_ATTR[currTileRef][LUMINOSITY]
+                selfLuminousity  = 0
 
-                self.propagate(index, j, i)
+                # if(currTileRef > 0 or currWallRef == 0):    # Front tile is present or wall is absent
+                #     selfLuminousity = TILE_ATTR[currTileRef][LUMINOSITY]
+                # elif(currWallRef > 0):                      # Front tile is absent but wall is present
+                #     selfLuminousity = TILE_ATTR[currWallRef][LUMINOSITY]
+
+                selfLuminousity = TILE_ATTR[currTileRef][LUMINOSITY]
+
+                self[index].lightMap[i][j] = selfLuminousity
+
+                if(selfLuminousity != 0): self.propagate(index, j, i)
 
     def propagate( self, index, x, y, top=True, right=True, bottom=True, left=True ):
 
@@ -188,43 +195,48 @@ class ChunkBuffer:
         bottomVal   =  self[index].lightMap[y][x]-16
         leftVal     =  self[index].lightMap[y][x]-16
 
+        if(topVal < 0): top=False
+        if(rightVal < 0): right=False
+        if(bottomVal < 0): bottom=False
+        if(leftVal < 0): left=False
+
         # Top side
-        if(topVal > 0):
+        if(top):
             if(y+1 < CHUNK_HEIGHT):         #check if the next position (1 above) is valid
                 if(topVal > self[index].lightMap[y+1][x]):
                     self[index].lightMap[y+1][x]   =  topVal
-                    self.propagate(index, x, y+1)
+                    self.propagate(index, x, y+1, bottom=False)
 
-        # Right side
-        if(rightVal > 0):
-            if(x+1 < CHUNK_WIDTH):          #check if the next position (1 to the right) is valid
-                if(rightVal > self[index].lightMap[y][x+1]):
-                    self[index].lightMap[y][x+1]   =  rightVal
-                    self.propagate(index, x+1, y)
+        # # Bottom side
+        # if(bottom):
+        #     if(y-1 >= 0):                   #check if the next position (1 below) is valid
+        #         if(bottomVal >= self[index].lightMap[y-1][x]):
+        #             self[index].lightMap[y-1][x]   =  bottomVal
+        #             self.propagate(index, x, y-1, top=False)
 
-            elif(index+1 < self.length):    #check if next chunk exists in the chunk buffer
-                if(rightVal > self[index+1].lightMap[y][0]):
-                    self[index+1].lightMap[y][0]   =  rightVal
-                    self.propagate(index+1, 0, y)
+        # # Left side
+        # if(left):
+        #     if(x-1 >= 0):                   #check if the next position (1 to the left) is valid
+        #         if(leftVal > self[index].lightMap[y][x-1]):
+        #             self[index].lightMap[y][x-1]   =  leftVal
+        #             self.propagate(index, x-1, y, right=False)
 
-        # Bottom side
-        if(bottomVal > 0):
-            if(y-1 >= 0):                   #check if the next position (1 below) is valid
-                if(bottomVal > self[index].lightMap[y-1][x]):
-                    self[index].lightMap[y-1][x]   =  bottomVal
-                    self.propagate(index, x, y-1)
+        #     elif(index-1 >= 0):             #check if previous chunk exists in the chunk buffer
+        #         if(leftVal > self[index-1].lightMap[y][CHUNK_WIDTH-1]):
+        #             self[index-1].lightMap[y][CHUNK_WIDTH-1]   =  leftVal
+        #             self.propagate(index-1, CHUNK_WIDTH-1, y, right=False)
 
-        # Left side
-        if(leftVal > 0):
-            if(x-1 >= 0):                   #check if the next position (1 to the left) is valid
-                if(leftVal > self[index].lightMap[y][x-1]):
-                    self[index].lightMap[y][x-1]   =  leftVal
-                    self.propagate(index, x-1, y)
+        # # Right side
+        # if(right):
+        #     if(x+1 < CHUNK_WIDTH):          #check if the next position (1 to the right) is valid
+        #         if(rightVal > self[index].lightMap[y][x+1]):
+        #             self[index].lightMap[y][x+1]   =  rightVal
+        #             self.propagate(index, x+1, y, left=False)
 
-            elif(index-1 >= 0):             #check if previous chunk exists in the chunk buffer
-                if(leftVal > self[index-1].lightMap[y][CHUNK_WIDTH-1]):
-                    self[index-1].lightMap[y][CHUNK_WIDTH-1]   =  leftVal
-                    self.propagate(index-1, CHUNK_WIDTH-1, y)
+        #     elif(index+1 < self.length):    #check if next chunk exists in the chunk buffer
+        #         if(rightVal > self[index+1].lightMap[y][0]):
+        #             self[index+1].lightMap[y][0]   =  rightVal
+        #             self.propagate(index+1, 0, y, left=False)
 
     def __getitem__( self, key ):
         return self.chunks[key]
@@ -297,6 +309,12 @@ class ChunkBuffer:
 
 
             absouluteIndex  +=  1
+
+
+class chunkBufferManager:
+    
+    def __init__(self):
+        pass
 
 class chunkGenerator:
 

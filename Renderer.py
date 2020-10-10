@@ -67,16 +67,16 @@ class Renderer:
         """
 
         # Create a reference to the chunk currently being rendered (for convenience)
-        currChunkRef                    =  cls.chunkBuffer[index]
-        currSurfRef                     =  cls.chunkBuffer.surfaces[index]
-        currLightmap                    =  cls.chunkBuffer.lightSurfs[index]
+        currChunkRef                    =  cls.chunkBuffer[ index ]
+        currSurfRef                     =  cls.chunkBuffer.surfaces[ index ]
+        currLightmap                    =  cls.chunkBuffer.lightSurfs[ index ]
 
         lightBox                        =  pygame.Surface( ( TILE_WIDTH, TILE_WIDTH ) )
 
-        coors                           =  [0, 0]
+        coors                           =  [ 0, 0 ]
 
         # Fill the to-be-updated region of the surface to "clear" it
-        cls.chunkBuffer.surfaces[index].fill( ( 30, 150, 240 ), [i * TILE_WIDTH for i in rect] )
+        cls.chunkBuffer.surfaces[ index ].fill( ( 30, 150, 240 ), [ i * TILE_WIDTH for i in rect ] )
 
         coors[1]    =  ( CHUNK_HEIGHT - rect[1] - 1) * TILE_WIDTH    # y-coordinate starts from bottom (1 is subtracted to acc for rendering from top instead of bottom)
 
@@ -85,18 +85,18 @@ class Renderer:
             coors[0]  =  rect[0] * TILE_WIDTH    # x coordinate starts from 0
             for j in range( rect[0], rect[2] ):
 
-                currTileRef =  currChunkRef[i][j]
-                currWallRef =  currChunkRef.walls[i][j]
-                ltVal       = currChunkRef.lightMap[i][j]
+                currTileRef =  currChunkRef[ i ][ j ]
+                currWallRef =  currChunkRef.walls[ i ][ j ]
+                ltVal       =  currChunkRef.lightMap[ i ][ j ]
 
                 lightBox.fill( ( ltVal, ltVal, ltVal ) )
                 currLightmap.blit( lightBox, coors )
 
                 if( currTileRef > 0 ):
-                    currSurfRef.blit( TILE_TABLE[currTileRef], coors )
+                    currSurfRef.blit( TILE_TABLE[ currTileRef ], coors )
 
                 elif( currWallRef > 0 ):
-                    currSurfRef.blit( TILE_TABLE[currWallRef], coors )
+                    currSurfRef.blit( TILE_TABLE[ currWallRef ], coors )
 
                 coors[0]    += TILE_WIDTH   # Every Iteration, increase the x-coordinate by tile-width
 
@@ -194,7 +194,7 @@ class Renderer:
 
                 cls.screen.blit( sliceSurf, slicePos )
                 if(cls.isShader):
-                    cls.screen.blit( lightSurf, slicePos, special_flags=pygame.BLEND_RGBA_MULT )
+                    cls.screen.blit( lightSurf, slicePos, special_flags = pygame.BLEND_RGBA_MULT )
                 tileWalker      += 1
 
             rightWalker     += 1
@@ -220,7 +220,7 @@ class Renderer:
 
                 cls.screen.blit ( sliceSurf, slicePos )
                 if(cls.isShader):
-                    cls.screen.blit( lightSurf, slicePos, special_flags=pygame.BLEND_RGBA_MULT )
+                    cls.screen.blit( lightSurf, slicePos, special_flags = pygame.BLEND_RGBA_MULT )
                 tileWalker      -= 1
 
             leftWalker      -= 1
