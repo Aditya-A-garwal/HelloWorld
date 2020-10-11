@@ -1,11 +1,6 @@
 from Chunk import *
 import math
 
-#todo  RENDERING BASED ON CHUNKS INSTEAD OF CHUNK SLICES
-#todo  COUNT NUMBER OF SLICES ON EACH SIDE BEFORE-HAND AND
-#todo  ONLY COUNT SLICES WHEN FINAL CHUNK HAS BEEN REACHED
-#todo  ELSE INCREMENT BY CHUNK WIDTH
-
 # Translations
 #     From                        To
 # 1   array-space                 chunk-space

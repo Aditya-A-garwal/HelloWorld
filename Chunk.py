@@ -1,6 +1,6 @@
 import pickle
 
-import tiles, items, entityTables
+import tiles, items
 from constants import *
 from opensimplex import OpenSimplex
 from gameUtilities import *
