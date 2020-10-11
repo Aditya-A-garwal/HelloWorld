@@ -12,16 +12,16 @@ prevFramerate = framerate = 0
 camera = pygame.math.Vector2([0, CHUNK_HEIGHT_P//2])
 prevCamera = [0, 0]
 
-# Player variables
-player = entity.Entity(0, [0, 0], [0, 0], DEFAULT_FRICTION)
-currChunk = prevChunk = deltaChunk = 0
-
 # Initialize pygame and start clock
 pygame.init()
 clock = pygame.time.Clock()
 
 # Create chunk buffer and chunk-position buffer
 chunkBuffer = ChunkBuffer(11, 0, "world1")
+
+# Player variables
+player = entity.Entity(0, [0, 0], [0, 0], chunkBuffer, DEFAULT_FRICTION)
+currChunk = prevChunk = deltaChunk = 0
 
 # Create and display window
 screen = pygame.display.set_mode(displaySize, pygame.RESIZABLE)

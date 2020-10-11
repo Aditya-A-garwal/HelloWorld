@@ -2,7 +2,7 @@ from constants import *
 
 class Entity:
 
-    def __init__(self, i, sp, p, f, h=100, g=True):
+    def __init__(self, i, sp, p, pcb, f, h=100, g=True):
         """[summary]
 
         Args:
@@ -24,7 +24,7 @@ class Entity:
         self.vel            =  [0.0, 0.0]
         self.acc            =  [0.0, 0.0]
 
-        self.parentChunkBuffer = None
+        self.parentChunkBuffer = pcb
 
     # def run(self, kp, kr, dt):
 
@@ -175,4 +175,9 @@ class Inventory:
 # class EntityBuffer:
 #     pass
 
-#chunkBuffer[math.floor(xpos/CHUNK_WIDTH_P)-chunkBuffer.leftIndex][][]
+
+##  currentChunk = math.floor(xpos/CHUNK_WIDTH_P)
+##  currentChunkInd = currentChunk - chunkBuffer.positions[0]
+##  xposinChunk = xpos//TILE_WIDTH - currentChunk * CHUNK_WIDTH
+##  yposinChunk = ypos//TILE_WIDTH
+##  chunkBuffer[currentChunkInd][yposinChunk][xposinChunk]
