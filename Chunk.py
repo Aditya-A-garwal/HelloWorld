@@ -182,10 +182,11 @@ class ChunkBuffer:
                 #     selfLuminousity = TILE_ATTR[currWallRef][LUMINOSITY]
 
                 selfLuminousity = tiles.TILE_ATTR[currTileRef][LUMINOSITY]
+                selfIllumination = self[index].lightMap[i][j]
 
-                self[index].lightMap[i][j] = selfLuminousity
-
-                if(selfLuminousity != 0): self.propagate(index, j, i)
+                if(selfLuminousity is not 0 and selfIllumination < selfLuminousity):
+                    self[index].lightMap[i][j] = selfLuminousity
+                    self.propagate(index, j, i)
 
     def propagate( self, index, x, y, top=True, right=True, bottom=True, left=True ):
 
@@ -208,36 +209,36 @@ class ChunkBuffer:
                     self[index].lightMap[y+1][x]   =  topVal
                     self.propagate(index, x, y+1, bottom=False)
 
-        # # Bottom side
-        # if(bottom):
-        #     if(y-1 >= 0):                   #check if the next position (1 below) is valid
-        #         if(bottomVal >= self[index].lightMap[y-1][x]):
-        #             self[index].lightMap[y-1][x]   =  bottomVal
-        #             self.propagate(index, x, y-1, top=False)
+        # Bottom side
+        if(bottom):
+            if(y-1 >= 0):                   #check if the next position (1 below) is valid
+                if(bottomVal >= self[index].lightMap[y-1][x]):
+                    self[index].lightMap[y-1][x]   =  bottomVal
+                    self.propagate(index, x, y-1, top=False)
 
-        # # Left side
-        # if(left):
-        #     if(x-1 >= 0):                   #check if the next position (1 to the left) is valid
-        #         if(leftVal > self[index].lightMap[y][x-1]):
-        #             self[index].lightMap[y][x-1]   =  leftVal
-        #             self.propagate(index, x-1, y, right=False)
+        # Left side
+        if(left):
+            if(x-1 >= 0):                   #check if the next position (1 to the left) is valid
+                if(leftVal > self[index].lightMap[y][x-1]):
+                    self[index].lightMap[y][x-1]   =  leftVal
+                    self.propagate(index, x-1, y, right=False)
 
-        #     elif(index-1 >= 0):             #check if previous chunk exists in the chunk buffer
-        #         if(leftVal > self[index-1].lightMap[y][CHUNK_WIDTH-1]):
-        #             self[index-1].lightMap[y][CHUNK_WIDTH-1]   =  leftVal
-        #             self.propagate(index-1, CHUNK_WIDTH-1, y, right=False)
+            elif(index-1 >= 0):             #check if previous chunk exists in the chunk buffer
+                if(leftVal > self[index-1].lightMap[y][CHUNK_WIDTH-1]):
+                    self[index-1].lightMap[y][CHUNK_WIDTH-1]   =  leftVal
+                    self.propagate(index-1, CHUNK_WIDTH-1, y, right=False)
 
-        # # Right side
-        # if(right):
-        #     if(x+1 < CHUNK_WIDTH):          #check if the next position (1 to the right) is valid
-        #         if(rightVal > self[index].lightMap[y][x+1]):
-        #             self[index].lightMap[y][x+1]   =  rightVal
-        #             self.propagate(index, x+1, y, left=False)
+        # Right side
+        if(right):
+            if(x+1 < CHUNK_WIDTH):          #check if the next position (1 to the right) is valid
+                if(rightVal > self[index].lightMap[y][x+1]):
+                    self[index].lightMap[y][x+1]   =  rightVal
+                    self.propagate(index, x+1, y, left=False)
 
-        #     elif(index+1 < self.length):    #check if next chunk exists in the chunk buffer
-        #         if(rightVal > self[index+1].lightMap[y][0]):
-        #             self[index+1].lightMap[y][0]   =  rightVal
-        #             self.propagate(index+1, 0, y, left=False)
+            elif(index+1 < self.length):    #check if next chunk exists in the chunk buffer
+                if(rightVal > self[index+1].lightMap[y][0]):
+                    self[index+1].lightMap[y][0]   =  rightVal
+                    self.propagate(index+1, 0, y, left=False)
 
     def __getitem__( self, key ):
         return self.chunks[key]
