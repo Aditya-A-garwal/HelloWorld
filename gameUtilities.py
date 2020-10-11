@@ -1,4 +1,14 @@
+#serializer
 import sqlite3,  bz2
+
+#noiseModules
+## Built-In Modules
+from enum import Enum
+import math
+from sortedcontainers import SortedDict, SortedList
+from functools import lru_cache
+## Pip-Installed Modules
+import numpy as np
 
 class Serializer:
 
@@ -98,16 +108,6 @@ class Shader:
 
     def __init__( self ):
         pass
-
-
-    ## Built-In Modules
-from enum import Enum
-import math
-from sortedcontainers import SortedDict, SortedList
-from functools import lru_cache
-## Pip-Installed Modules
-import numpy as np
-
 
 vector = [
     -0.763874, -0.596439, -0.246489, 0.0, 0.396055, 0.904518, -0.158073, 0.0,

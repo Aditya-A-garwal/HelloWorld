@@ -1,6 +1,5 @@
 import sys, time
 from pygame.locals import *
-
 from Renderer import *
 
 import entity
@@ -30,7 +29,8 @@ pygame.display.set_caption("Hello World!")
 pygame.display.set_icon(pygame.image.load("Resources/Default/gameIcon.png"))
 
 # Convert all images to optimize for blitting
-loadImageTable()
+tiles.loadImageTable()
+items.loadImageTable()
 
 # Initialize the renderer
 Renderer.initialize(chunkBuffer, camera, player, displaySize, screen)

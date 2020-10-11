@@ -1,4 +1,4 @@
-from constants import *
+from entityTables import *
 
 class Entity:
 

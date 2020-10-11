@@ -1,4 +1,6 @@
 import pickle
+
+import tiles, items, entityTables
 from constants import *
 from opensimplex import OpenSimplex
 from gameUtilities import *
@@ -22,8 +24,8 @@ class Chunk:
         self.TILE_TABLE_LOCAL =  localTable
 
         if(blocks is None):
-            self.blocks         =  [[air for i in range(0,   CHUNK_WIDTH)] for i in range(0, CHUNK_HEIGHT)]
-            self.walls          =  [[air for i in range(0,   CHUNK_WIDTH)] for i in range(0, CHUNK_HEIGHT)]
+            self.blocks         =  [[tiles.air for i in range(0,   CHUNK_WIDTH)] for i in range(0, CHUNK_HEIGHT)]
+            self.walls          =  [[tiles.air for i in range(0,   CHUNK_WIDTH)] for i in range(0, CHUNK_HEIGHT)]
         else:
             self.blocks         =  blocks
             self.walls          =  walls
@@ -179,7 +181,7 @@ class ChunkBuffer:
                 # elif(currWallRef > 0):                      # Front tile is absent but wall is present
                 #     selfLuminousity = TILE_ATTR[currWallRef][LUMINOSITY]
 
-                selfLuminousity = TILE_ATTR[currTileRef][LUMINOSITY]
+                selfLuminousity = tiles.TILE_ATTR[currTileRef][LUMINOSITY]
 
                 self[index].lightMap[i][j] = selfLuminousity
 
@@ -363,7 +365,7 @@ class chunkGenerator:
     def getLowerBedrockWastes(self, x, y):
 
         if(y == 0):
-            return bedrock, bedrock
+            return tiles.bedrock, tiles.bedrock
 
         else:
             front  =  self.frontVal(x * BEDROCK_LOWER_X, y * BEDROCK_LOWER_Y)
@@ -371,13 +373,13 @@ class chunkGenerator:
 
             bedrockProbability = 50
 
-            front = obsidian
+            front = tiles.obsidian
             if( front <= bedrockProbability ):
-                front = bedrock
+                front = tiles.bedrock
 
-            back = obsidian
+            back = tiles.obsidian
             if( back <= bedrockProbability ):
-                back = bedrock
+                back = tiles.bedrock
 
             return front, back
 
@@ -391,16 +393,16 @@ class chunkGenerator:
         hellStoneProbability = 12.5 + stoneProbability
 
         if(front <= obsidianProbability):
-            front = obsidian
+            front = tiles.obsidian
         elif(front <= stoneProbability):
-            front = greystone
+            front = tiles.greystone
         else:
-            front = hellstone
+            front = tiles.hellstone
 
         if(back <= obsidianProbability):
-            back = obsidian
+            back = tiles.obsidian
         else:
-            back = greystone
+            back = tiles.greystone
 
         return front, back
 
@@ -419,25 +421,25 @@ class chunkGenerator:
         platinumProbability   =  diamondProbability + 7.5
 
         if(front <= obsidianProbability):
-            front = obsidian
+            front = tiles.obsidian
 
         elif(front <= stoneProbability):
-            front = greystone
+            front = tiles.greystone
 
         elif(front <= graniteProbability):
-            front = granite
+            front = tiles.granite
 
         elif(front <= limestoneProbability):
-            front = limestone
+            front = tiles.limestone
 
         elif(front <= unobtaniumProbability):
-            front = unobtaniumOre
+            front = tiles.unobtaniumOre
 
         elif(front <= diamondProbability):
-            front = diamondOre
+            front = tiles.diamondOre
 
         else:
-            front = platinumOre
+            front = tiles.platinumOre
 
         return front, back
 
@@ -454,26 +456,26 @@ class chunkGenerator:
         platinumProbability = 10 + diamondProbability
 
         if(front <= stoneProbability):
-            front = greystone
+            front = tiles.greystone
         elif(front <= graniteProbability):
-            front = granite
+            front = tiles.granite
         elif(front <= quartzProbability):
-            front = quartz
+            front = tiles.quartz
         elif(front <= unobtaniumProbability):
-            front = unobtaniumOre
+            front = tiles.unobtaniumOre
         elif(front <= diamondProbability):
-            front = diamondOre
+            front = tiles.diamondOre
         elif(front <= platinumProbability):
-            front = platinumOre
+            front = tiles.platinumOre
 
         if(back <= stoneProbability):
-            back = greystone
+            back = tiles.greystone
         elif(back <= graniteProbability):
-            back = granite
+            back = tiles.granite
         elif(back <= quartzProbability):
-            back = quartz
+            back = tiles.quartz
         else:
-            back = greystone
+            back = tiles.greystone
 
         return front, back
 
@@ -486,14 +488,14 @@ class chunkGenerator:
         ironProbability = 12.5 + stoneProbability
         goldProbability = 12.5 + ironProbability
 
-        back = greystone
+        back = tiles.greystone
 
         if(front <= stoneProbability):
-            front = greystone
+            front = tiles.greystone
         elif(front <= ironProbability):
-            front = ironOre
+            front = tiles.ironOre
         elif(front <= goldProbability):
-            front = goldOre
+            front = tiles.goldOre
 
         return front, back
 
@@ -509,20 +511,20 @@ class chunkGenerator:
         copperProbability = 20 + coalProbability
 
         if(front <= gravelProbability):
-            front = gravel
+            front = tiles.gravel
         elif(front <= dirtProbability):
-            front = brownDirt
+            front = tiles.browndirt
         elif(front <= redclayProbability):
-            front = redClay
+            front = tiles.redClay
         elif(front <= coalProbability):
-            front = coke
+            front = tiles.coke
         elif(front <= copperProbability):
-            front = copperOre
+            front = tiles.copperOre
 
         if(back <= gravelProbability):
-            back = gravel
+            back = tiles.gravel
         elif(back <= dirtProbability):
-            back = brownDirt
+            back = tiles.browndirt
         else:
             back = redclayProbability
 
@@ -540,20 +542,20 @@ class chunkGenerator:
         copperProbability = 20 + coalProbability
 
         if(front <= gravelProbability):
-            front = gravel
+            front = tiles.gravel
         elif(front <= dirtProbability):
-            front = brownDirt
+            front = tiles.browndirt
         elif(front <= redclayProbability):
-            front = redClay
+            front = tiles.redClay
         elif(front <= coalProbability):
-            front = coke
+            front = tiles.coke
         elif(front <= copperProbability):
-            front = copperOre
+            front = tiles.copperOre
 
         if(back <= gravelProbability):
-            back = gravel
+            back = tiles.gravel
         elif(back <= dirtProbability):
-            back = brownDirt
+            back = tiles.browndirt
         else:
             back = redclayProbability
 

@@ -93,10 +93,10 @@ class Renderer:
                 currLightmap.blit( lightBox, coors )
 
                 if( currTileRef > 0 ):
-                    currSurfRef.blit( TILE_TABLE[ currTileRef ], coors )
+                    currSurfRef.blit( tiles.TILE_TABLE[ currTileRef ], coors )
 
                 elif( currWallRef > 0 ):
-                    currSurfRef.blit( TILE_TABLE[ currWallRef ], coors )
+                    currSurfRef.blit( tiles.TILE_TABLE[ currWallRef ], coors )
 
                 coors[0]    += TILE_WIDTH   # Every Iteration, increase the x-coordinate by tile-width
 
@@ -131,10 +131,10 @@ class Renderer:
                 currWallRef =  currChunkRef.walls[i][j]
 
                 if( currTileRef > 0 ):
-                    currSurfRef.blit( TILE_TABLE[currTileRef], coors )
+                    currSurfRef.blit( tiles.TILE_TABLE[currTileRef], coors )
 
                 elif( currWallRef > 0 ):
-                    currSurfRef.blit( TILE_TABLE[currWallRef], coors )
+                    currSurfRef.blit( tiles.TILE_TABLE[currWallRef], coors )
 
                 coors[0]    += TILE_WIDTH   # Every Iteration, increase the x-coordinate by tile-width
 
