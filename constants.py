@@ -30,9 +30,11 @@ SCALE_VEL           =  TILE_WIDTH * 12    # 6 is number of tiles to move
 AIR_FRICTION        =  0.2
 UP_ACC              =  0.8
 DOWN_ACC            =  0.8
-DEFAULT_FRICTION    =  0.5
+DEFAULT_FRICTION    =  1
 MAX_ACC             =  1
 MAX_VEL             =  1
+PLYR_WIDTH          =  36
+PLYR_HEIGHT         =  54
 
 
 # List of attributes (constants)

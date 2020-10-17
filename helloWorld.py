@@ -35,14 +35,15 @@ items.loadImageTable()
 # Initialize the renderer
 Renderer.initialize(chunkBuffer, camera, player, displaySize, screen)
 
-keyRelease = keyPress = None
-
+keyPress = []
+now = prev = time.time()
 # game loop
 
 running = True
 while running:
 
     # Client-side
+    keyFlag = False
 
 
     # event handling loop
@@ -54,11 +55,15 @@ while running:
             if(event.key is pygame.K_c):
                 Renderer.setShaders()
             else:
-                keyPress = event.key
+                if event.key not in keyPress:
+                    keyPress.append(event.key)
+                    keyFlag = True
 
         elif event.type == pygame.KEYUP:
             if(event.key is not pygame.K_c):
-                keyRelease = event.key
+                if event.key in keyPress:
+                    keyPress.remove(event.key)
+                    keyFlag = True
 
         elif event.type == pygame.VIDEORESIZE:
             displaySize[0], displaySize[1] = screen.get_width(), screen.get_height()
@@ -89,16 +94,22 @@ while running:
 
     # Player movement handling
     #player.run(keyPress, keyRelease, frameTime)
+    # if(keyPress is not None):
+    if keyFlag:
+        player.run(keyPress)
+        #keyPress = None
 
-    if(keyPress is not None):
-        player.keyPress(keyPress)
-        keyPress = None
 
-    if(keyRelease is not None):
-        player.keyRelease(keyRelease)
-        keyRelease = None
+    # if(keyRelease is not None):
+    #     player.keyRelease(keyRelease)
+    #     #keyRelease = None
+    #     if keyPress == keyRelease:
+    #         keyPress = keyRelease = None
 
-    player.update(frameTime)
+    now = time.time()
+    dt = now-prev
+    prev = now
+    player.update(dt)
 
     deltaChunk = currChunk-prevChunk
     prevChunk = currChunk
@@ -107,6 +118,7 @@ while running:
         loadedIndex = chunkBuffer.shiftBuffer(deltaChunk)
         Renderer.renderChunk(loadedIndex)
         Renderer.renderLightmap(loadedIndex-deltaChunk)
+
 
 chunkBuffer.saveComplete()
 chunkBuffer.serializer.stop()

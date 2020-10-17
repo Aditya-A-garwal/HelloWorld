@@ -97,7 +97,7 @@ TILE_NAMES = {
     browndirt      : "block of dirt",
     grass          : "block of grass",
 
-    #Snowy blocks
+    # Snowy blocks
     snowygrass     : "block of snowy grass",
     snow           : "block of snow",
     ice            : "block of ice",
@@ -154,7 +154,7 @@ TILE_TABLE = {
     browndirt       :   pygame.image.load("Resources/Default/browndirt.png"),
 }
 
-TILE_ATTR={
+TILE_ATTR = {
     air:{LUMINOSITY:255},
     bedrock:{ID:1,WEIGHT:100,FRICTION:0.4,LUMINOSITY:0,BREAKTIME:None,PLACEABLE:False,DAMAGE:None,HEALTH:10**10,INFLAMMABLE:None,LTIMPERMEABILITY:0},
     obsidian:{ID:2,WEIGHT:99,FRICTION:0.4,LUMINOSITY:0,BREAKTIME:10,PLACEABLE:True,DAMAGE:10,HEALTH:100,INFLAMMABLE:0,LTIMPERMEABILITY:0},
@@ -198,6 +198,8 @@ TILE_ATTR={
     torch:{ID:42,WEIGHT:20,FRICTION:None,LUMINOSITY:200,BREAKTIME:1,PLACEABLE:True,DAMAGE:10,HEALTH:15,INFLAMMABLE:None,LTIMPERMEABILITY:0},
 }
 
+
 def loadImageTable():
     for key in TILE_TABLE:
         TILE_TABLE[key] = TILE_TABLE[key].convert_alpha()
+        TILE_TABLE[key] = pygame.transform.smoothscale(TILE_TABLE[key], (TILE_WIDTH, TILE_WIDTH))
