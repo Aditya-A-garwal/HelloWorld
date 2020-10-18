@@ -54,6 +54,7 @@ glass           =  39
 glasswindow     =  40
 
 torch           =  41
+bed             =  42
 
 # Tile table with names
 TILE_NAMES = {
@@ -124,6 +125,7 @@ TILE_NAMES = {
     glasswindow    : "glass window",
 
     torch          : "torch",
+    bed            : "bed",
 
 }
 
