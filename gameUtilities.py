@@ -112,25 +112,26 @@ class Shader:
 
     def shadeRetro( self, index, top=True, down=True, left=True, right=True ):
 
-        for i in range( 0, CHUNK_HEIGHT ):
-            for j in range( 0, CHUNK_WIDTH ):
+        for c in range( 0, parent.length ):
+            for i in range( 0, CHUNK_HEIGHT ):
+                for j in range( 0, CHUNK_WIDTH ):
 
-                currTileRef = self[index][i][j]
-                currWallRef = self[index].walls[i][j]
+                    currTileRef = parent[index][i][j]
+                    currWallRef = parent[index].walls[i][j]
 
-                selfLuminousity  = 0
+                    selfLuminousity  = 0
 
-                # if(currTileRef > 0 or currWallRef == 0):    # Front tile is present or wall is absent
-                #     selfLuminousity = TILE_ATTR[currTileRef][LUMINOSITY]
-                # elif(currWallRef > 0):                      # Front tile is absent but wall is present
-                #     selfLuminousity = TILE_ATTR[currWallRef][LUMINOSITY]
+                    # if(currTileRef > 0 or currWallRef == 0):    # Front tile is present or wall is absent
+                    #     selfLuminousity = TILE_ATTR[currTileRef][LUMINOSITY]
+                    # elif(currWallRef > 0):                      # Front tile is absent but wall is present
+                    #     selfLuminousity = TILE_ATTR[currWallRef][LUMINOSITY]
 
-                selfLuminousity = tiles.TILE_ATTR[currTileRef][LUMINOSITY]
-                selfIllumination = self[index].lightMap[i][j]
+                    selfLuminousity = tiles.TILE_ATTR[currTileRef][LUMINOSITY]
+                    selfIllumination = self[index].lightMap[i][j]
 
-                if(selfLuminousity is not 0 and selfIllumination < selfLuminousity):
-                    self[index].lightMap[i][j] = selfLuminousity
-                    self.propagate(index, j, i)
+                    if(selfLuminousity is not 0 and selfIllumination < selfLuminousity):
+                        parent[index].lightMap[i][j] = selfLuminousity
+                        self.propagateRetro(index, j, i)
 
     def propagateRetro( self, index, x, y, top=True, right=True, bottom=True, left=True ):
 
@@ -151,77 +152,83 @@ class Shader:
             if(y+1 < CHUNK_HEIGHT):         #check if the next position (1 above) is valid
                 if(topVal > self[index].lightMap[y+1][x]):
                     self[index].lightMap[y+1][x]   =  topVal
-                    self.propagate(index, x, y+1, bottom=False)
+                    self.propogateRetro(index, x, y+1, bottom=False)
 
         # Bottom side
         if(bottom):
             if(y-1 >= 0):                   #check if the next position (1 below) is valid
                 if(bottomVal >= self[index].lightMap[y-1][x]):
                     self[index].lightMap[y-1][x]   =  bottomVal
-                    self.propagate(index, x, y-1, top=False)
+                    self.propogateRetro(index, x, y-1, top=False)
 
         # Left side
         if(left):
             if(x-1 >= 0):                   #check if the next position (1 to the left) is valid
                 if(leftVal > self[index].lightMap[y][x-1]):
                     self[index].lightMap[y][x-1]   =  leftVal
-                    self.propagate(index, x-1, y, right=False)
+                    self.propogateRetro(index, x-1, y, right=False)
 
             elif(index-1 >= 0):             #check if previous chunk exists in the chunk buffer
                 if(leftVal > self[index-1].lightMap[y][CHUNK_WIDTH-1]):
                     self[index-1].lightMap[y][CHUNK_WIDTH-1]   =  leftVal
-                    self.propagate(index-1, CHUNK_WIDTH-1, y, right=False)
+                    self.propogateRetro(index-1, CHUNK_WIDTH-1, y, right=False)
 
         # Right side
         if(right):
             if(x+1 < CHUNK_WIDTH):          #check if the next position (1 to the right) is valid
                 if(rightVal > self[index].lightMap[y][x+1]):
                     self[index].lightMap[y][x+1]   =  rightVal
-                    self.propagate(index, x+1, y, left=False)
+                    self.propogateRetro(index, x+1, y, left=False)
 
             elif(index+1 < self.length):    #check if next chunk exists in the chunk buffer
                 if(rightVal > self[index+1].lightMap[y][0]):
                     self[index+1].lightMap[y][0]   =  rightVal
-                    self.propagate(index+1, 0, y, left=False)
+                    self.propogateRetro(index+1, 0, y, left=False)
 
     def shadeRadial( self ):
-        chunk = []
-        luminous = None#the luminosity of the block
+
+        luminous = None # the luminosity of the block
+        #sq2 = sqrt(2)
+        sq2 = 1.414
         for y in range(CHUNK_HEIGHT):
             for x in range(CHUNK_WIDTH):
-                if chunk[x][y] is luminous:
-                    propagate(chunk,x,y,True,True,True,True)
+
+                if( chunk[x][y] is luminous ):
+
+                    propagateRadial( chunk, x, y, True, True, True, True)
+
                     while(y-1-i>0 and x-1-i>0):#up diagonal left
-                        propagate(chunk,x-1-i,y-1-i,up=True,left=True)
+                        propagateRadial(chunk,x-1-i,y-1-i,up=True,left=True)
+
                     while(y-1-i>0 and x+1+i<CHUNK_WIDTH):#up diagonal right
-                        propagate(chunk,x+1+i,y-1-i,up=True,right=True)
+                        propagateRadial(chunk,x+1+i,y-1-i,up=True,right=True)
+
                     while(y+1+i<CHUNK_HEIGHT and x-1-i>0):#down diagonal left
-                        propagate(chunk,x-1-i,y+1+i,down=True,left=True)
+                        propagateRadial(chunk,x-1-i,y+1+i,down=True,left=True)
+
                     while(y+1+i<CHUNK_HEIGHT and x+1+i<CHUNK_WIDTH):#down diagonal right
-                        propagate(chunk,x+1+i,y+1+i,down=True,right=True)
+                        propagateRadial(chunk,x+1+i,y+1+i,down=True,right=True)
 
     def propagateRadial(l, x, y, up=False, down=False, left=False, right=False):
-        valid = True#check if valid
+        valid = True       #check if valid
         if valid and lightval != 0:
             if up:
-                l[y+1][x].lightval = 0.5#some value
-                propagate(y+1, x, up=True)
+                l[y+1][x].lightval = 0.5    #some value
+                propagateRadial(y+1, x, up=True)
             if down:
-                l[y-1][x].lightval = 0.5#some value
-                propagate(y-1, x, down=True)
+                l[y-1][x].lightval = 0.5    #some value
+                propagateRadial(y-1, x, down=True)
             if right:
-                l[y][x+1].lightval = 0.5#some value
-                propagate(y, x+1, right=True)
+                l[y][x+1].lightval = 0.5    #some value
+                propagateRadial(y, x+1, right=True)
             if left:
-                l[y][x-1]lightval = 0.5#some value
-                propagate(y, x-1, left=True)
-        else:
-            return
+                l[y][x-1].lightval = 0.5     #some value
+                propagateRadial(y, x-1, left=True)
 
-    def shadeSmooth( self, target):
-        pass
-    def propogateSmooth( self, target ):
-        pass
+    # def shadeSmooth( self, target):
+    #     pass
+    # def propogateSmooth( self, target ):
+    #     pass
 
 
 vector = [
