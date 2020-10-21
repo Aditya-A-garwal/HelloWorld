@@ -315,8 +315,98 @@ class ChunkBuffer:
 
 class chunkBufferManager:
 
-    def __init__(self):
+    def __init__(  self, length, middleIndex, targetWorld, seed=None  ):
+
+        # Create references to required objects
+        self.serializer     =  Serializer(targetWorld)
+        self.chunkGenerator =  chunkGenerator()
+
+        # Save length and index of last item
+        self.length         =  length
+        self.len            =  length - 1
+
+        # Positions of the left-most, middle and right-most chunks
+        self.positions      =  [ middleIndex - self.len // 2, middleIndex, middleIndex + self.len // 2 ]
+
+        # Create lists of required objects
+        self.chunks         =  [ ]
+        self.surfaces       =  [ ]
+        self.lightSurfs     =  [ ]
+
+    def loadAll( self ):
         pass
+    def dumpAll( self ):
+        pass
+
+    def loadRightShiftLeft( self, deltaChunk ):
+
+        # chunkbuffer middle has shifted to the right if deltaChunk is greater than 0 (loadRightShiftLeft is called)
+        # chunkbuffer middle has shifted to the left if deltaChunk is less than 0 (loadLeftShiftRight is called)
+
+        # deltaChunk number of chunks need to be loaded and deltaChunk number of chunks need to be unloaded
+        # present chunks need to be shifted by deltaChunk amount
+
+        for i in range( 0, deltaChunk ):
+
+            # Pick up the first deltaChunk number of chunks for serialization
+            li              =  [ self.chunks[i].blocks, self.chunks[i].walls ]
+            lo              =  self.chunk[i].TILE_TABLE_LOCAL
+
+            # Get the next deltaChunk number of chunks from the serializer
+            self.serializer[self.positions[0] + i] = li, lo
+
+        # Shift the chunks to the left by deltaChunk amount
+        for i in range( 0, self.length - deltaChunk ):
+            self.chunks[i] = self.chunks[i + deltaChunk]
+
+        loadedChunks =  [ ]
+        for i in range(0, deltaChunk):
+            loadedChunks.append(self.serializer[self.positions[-1] + 1 + i])
+            # processing of the chunk needs to be done here
+
+        for i in range( 0, deltaChunk ):
+            # ! before doing this, the loaded chunks must be generated and processed
+            self.chunks[self.length - deltaChunk + i] = loadedChunks[i]
+
+        # Increment the positions
+        self.positions[0] += deltaChunk
+        self.positions[1] += deltaChunk
+        self.positions[2] += deltaChunk
+
+    def loadLeftShiftRight( self, deltaChunk ):
+
+        # chunkbuffer middle has shifted to the right if deltaChunk is greater than 0 (loadRightShiftLeft is called)
+        # chunkbuffer middle has shifted to the left if deltaChunk is less than 0 (loadLeftShiftRight is called)
+
+        # deltaChunk number of chunks need to be loaded and deltaChunk number of chunks need to be unloaded
+        # present chunks need to be shifted by deltaChunk amount
+
+        for i in range( 0, deltaChunk ):
+
+            # Pick up the last deltaChunk number of chunks for serialization
+            li              =  [ self.chunks[self.length-1-i].blocks, self.chunks[self.length-1-i].walls ]
+            lo              =  self.chunk[self.length-1-i].TILE_TABLE_LOCAL
+
+            # Get the next deltaChunk number of chunks from the serializer
+            self.serializer[self.positions[-1] - i] = li, lo
+
+        # Shift the chunks to the right by deltaChunk amount
+        for i in range( self.length - 1, deltaChunk - 1, -1 ):
+            self.chunks[i] = self.chunks[i - deltaChunk]
+
+        loadedChunks =  [ ]
+        for i in range(0, deltaChunk):
+            loadedChunks.append(self.serializer[self.positions[0] - deltaChunk + i])
+            # processing of the chunk needs to be done here
+
+        for i in range( 0, deltaChunk ):
+            # ! before doing this, the loaded chunks must be generated and processed
+            self.chunks[i] = loadedChunks[i]
+
+        # Decrement the positions
+        self.positions[0] -= deltaChunk
+        self.positions[1] -= deltaChunk
+        self.positions[2] -= deltaChunk
 
 class chunkGenerator:
 

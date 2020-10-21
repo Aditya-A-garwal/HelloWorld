@@ -4,27 +4,27 @@ https://www.lfd.uci.edu/~gohlke/pythonlibs/#pyopencl
 ignore these links
 
 Threads-
-    1. Main thread (Client-loop ,rendering, querying to and putting back to RAMDB)
-    2. RAMDB thread (Population, renderingchunk, calculating lighttable, rendering lightmap, query, putting back to ROM)
-    3. Server thread
+    1. Main Process (Client-loop ,rendering, querying to and putting back to RAMDB)
+    2. RAMDB Process (Population, renderingchunk, calculating lighttable, rendering lightmap, query, putting back to ROM)
+    3. Server Process
 
 
 Tiles:             Weight    Friction    Luminosity    Breaktime    Burnable
 
-Bedrock:            100        0             0            -            
-Obsidian:           99         0             0            10           
-Hellstone:          99         1             0            10           
+Bedrock:            100        0             0            -
+Obsidian:           99         0             0            10
+Hellstone:          99         1             0            10
 Ores:
- Unobtanium:        85         0             0            8            
- Diamond:           80         0             0            7            
- Platinum:          75         0             0            7           
+ Unobtanium:        85         0             0            8
+ Diamond:           80         0             0            7
+ Platinum:          75         0             0            7
  Gold:              70         0             0            5
  Iron:              65         0             0            3
  Copper:            65         0             0            2
 Stone:
  Granite:           60         0             0            2
  Quartz:            60         0             0            2
- Limestone:         55         0             0            2   
+ Limestone:         55         0             0            2
  Greystone:         55         0             0            2
  Sandstone:         50         0             0            2
 Gravel:             45         0             0            1
