@@ -136,6 +136,11 @@ class Renderer:
             coors[1]  -= TILE_WIDTH         # Every Iteration, decrease the y-coordinate by tile-width
 
     @classmethod
+    def renderLightmaps( cls ):
+        for i in range(0, cls.length ):
+            cls.renderLightmap( i )
+
+    @classmethod
     def renderLightmap(  cls, index, rect = [0, 0, CHUNK_WIDTH, CHUNK_HEIGHT] ):
 
         currChunkRef                    =  cls.chunkBuffer[index]

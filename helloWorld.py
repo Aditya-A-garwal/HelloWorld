@@ -29,7 +29,7 @@ screen = pygame.display.set_mode(displaySize, pygame.RESIZABLE)
 pygame.display.set_caption("Hello World!")
 pygame.display.set_icon(pygame.image.load("Resources/Default/gameIcon.png"))
 
-# Convert all images to optimize for blitting
+# Convert all images to optimized form
 tiles.loadImageTable()
 items.loadImageTable()
 
@@ -77,15 +77,16 @@ while running:
             Renderer.render()
 
     # camera movement handling
-    if(cameraBound):
-        camera[0] += (player.pos[0]-camera[0]) * LERP_C
-        camera[1] += (player.pos[1]-camera[1]) * LERP_C
-    else:
-        if(pygame.K_a in keyPress): camera[0] -= SCALE_VEL * dt / 1000
-        elif(pygame.K_d in keyPress): camera[0] += SCALE_VEL * dt / 1000
+    if( cameraBound ):
+        camera[0] += ( player.pos[0] - camera[0] ) * LERP_C
+        camera[1] += ( player.pos[1] - camera[1] ) * LERP_C
 
-        if(pygame.K_w in keyPress): camera[1] += SCALE_VEL * dt / 1000
-        elif(pygame.K_s in keyPress): camera[1] -= SCALE_VEL * dt / 1000
+    else:
+        if( pygame.K_a in keyPress ): camera[0] -= SCALE_VEL * dt
+        elif( pygame.K_d in keyPress ): camera[0] += SCALE_VEL * dt
+
+        if( pygame.K_w in keyPress ): camera[1] += SCALE_VEL * dt
+        elif( pygame.K_s in keyPress ): camera[1] -= SCALE_VEL * dt
 
     if(int(prevCamera[0]) != int(camera[0]) or int(prevCamera[1]) != int(camera[1])):
         Renderer.updateCam()
@@ -101,15 +102,15 @@ while running:
     # Server-side
 
     # Framerate calculation
-    dt = clock.tick(0)
-    framerate = 1000 / (dt + 1)
+    dt = clock.tick(0) / 1000
+    framerate = 1 / (dt + 1)
 
     # Player movement handling
     if(keyFlag and cameraBound):
         player.run(keyPress)
 
 
-    player.update(dt/1000)
+    player.update(dt)
 
     deltaChunk = currChunk-prevChunk
     prevChunk = currChunk
@@ -117,7 +118,7 @@ while running:
     if(deltaChunk != 0):        # Player has moved
         loadedIndex = chunkBuffer.shiftBuffer(deltaChunk)
         Renderer.renderChunk(loadedIndex)
-        Renderer.renderLightmap(loadedIndex-deltaChunk)
+        Renderer.renderLightmap(loadedIndex - deltaChunk)
 
 
 chunkBuffer.saveComplete()
