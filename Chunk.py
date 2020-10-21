@@ -333,10 +333,16 @@ class chunkBufferManager:
         self.surfaces       =  [ ]
         self.lightSurfs     =  [ ]
 
+        self.loadAll()
+
     def loadAll( self ):
-        pass
+        for i in range(0, self.length):
+            self.chunks.append(self.serializer[self.positions[0] + i])
+            # generation and processing must be done here
+
     def dumpAll( self ):
-        pass
+        for i in range(0, self.length):
+            self.serializer[self.positions[0] + i] = [ self.chunks[i].blocks, self.chunks[i].walls ], self.chunks[i].TILE_TABLE_LOCAL
 
     def loadRightShiftLeft( self, deltaChunk ):
 
@@ -407,6 +413,70 @@ class chunkBufferManager:
         self.positions[0] -= deltaChunk
         self.positions[1] -= deltaChunk
         self.positions[2] -= deltaChunk
+
+    def __getitem__( self, key ):
+        return self.chunks[key]
+
+    def __setitem__( self, key, value):
+        self.chunks[key] = value
+
+    def populateChunk( self, chunk ):
+
+        absouluteIndex  =   chunk.index * CHUNK_WIDTH
+
+        for i in range(0, CHUNK_WIDTH):
+
+            ## Lower bedrock wastes
+            for j in range(0, 10):
+
+                front, back  =  self.chunkGenerator.getLowerBedrockWastes( absouluteIndex, j )
+                chunk[j][i]  = front
+                chunk.walls[j][i]  = back
+
+            ## Upper bedrock wastes
+            for j in range(10, 20):
+
+                front, back   =  self.chunkGenerator.getUpperBedrockWastes( absouluteIndex, j )
+                chunk[j][i]  = front
+                chunk.walls[j][i]  = back
+
+            ## Lower Caves
+            for j in range(20, 50):
+
+                front, back   =  self.chunkGenerator.getLowerCaves( absouluteIndex, j )
+                chunk[j][i]  = front
+                chunk.walls[j][i]  = back
+
+            ## Middle Caves
+            for j in range(50, 90):
+
+                front, back    =  self.chunkGenerator.getMiddleCaves( absouluteIndex, j )
+                chunk[j][i]  = front
+                chunk.walls[j][i]  = back
+
+            ## Upper Caves
+            for j in range(90, 120):
+
+                front, back    =  self.chunkGenerator.getUpperCaves( absouluteIndex, j )
+                chunk[j][i]  = front
+                chunk.walls[j][i]  = back
+
+            ## Lower Undergrounds
+            for j in range(120, 140):
+
+                front, back    =  self.chunkGenerator.getUpperUnderground( absouluteIndex, j )
+                chunk[j][i]  = front
+                chunk.walls[j][i]  = back
+
+            ## Upper Undergrounds
+            for j in range(140, 170):
+
+                front, back    =  self.chunkGenerator.getUpperUnderground( absouluteIndex, j )
+                chunk[j][i]  = front
+                chunk.walls[j][i]  = back
+
+
+            absouluteIndex  +=  1
 
 class chunkGenerator:
 

@@ -142,11 +142,11 @@ class Inventory:
             rows ([type]): [description]
         """
 
-        self.items = [ [ 0 for j in range( 0, rows ) ] for i in range( 0, cols ) ]
-        self.quantities = [ [ 0 for j in range( 0, rows ) ] for i in range( 0, cols ) ]
-        self.positions = { }
-        self.selectedPos = 0
-        self.selectedItem = None
+        self.items          =  [ [ 0 for j in range( 0, rows ) ] for i in range( 0, cols ) ]
+        self.quantities     =  [ [ 0 for j in range( 0, rows ) ] for i in range( 0, cols ) ]
+        self.positions      =  { }
+        self.selectedPos    =  0
+        self.selectedItem   =  None
 
     def addItemStack( self, i, q ):
         pass
