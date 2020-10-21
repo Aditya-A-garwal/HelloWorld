@@ -2,9 +2,11 @@ from constants import *
 
 # Item names along with their IDs
 
+# foods
 berry           =  1
 apple           =  2
 
+# woods
 junglewood      =  3
 oakwood         =  4
 borealwood      =  5
@@ -12,9 +14,11 @@ pinewood        =  6
 cactuswood      =  7
 palmwood        =  8
 
+# bow and arrow
 bow             =  46
 arrow           =  47
 
+# pickaxes
 wood_pickaxe    =  53
 stone_pickaxe   =  54
 copper_pickaxe  =  55
@@ -25,6 +29,8 @@ plat_pickaxe    =  59
 unob_pickaxe    =  60
 hell_pickaxe    =  61
 cosmo_pickaxe   =  62
+
+# axes
 wood_axe        =  63
 stone_axe       =  64
 copper_axe      =  65
@@ -35,6 +41,8 @@ plat_axe        =  69
 unob_axe        =  70
 hell_axe        =  71
 cosmo_axe       =  72
+
+# battle axes
 wood_battleaxe  =  73
 stone_battleaxe =  74
 copper_battleaxe=  75
@@ -45,6 +53,8 @@ plat_battleaxe  =  79
 unob_battleaxe  =  80
 hell_battleaxe  =  81
 cosmo_battleaxe =  82
+
+# swords
 wood_sword      =  83
 stone_sword     =  84
 copper_sword    =  85
@@ -55,17 +65,24 @@ plat_sword      =  89
 unob_sword      =  90
 hell_sword      =  91
 cosmo_sword     =  92
+
+# lighter
 lighter         =  93
 
+# animal hides
 deerskin        =  48
 rottenleather   =  49
 
+# meats
 chicken         =  50
 deermeat        =  51
 rottenmeat      =  52
 
+# door
 door_upper      =  43
 door_lower      =  44
+
+# bed and bucket
 bed             =  45
 bucket          =  46
 
@@ -76,10 +93,6 @@ ITEM_NAMES = {
     bucket         : "bucket",
     bow            : "bow",
     arrow          : "arrow",
-    #pickaxe        : "pickaxe",
-    #battleaxe      : "battle axe",
-    #axe            : "axe",
-    #sword          : "sword",
     lighter        : "lighter",
     deerskin       : "deer skin",
     rottenleather  : "rotten leather",
@@ -101,19 +114,19 @@ ITEM_ATTR = {
                 INFLAMMABLE:3,
                 LTIMPERMEABILITY:0},
     door_lower: {ID: 44,
-                 WEIGHT: 25,
-                 LUMINOSITY: 0,
-                 DAMAGE: 10,
-                 HEALTH: 20,
-                 INFLAMMABLE: 3,
-                 LTIMPERMEABILITY: 0},
+                WEIGHT: 25,
+                LUMINOSITY: 0,
+                DAMAGE: 10,
+                HEALTH: 20,
+                INFLAMMABLE: 3,
+                LTIMPERMEABILITY: 0},
     bed:{ID:45,
-         WEIGHT:30,
-         LUMINOSITY:0,
-         DAMAGE:10,
-         HEALTH:30,
-         INFLAMMABLE:3,
-         LTIMPERMEABILITY:0},
+        WEIGHT:30,
+        LUMINOSITY:0,
+        DAMAGE:10,
+        HEALTH:30,
+        INFLAMMABLE:3,
+        LTIMPERMEABILITY:0},
     bucket:{ID:46,
             WEIGHT:15,
             LUMINOSITY:0,
@@ -122,26 +135,26 @@ ITEM_ATTR = {
             INFLAMMABLE:None,
             LTIMPERMEABILITY:0},
     bow:{ID:47,
-         WEIGHT:10,
-         LUMINOSITY:0,
-         DAMAGE:10,
-         HEALTH:None,
-         INFLAMMABLE:None,
-         LTIMPERMEABILITY:0},
+        WEIGHT:10,
+        LUMINOSITY:0,
+        DAMAGE:10,
+        HEALTH:None,
+        INFLAMMABLE:None,
+        LTIMPERMEABILITY:0},
     arrow:{ID:48,
-           WEIGHT:5,
-           LUMINOSITY:0,
-           DAMAGE:10,
-           HEALTH:None,
-           INFLAMMABLE:None,
-           LTIMPERMEABILITY:0},
+            WEIGHT:5,
+            LUMINOSITY:0,
+            DAMAGE:10,
+            HEALTH:None,
+            INFLAMMABLE:None,
+            LTIMPERMEABILITY:0},
     wood_pickaxe:{ID:53,
-                  WEIGHT:15,
-                  LUMINOSITY:0,
-                  DAMAGE:15,
-                  HEALTH:None,
-                  INFLAMMABLE:None,
-                  LTIMPERMEABILITY:0},
+                WEIGHT:15,
+                LUMINOSITY:0,
+                DAMAGE:15,
+                HEALTH:None,
+                INFLAMMABLE:None,
+                LTIMPERMEABILITY:0},
     stone_pickaxe:{ID:54,
                    WEIGHT:17,
                    LUMINOSITY:0,

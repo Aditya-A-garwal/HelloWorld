@@ -6,11 +6,12 @@ import entity
 
 # Screen variables
 displaySize = [400, 300]
-prevFramerate = framerate = 0
+framerate = 0
 
 # Camera variables
 camera = pygame.math.Vector2([0, CHUNK_HEIGHT_P//2])
 prevCamera = [0, 0]
+cameraBound = True
 
 # Initialize pygame and start clock
 pygame.init()
@@ -36,7 +37,7 @@ items.loadImageTable()
 Renderer.initialize(chunkBuffer, camera, player, displaySize, screen)
 
 keyPress = []
-now = prev = time.time()
+dt = 0
 # game loop
 
 running = True
@@ -44,7 +45,6 @@ while running:
 
     # Client-side
     keyFlag = False
-
 
     # event handling loop
     for event in pygame.event.get():
@@ -54,6 +54,11 @@ while running:
         elif event.type == pygame.KEYDOWN:
             if(event.key is pygame.K_c):
                 Renderer.setShaders()
+            elif(event.key is pygame.K_n):
+                # This should free the camera from being fixed to the player
+                cameraBound = not cameraBound
+            elif(event.key is pygame.K_SLASH):
+                pass # This should open the terminal for issuing text commands
             else:
                 if event.key not in keyPress:
                     keyPress.append(event.key)
@@ -72,8 +77,15 @@ while running:
             Renderer.render()
 
     # camera movement handling
-    camera[0] += (player.pos[0]-camera[0]) * 0.05
-    camera[1] += (player.pos[1]-camera[1]) * 0.05
+    if(cameraBound):
+        camera[0] += (player.pos[0]-camera[0]) * LERP_C
+        camera[1] += (player.pos[1]-camera[1]) * LERP_C
+    else:
+        if(pygame.K_a in keyPress): camera[0] -= SCALE_VEL * dt / 1000
+        elif(pygame.K_d in keyPress): camera[0] += SCALE_VEL * dt / 1000
+
+        if(pygame.K_w in keyPress): camera[1] += SCALE_VEL * dt / 1000
+        elif(pygame.K_s in keyPress): camera[1] -= SCALE_VEL * dt / 1000
 
     if(int(prevCamera[0]) != int(camera[0]) or int(prevCamera[1]) != int(camera[1])):
         Renderer.updateCam()
@@ -89,27 +101,15 @@ while running:
     # Server-side
 
     # Framerate calculation
-    frameTime = clock.tick(framerate) + 1
-    prevFramerate = 1000 / frameTime
+    dt = clock.tick(0)
+    framerate = 1000 / (dt + 1)
 
     # Player movement handling
-    #player.run(keyPress, keyRelease, frameTime)
-    # if(keyPress is not None):
-    if keyFlag:
+    if(keyFlag and cameraBound):
         player.run(keyPress)
-        #keyPress = None
 
 
-    # if(keyRelease is not None):
-    #     player.keyRelease(keyRelease)
-    #     #keyRelease = None
-    #     if keyPress == keyRelease:
-    #         keyPress = keyRelease = None
-
-    now = time.time()
-    dt = now-prev
-    prev = now
-    player.update(dt)
+    player.update(dt/1000)
 
     deltaChunk = currChunk-prevChunk
     prevChunk = currChunk
