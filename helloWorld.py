@@ -38,6 +38,11 @@ Renderer.initialize(chunkBuffer, camera, player, displaySize, screen)
 
 keyPress = []
 dt = 0
+
+mousePress = []
+mousePos = [-1, -1]
+mouseWorldPos = [-1, -1]
+
 # game loop
 
 running = True
@@ -48,17 +53,20 @@ while running:
 
     # event handling loop
     for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False #quit game if user leaves
 
-        elif event.type == pygame.KEYDOWN:
+        if(event.type == pygame.QUIT):
+            running = False
+
+        elif(event.type == pygame.KEYDOWN):
+
             if(event.key is pygame.K_c):
                 Renderer.setShaders()
             elif(event.key is pygame.K_n):
-                # This should free the camera from being fixed to the player
-                cameraBound = not cameraBound
+                cameraBound = not cameraBound # This should free the camera from being fixed to the player
+
             elif(event.key is pygame.K_SLASH):
                 pass # This should open the terminal for issuing text commands
+
             else:
                 if event.key not in keyPress:
                     keyPress.append(event.key)
@@ -70,7 +78,18 @@ while running:
                     keyPress.remove(event.key)
                     keyFlag = True
 
-        elif event.type == pygame.VIDEORESIZE:
+        # i for left, 2 for middle, 3 for right, 4 for scroll up and 5 for scroll down
+        elif(event.type == pygame.MOUSEMOTION):
+            mousePos = event.pos[0], event.pos[1]
+            mouseWorldPos = camera[0] + mousePos[0] - displaySize[0]//2, camera[1] + displaySize[1]//2 - mousePos[1]
+
+        elif(event.type == pygame.MOUSEBUTTONDOWN):
+            mousePress.append(event.button)
+
+        elif(event.type == pygame.MOUSEBUTTONUP):
+            mousePress.remove(event.button)
+
+        elif(event.type == pygame.VIDEORESIZE):
             displaySize[0], displaySize[1] = screen.get_width(), screen.get_height()
 
             Renderer.updateRefs()
@@ -97,7 +116,6 @@ while running:
 
     # Updating screen
     pygame.display.update()
-
 
     # Server-side
 
