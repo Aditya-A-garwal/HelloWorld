@@ -2,6 +2,9 @@ from constants import *
 
 # Item names along with their IDs
 
+# inventory
+slot            =  0
+
 # foods
 berry           =  1
 apple           =  2
@@ -103,7 +106,9 @@ ITEM_NAMES = {
     apple          : "apple"
 }
 
-ITEM_TABLE = {}
+ITEM_TABLE = {
+    slot : pygame.image.load("Resources/Default/InventorySpace.png")
+}
 
 ITEM_ATTR = {
     door_upper:{ID:43,

@@ -109,13 +109,10 @@ class Renderer:
         # Create a reference to the chunk currently being rendered (for convenience)
         currChunkRef                    =  cls.chunkBuffer[index]
         currSurfRef                     =  cls.chunkBuffer.surfaces[index]
+        coors                           =  [ 0, ( CHUNK_HEIGHT - rect[1] - 1 ) * TILE_WIDTH ]
+        # y-coordinate starts from bottom (1 is subtracted to acc for rendering from top instead of bottom)
 
-        coors                           =  [0, 0]
-
-        # Fill the to-be-updated region of the surface to "clear" it
         cls.chunkBuffer.surfaces[index].fill( ( 30, 150, 240 ), [i * TILE_WIDTH for i in rect] )
-
-        coors[1]    =  ( CHUNK_HEIGHT - rect[1] - 1) * TILE_WIDTH    # y-coordinate starts from bottom (1 is subtracted to acc for rendering from top instead of bottom)
 
         for i in range( rect[1], rect[3] ):
 
@@ -237,6 +234,8 @@ class Renderer:
         playerCoors[1] =  cls.numVer - playerCoors[1]
 
         pygame.draw.circle( cls.screen, (255,50,50), playerCoors, 2 )
+
+        cls.screen.blit( items.ITEM_TABLE[items.slot], (10, 10))
 
     @classmethod
     def updateSize(  cls  ):

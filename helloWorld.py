@@ -60,18 +60,17 @@ while running:
 
         elif(event.type == pygame.KEYDOWN):
 
-            if(event.key is pygame.K_c):
+            if(event.key in keyPress):
+                keyFlag = True
+                keyPress[event.key] = True
+
+            elif(event.key is pygame.K_c):
                 Renderer.setShaders()
             elif(event.key is pygame.K_n):
                 cameraBound = not cameraBound # This should free the camera from being fixed to the player
-
             elif(event.key is pygame.K_SLASH):
                 plc = input(">> ")
                 # processPLC(plc)
-
-            else:
-                keyFlag = True
-                keyPress[event.key] = True
 
         elif event.type == pygame.KEYUP:
             if( event.key in keyPress):
