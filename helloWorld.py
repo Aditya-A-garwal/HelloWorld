@@ -22,7 +22,7 @@ clock = pygame.time.Clock()
 chunkBuffer = ChunkBuffer(11, 0, "world1")
 
 # Player variables
-player = entity.Entity(0, [0, 0], [0, 0], chunkBuffer, DEFAULT_FRICTION)
+player = entity.Player(0, [0, 0], [0, 0], chunkBuffer, DEFAULT_FRICTION)
 currChunk = prevChunk = deltaChunk = 0
 
 # Create and display window
@@ -51,6 +51,7 @@ while running:
 
     # Client-side
     keyFlag = False
+    mouseFlag = False
 
     # event handling loop
     for event in pygame.event.get():
@@ -80,12 +81,14 @@ while running:
         # i for left, 2 for middle, 3 for right, 4 for scroll up and 5 for scroll down
         elif(event.type == pygame.MOUSEMOTION):
             mousePos = event.pos[0], event.pos[1]
-            mouseWorldPos = camera[0] + mousePos[0] - displaySize[0]//2, camera[1] + displaySize[1]//2 - mousePos[1]
+            mouseWorldPos = int(camera[0]) + mousePos[0] - displaySize[0]//2, int(camera[1]) + displaySize[1]//2 - mousePos[1]
 
         elif(event.type == pygame.MOUSEBUTTONDOWN):
+            mouseFlag = True
             mousePress[event.button] = True
 
         elif(event.type == pygame.MOUSEBUTTONUP):
+            mouseFlag = True
             mousePress[event.button] = False
 
         elif(event.type == pygame.VIDEORESIZE):
@@ -123,8 +126,14 @@ while running:
     #framerate = 1 / min(dt, 0.001)
 
     # Player movement handling
-    if(keyFlag and cameraBound):
-        player.run(keyPress)
+    if(cameraBound):
+        if(mouseFlag):
+            updatedIndex = player.runMouse(mousePress, mouseWorldPos)
+            if(updatedIndex is not None):
+                Renderer.renderChunk(updatedIndex)
+                Renderer.render()
+        if(keyFlag):
+            player.run(keyPress)
 
 
     player.update(dt)
@@ -135,6 +144,7 @@ while running:
     if(deltaChunk != 0):        # Player has moved
         loadedIndex = chunkBuffer.shiftBuffer(deltaChunk)
         Renderer.renderChunk(loadedIndex)
+        # Renderer.renderLightmap(loadedIndex)
         Renderer.renderLightmap(loadedIndex - deltaChunk)
 
 

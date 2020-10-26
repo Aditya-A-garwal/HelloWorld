@@ -235,8 +235,6 @@ class Renderer:
 
         pygame.draw.circle( cls.screen, (255,50,50), playerCoors, 2 )
 
-        cls.screen.blit( items.ITEM_TABLE[items.slot], (10, 10))
-
     @classmethod
     def updateSize(  cls  ):
 

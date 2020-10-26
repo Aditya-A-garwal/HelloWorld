@@ -1,4 +1,5 @@
 from constants import *
+import tiles, items
 import math, Chunk
 
 class Entity:
@@ -59,23 +60,6 @@ class Entity:
             self.moveDown()
         elif( key[pygame.K_w] and not key[pygame.K_s] ):
             self.moveUp()
-
-    def run2( self, mouse: dict ): # ! this should actually belong to the player
-        """[summary]
-
-        Args:
-            mouse ([type]): [description]
-        """
-        if(mouse[1]): # left is there
-            pass
-        if(mouse[2]): # middle is there
-            pass
-        if(mouse[3]): # right is there
-            pass
-        if(mouse[4]): # scroll up
-            pass
-        if(mouse[5]): # scroll down
-            pass
 
     def update(self, dt):
         """[summary]
@@ -139,8 +123,41 @@ class Entity:
 
 class Player(Entity):
 
-    def __init__( self ):
-        pass
+    def __init__( self , i:int, sp:list, p:list, cb:Chunk.ChunkBuffer, f:float, h:int=100, g:bool=True):
+        super().__init__( i, sp, p, cb, f, h, g)
+
+    def runMouse( self, mouse, mousePos ):
+
+        """[summary]
+
+        Args:
+            mouse ([type]): [description]
+        """
+        x, y = None, None
+        chunkInd = None
+        if(mouse[1]): # left is there
+            # Since the mouse is being held down, the player is hitting
+            chunk = math.floor(mousePos[0] / CHUNK_WIDTH_P)
+            chunkInd = chunk - self.chunkBuffer.positions[0]
+            x = (mousePos[0] // TILE_WIDTH) - chunk * CHUNK_WIDTH
+            y = (mousePos[1] // TILE_WIDTH)
+            self.chunkBuffer[chunkInd].blocks[y][x] = tiles.air
+            self.chunkBuffer[chunkInd].walls[y][x] = tiles.air
+
+        if(mouse[2]): # middle is there
+            # do something
+            pass
+        if(mouse[3]): # right is there
+            # do something
+            pass
+        if(mouse[4]): # scroll up
+            # do something
+            pass
+        if(mouse[5]): # scroll down
+            # do something
+            pass
+
+        return chunkInd
 
 class Inventory:
 
