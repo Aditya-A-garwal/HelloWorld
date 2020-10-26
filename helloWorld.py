@@ -103,11 +103,11 @@ while running:
         camera[1] += ( player.pos[1] - camera[1] ) * LERP_C
 
     else:
-        if( pygame.K_a in keyPress ): camera[0] -= SCALE_VEL * dt
-        elif( pygame.K_d in keyPress ): camera[0] += SCALE_VEL * dt
+        if( keyPress[pygame.K_a] ): camera[0] -= SCALE_VEL * dt
+        elif( keyPress[pygame.K_d] ): camera[0] += SCALE_VEL * dt
 
-        if( pygame.K_w in keyPress ): camera[1] += SCALE_VEL * dt
-        elif( pygame.K_s in keyPress ): camera[1] -= SCALE_VEL * dt
+        if( keyPress[pygame.K_w] ): camera[1] += SCALE_VEL * dt
+        elif( keyPress[pygame.K_s] ): camera[1] -= SCALE_VEL * dt
 
     if(int(prevCamera[0]) != int(camera[0]) or int(prevCamera[1]) != int(camera[1])):
         Renderer.updateCam()
