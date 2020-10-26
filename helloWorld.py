@@ -40,7 +40,7 @@ Renderer.initialize(chunkBuffer, camera, player, displaySize, screen)
 keyPress = { pygame.K_w : False, pygame.K_a : False, pygame.K_s : False, pygame.K_d : False }
 dt = 0
 
-mousePress = [False, False, False, False, False]
+mousePress = { 1 : False, 2 : False, 3 : False, 4 : False, 5 : False }
 mousePos = [-1, -1]
 mouseWorldPos = [-1, -1]
 
@@ -84,10 +84,10 @@ while running:
             mouseWorldPos = camera[0] + mousePos[0] - displaySize[0]//2, camera[1] + displaySize[1]//2 - mousePos[1]
 
         elif(event.type == pygame.MOUSEBUTTONDOWN):
-            mousePress[event.button - 1] = True
+            mousePress[event.button] = True
 
         elif(event.type == pygame.MOUSEBUTTONUP):
-            mousePress[event.button - 1] = False
+            mousePress[event.button] = False
 
         elif(event.type == pygame.VIDEORESIZE):
             displaySize[0], displaySize[1] = screen.get_width(), screen.get_height()

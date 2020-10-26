@@ -60,21 +60,21 @@ class Entity:
         elif( key[pygame.K_w] and not key[pygame.K_s] ):
             self.moveUp()
 
-    def run2( self, mouse: list ): # ! this should actually belong to the player
+    def run2( self, mouse: dict ): # ! this should actually belong to the player
         """[summary]
 
         Args:
             mouse ([type]): [description]
         """
-        if(mouse[0]): # left is there
+        if(mouse[1]): # left is there
             pass
-        if(mouse[1]): # middle is there
+        if(mouse[2]): # middle is there
             pass
-        if(mouse[2]): # right is there
+        if(mouse[3]): # right is there
             pass
-        if(mouse[3]): # scroll up
+        if(mouse[4]): # scroll up
             pass
-        if(mouse[4]): # scroll down
+        if(mouse[5]): # scroll down
             pass
 
     def update(self, dt):
