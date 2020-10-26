@@ -47,29 +47,35 @@ class Entity:
         Args:
             key ([type]): [description]
         """
-        self.acc[0] = self.acc[1] = 0
+        self.acc[0] = 0
+        self.acc[1] = 0
 
-        if pygame.K_a in key and pygame.K_d in key:
-            self.acc[0] = 0
-        else:
-            if pygame.K_a in key:
-                self.moveLeft()
-            if pygame.K_d in key:
-                self.moveRight()
+        if( key[pygame.K_a] and not key[pygame.K_d] ):
+            self.moveLeft()
+        elif( key[pygame.K_d] and not key[pygame.K_a] ):
+            self.moveRight()
 
-        if pygame.K_s in key and pygame.K_w in key:
-            self.acc[1] = 0
-        else:
-            if pygame.K_s in key:
-                self.moveDown()
-            if pygame.K_w in key:
-                self.moveUp()
+        if( key[pygame.K_s] and not key[pygame.K_w] ):
+            self.moveDown()
+        elif( key[pygame.K_w] and not key[pygame.K_s] ):
+            self.moveUp()
 
-    # def keyRelease(self, key):
-    #     if (key is pygame.K_a or key is pygame.K_d):
-    #         self.acc[0] = 0
-    #     elif (key is pygame.K_s or key is pygame.K_w):
-    #         self.acc[1] = 0
+    def run2( self, mouse: list ): # ! this should actually belong to the player
+        """[summary]
+
+        Args:
+            mouse ([type]): [description]
+        """
+        if(mouse[0]): # left is there
+            pass
+        if(mouse[1]): # middle is there
+            pass
+        if(mouse[2]): # right is there
+            pass
+        if(mouse[3]): # scroll up
+            pass
+        if(mouse[4]): # scroll down
+            pass
 
     def update(self, dt):
         """[summary]
@@ -131,6 +137,10 @@ class Entity:
     def notObstacle(self, c):
         pass
 
+class Player(Entity):
+
+    def __init__( self ):
+        pass
 
 class Inventory:
 

@@ -9,7 +9,8 @@ displaySize = [400, 300]
 framerate = 0
 
 # Camera variables
-camera = pygame.math.Vector2([0, CHUNK_HEIGHT_P//2])
+#camera = pygame.math.Vector2([0, CHUNK_HEIGHT_P//2])
+camera = [0, CHUNK_HEIGHT_P//2]
 prevCamera = [0, 0]
 cameraBound = True
 
@@ -36,10 +37,10 @@ items.loadImageTable()
 # Initialize the renderer
 Renderer.initialize(chunkBuffer, camera, player, displaySize, screen)
 
-keyPress = []
+keyPress = { pygame.K_w : False, pygame.K_a : False, pygame.K_s : False, pygame.K_d : False }
 dt = 0
 
-mousePress = []
+mousePress = [False, False, False, False, False]
 mousePos = [-1, -1]
 mouseWorldPos = [-1, -1]
 
@@ -65,18 +66,17 @@ while running:
                 cameraBound = not cameraBound # This should free the camera from being fixed to the player
 
             elif(event.key is pygame.K_SLASH):
-                pass # This should open the terminal for issuing text commands
+                plc = input(">> ")
+                # processPLC(plc)
 
             else:
-                if event.key not in keyPress:
-                    keyPress.append(event.key)
-                    keyFlag = True
+                keyFlag = True
+                keyPress[event.key] = True
 
         elif event.type == pygame.KEYUP:
-            if(event.key is not pygame.K_c):
-                if event.key in keyPress:
-                    keyPress.remove(event.key)
-                    keyFlag = True
+            if( event.key in keyPress):
+                keyFlag = True
+                keyPress[event.key] = False
 
         # i for left, 2 for middle, 3 for right, 4 for scroll up and 5 for scroll down
         elif(event.type == pygame.MOUSEMOTION):
@@ -84,10 +84,10 @@ while running:
             mouseWorldPos = camera[0] + mousePos[0] - displaySize[0]//2, camera[1] + displaySize[1]//2 - mousePos[1]
 
         elif(event.type == pygame.MOUSEBUTTONDOWN):
-            mousePress.append(event.button)
+            mousePress[event.button - 1] = True
 
         elif(event.type == pygame.MOUSEBUTTONUP):
-            mousePress.remove(event.button)
+            mousePress[event.button - 1] = False
 
         elif(event.type == pygame.VIDEORESIZE):
             displaySize[0], displaySize[1] = screen.get_width(), screen.get_height()
@@ -121,7 +121,7 @@ while running:
 
     # Framerate calculation
     dt = clock.tick(0) / 1000
-    framerate = 1 / (dt + 1)
+    #framerate = 1 / min(dt, 0.001)
 
     # Player movement handling
     if(keyFlag and cameraBound):
@@ -130,7 +130,7 @@ while running:
 
     player.update(dt)
 
-    deltaChunk = currChunk-prevChunk
+    deltaChunk = currChunk - prevChunk
     prevChunk = currChunk
 
     if(deltaChunk != 0):        # Player has moved
