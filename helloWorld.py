@@ -127,16 +127,14 @@ while running:
 
     # Player movement handling
     if(cameraBound):
-        if(mouseFlag):
-            updatedIndex = player.runMouse(mousePress, mouseWorldPos)
-            if(updatedIndex is not None):
-                Renderer.renderChunk(updatedIndex)
-                Renderer.render()
-        if(keyFlag):
-            player.run(keyPress)
+        if(keyFlag or mouseFlag or True):
+            player.run(keyPress, mousePress, mouseWorldPos)
 
 
-    player.update(dt)
+    updatedIndex = player.update(dt)
+    if(updatedIndex is not None):
+        Renderer.renderChunk(updatedIndex)
+        Renderer.render()
 
     deltaChunk = currChunk - prevChunk
     prevChunk = currChunk
@@ -144,7 +142,6 @@ while running:
     if(deltaChunk != 0):        # Player has moved
         loadedIndex = chunkBuffer.shiftBuffer(deltaChunk)
         Renderer.renderChunk(loadedIndex)
-        # Renderer.renderLightmap(loadedIndex)
         Renderer.renderLightmap(loadedIndex - deltaChunk)
 
 

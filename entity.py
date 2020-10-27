@@ -30,6 +30,9 @@ class Entity:
         # self.itemHeld    = None
         self.vel         = [0.0, 0.0]
         self.acc         = [0.0, 0.0]
+
+        self.hitting     = False
+        self.placing     = False
         self.width       = PLYR_WIDTH
         self.height      = PLYR_HEIGHT
         # self.left        = self.display[0]+self.pos[0]-self.camera[0]-(self.width*0.5)
@@ -70,24 +73,17 @@ class Entity:
 
         for i in range(0, 2):
             nextVel = self.vel[i] + self.acc[i]*dt
-            absVel  = abs(nextVel)
 
-            if absVel >= abs(self.friction*dt):
-                # self.vel[i] -= (absVel//nextVel)*self.friction*dt
-                if nextVel > 0:
-                    self.vel[i] -= self.friction*dt
-                elif nextVel < 0:
-                    self.vel[i] += self.friction*dt
+            if nextVel >= abs(self.friction*dt):
+                self.vel[i] -= self.friction*dt
+            elif nextVel <= -abs(self.friction*dt):
+                self.vel[i] += self.friction*dt
+
             else:
                 self.vel[i] = 0
                 self.acc[i] = 0
 
-            # self.acc[i] = min(self.acc[i], MAX_ACC*2)
-            # self.acc[i] = max(self.acc[i], -MAX_ACC*2)
-            if self.acc[i] > MAX_ACC*2:
-                self.acc[i] = MAX_ACC*2
-            elif self.acc[i] < -MAX_ACC*2:
-                self.acc[i] = -MAX_ACC*2
+            self.acc[i] = MAX_ACC*2 if(self.acc[i] > MAX_ACC*2) else -MAX_ACC*2 if(self.acc[i] < -MAX_ACC*2) else self.acc[i]
 
             self.vel[i] += self.acc[i] * dt
             if self.vel[i] < -MAX_VEL: self.vel[i] = -MAX_VEL
@@ -125,39 +121,81 @@ class Player(Entity):
 
     def __init__( self , i:int, sp:list, p:list, cb:Chunk.ChunkBuffer, f:float, h:int=100, g:bool=True):
         super().__init__( i, sp, p, cb, f, h, g)
+        self.cursorPos = [-1, -1]
 
-    def runMouse( self, mouse, mousePos ):
-
+    def run( self, key, mouse, mousePos ):
         """[summary]
 
         Args:
-            mouse ([type]): [description]
+            key ([type]): [description]
         """
-        x, y = None, None
-        chunkInd = None
+        self.acc[0] = 0
+        self.acc[1] = 0
+
+        self.hitting = False
+        self.placing = False
+
+        if( key[pygame.K_a] and not key[pygame.K_d] ):
+            self.moveLeft()
+        elif( key[pygame.K_d] and not key[pygame.K_a] ):
+            self.moveRight()
+
+        if( key[pygame.K_s] and not key[pygame.K_w] ):
+            self.moveDown()
+        elif( key[pygame.K_w] and not key[pygame.K_s] ):
+            self.moveUp()
+
+        self.cursorPos = mousePos
         if(mouse[1]): # left is there
-            # Since the mouse is being held down, the player is hitting
-            chunk = math.floor(mousePos[0] / CHUNK_WIDTH_P)
-            chunkInd = chunk - self.chunkBuffer.positions[0]
-            x = (mousePos[0] // TILE_WIDTH) - chunk * CHUNK_WIDTH
-            y = (mousePos[1] // TILE_WIDTH)
-            self.chunkBuffer[chunkInd].blocks[y][x] = tiles.air
-            self.chunkBuffer[chunkInd].walls[y][x] = tiles.air
+            self.hitting = True
 
         if(mouse[2]): # middle is there
-            # do something
-            pass
+            self.placing = True
+
         if(mouse[3]): # right is there
-            # do something
             pass
         if(mouse[4]): # scroll up
-            # do something
             pass
         if(mouse[5]): # scroll down
-            # do something
             pass
 
-        return chunkInd
+    def update( self, dt ):
+        """[summary]
+
+        Args:
+            dt ([type]): [description]
+        """
+
+        for i in range(0, 2):
+            nextVel = self.vel[i] + self.acc[i]*dt
+
+            if nextVel >= abs(self.friction*dt):
+                self.vel[i] -= self.friction*dt
+            elif nextVel <= -abs(self.friction*dt):
+                self.vel[i] += self.friction*dt
+
+            else:
+                self.vel[i] = 0
+                self.acc[i] = 0
+
+            self.acc[i] = MAX_ACC*2 if(self.acc[i] > MAX_ACC*2) else -MAX_ACC*2 if(self.acc[i] < -MAX_ACC*2) else self.acc[i]
+
+            self.vel[i] += self.acc[i] * dt
+            if self.vel[i] < -MAX_VEL: self.vel[i] = -MAX_VEL
+            elif self.vel[i] > MAX_VEL: self.vel[i] = MAX_VEL
+
+            self.pos[i] += self.vel[i] * SCALE_VEL * dt
+
+        if(self.hitting):
+            chunk = math.floor(self.cursorPos[0] / CHUNK_WIDTH_P)
+            chunkInd = chunk - self.chunkBuffer.positions[0]
+
+            x = (self.cursorPos[0] // TILE_WIDTH) - chunk * CHUNK_WIDTH
+            y = (self.cursorPos[1] // TILE_WIDTH)
+
+            self.chunkBuffer[chunkInd].blocks[y][x] = tiles.air
+            self.chunkBuffer[chunkInd].walls[y][x] = tiles.air
+            return chunkInd
 
 class Inventory:
 
