@@ -21,6 +21,13 @@ clock = pygame.time.Clock()
 # Create chunk buffer and chunk-position buffer
 chunkBuffer = ChunkBuffer(11, 0, "world1")
 
+# Input handling containers
+keyPress = { pygame.K_w : False, pygame.K_a : False, pygame.K_s : False, pygame.K_d : False }
+
+mousePress = { 1 : False, 2 : False, 3 : False, 4 : False, 5 : False }
+mousePos = [-1, -1]
+mouseWorldPos = [-1, -1]
+
 # Player variables
 player = entity.Player(0, [0, 0], [0, 0], chunkBuffer, DEFAULT_FRICTION)
 currChunk = prevChunk = deltaChunk = 0
@@ -36,13 +43,7 @@ items.loadImageTable()
 
 # Initialize the renderer
 Renderer.initialize(chunkBuffer, camera, player, displaySize, screen)
-
-keyPress = { pygame.K_w : False, pygame.K_a : False, pygame.K_s : False, pygame.K_d : False }
 dt = 0
-
-mousePress = { 1 : False, 2 : False, 3 : False, 4 : False, 5 : False }
-mousePos = [-1, -1]
-mouseWorldPos = [-1, -1]
 
 # game loop
 
@@ -127,8 +128,7 @@ while running:
 
     # Player movement handling
     if(cameraBound):
-        if(keyFlag or mouseFlag or True):
-            player.run(keyPress, mousePress, mouseWorldPos)
+        player.run(keyPress, mousePress, mouseWorldPos)
 
 
     updatedIndex = player.update(dt)
