@@ -193,8 +193,9 @@ class Player(Entity):
             x = (self.cursorPos[0] // TILE_WIDTH) - chunk * CHUNK_WIDTH
             y = (self.cursorPos[1] // TILE_WIDTH)
 
-            self.chunkBuffer[chunkInd].blocks[y][x] = tiles.air
-            self.chunkBuffer[chunkInd].walls[y][x] = tiles.air
+            self.chunkBuffer[ chunkInd ].breakBlockAt( x, y, 10, dt)
+            self.chunkBuffer[chunkInd].breakWallAt( x, y, 10, dt)
+
             return chunkInd
 
 class Inventory:

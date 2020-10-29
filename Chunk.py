@@ -32,6 +32,51 @@ class Chunk:
 
         self.lightMap           =  [[0 for i in range(0,   CHUNK_WIDTH)] for i in range(0, CHUNK_HEIGHT)]
 
+    def breakWallAt( self, x, y, tool, dt):
+        #if(self.walls[y][x] == tiles.air): return False
+        #return True
+        self.walls[y][x] = tiles.air
+
+    def breakBlockAt( self, x, y, tool, dt):
+
+        """[summary]
+
+        Args:
+            x ([type]): [description]
+            y ([type]): [description]
+            tool ([type]): [description]
+
+        Returns:
+            [type]: [description]
+        """
+
+        if(self.blocks[y][x] == tiles.air): return False
+
+        if( ( x, y, True ) not in self.TILE_TABLE_LOCAL ):
+            self.TILE_TABLE_LOCAL[ ( x, y, True ) ] = { }
+
+        if( HEALTH not in self.TILE_TABLE_LOCAL[ ( x, y, True) ] ):
+            self.TILE_TABLE_LOCAL[ ( x, y, True ) ][ HEALTH ] = 100
+
+        self.TILE_TABLE_LOCAL[ ( x, y, True ) ][ HEALTH ] -= (25 * dt)
+        print(self.TILE_TABLE_LOCAL[ ( x, y, True ) ][ HEALTH ], dt)
+
+        if(self.TILE_TABLE_LOCAL[ ( x, y, True ) ][ HEALTH ] <= 0):
+            del self.TILE_TABLE_LOCAL[ ( x, y, True ) ]
+            self.blocks[y][x] = tiles.air
+
+        return True
+
+    def placeWallAt( self, x, y, val):
+        if(self.walls[y][x] != tiles.air): return False
+        self.walls[y][x] = val
+        return True
+
+    def placeBlockAt( self, x, y, val):
+        if(self.blocks[y][x] != tiles.air): return False
+        self.blocks[y][x] = val
+        return True
+
     def __getitem__(  self, key  ):
         return self.blocks[key]
 
