@@ -131,7 +131,7 @@ TILE_NAMES = {
 
 }
 
-TILE_MODIFIER_TABLE = {
+TILE_MODIFIERS = {
       crack :     [pygame.image.load("Resources/Default/break{}.png".format(i)) for i in range(0, 9)]
 }
 
@@ -499,8 +499,8 @@ def loadImageTable():
       for key in TILE_TABLE:
             TILE_TABLE[key] = pygame.transform.smoothscale(TILE_TABLE[key], (TILE_WIDTH, TILE_WIDTH))
             TILE_TABLE[key] = TILE_TABLE[key].convert_alpha()
-      for key in TILE_MODIFIER_TABLE:
-            for i in range(0, len(TILE_MODIFIER_TABLE[key])):
-                  TILE_MODIFIER_TABLE[key][i] = pygame.transform.smoothscale( TILE_MODIFIER_TABLE[key][i], ( TILE_WIDTH, TILE_WIDTH ) )
-                  TILE_MODIFIER_TABLE[key][i] = TILE_MODIFIER_TABLE[key][i].convert_alpha()
+      for key in TILE_MODIFIERS:
+            for i in range(0, len(TILE_MODIFIERS[key])):
+                  TILE_MODIFIERS[key][i] = pygame.transform.smoothscale( TILE_MODIFIERS[key][i], ( TILE_WIDTH, TILE_WIDTH ) )
+                  TILE_MODIFIERS[key][i] = TILE_MODIFIERS[key][i].convert_alpha()
 

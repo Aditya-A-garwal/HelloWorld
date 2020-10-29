@@ -194,7 +194,7 @@ class Player(Entity):
             y = (self.cursorPos[1] // TILE_WIDTH)
 
             self.chunkBuffer[ chunkInd ].breakBlockAt( x, y, 10, dt)
-            self.chunkBuffer[chunkInd].breakWallAt( x, y, 10, dt)
+            self.chunkBuffer[ chunkInd ].breakWallAt( x, y, 10, dt)
 
             return chunkInd
 

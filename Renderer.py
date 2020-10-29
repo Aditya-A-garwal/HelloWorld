@@ -94,12 +94,16 @@ class Renderer:
                         if(HEALTH in currChunkRef.TILE_TABLE_LOCAL[ ( j, i, True ) ] ):
 
                             breakState = (currChunkRef.TILE_TABLE_LOCAL[ ( j, i, True ) ][ HEALTH ] * 8) / 100
-                            currSurfRef.blit( tiles.TILE_MODIFIER_TABLE[ tiles.crack ][ 8 - int(breakState) ], coors )
+                            currSurfRef.blit( tiles.TILE_MODIFIERS[ tiles.crack ][ 8 - int(breakState) ], coors )
 
                 elif( currWallRef > 0 ):
                     currSurfRef.blit( tiles.TILE_TABLE[ currWallRef ], coors )
                     if( ( i, j, False ) in currChunkRef.TILE_TABLE_LOCAL ):
-                        pass
+
+                        if(HEALTH in currChunkRef.TILE_TABLE_LOCAL[ ( j, i, False ) ] ):
+
+                            breakState = (currChunkRef.TILE_TABLE_LOCAL[ ( j, i, False ) ][ HEALTH ] * 8) / 100
+                            currSurfRef.blit( tiles.TILE_MODIFIERS[ tiles.crack ][ 8 - int(breakState) ], coors )
 
                 coors[0]    += TILE_WIDTH   # Every Iteration, increase the x-coordinate by tile-width
 
