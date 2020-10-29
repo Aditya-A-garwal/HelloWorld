@@ -130,10 +130,10 @@ while running:
     if(cameraBound):
         player.run(keyPress, mousePress, mouseWorldPos)
 
-
     updatedIndex = player.update(dt)
+
     if(updatedIndex is not None):
-        Renderer.renderChunk(updatedIndex)
+        Renderer.renderChunk( updatedIndex )
         Renderer.render()
 
     deltaChunk = currChunk - prevChunk

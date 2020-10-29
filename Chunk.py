@@ -59,7 +59,6 @@ class Chunk:
             self.TILE_TABLE_LOCAL[ ( x, y, True ) ][ HEALTH ] = 100
 
         self.TILE_TABLE_LOCAL[ ( x, y, True ) ][ HEALTH ] -= (25 * dt)
-        print(self.TILE_TABLE_LOCAL[ ( x, y, True ) ][ HEALTH ], dt)
 
         if(self.TILE_TABLE_LOCAL[ ( x, y, True ) ][ HEALTH ] <= 0):
             del self.TILE_TABLE_LOCAL[ ( x, y, True ) ]

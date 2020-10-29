@@ -2,6 +2,8 @@ from constants import *
 
 # Tile names along with their IDs
 
+crack           =  0
+
 air             =  0
 
 bedrock         =  1
@@ -127,6 +129,10 @@ TILE_NAMES = {
     torch          : "torch",
     bed            : "bed",
 
+}
+
+TILE_MODIFIER_TABLE = {
+      crack :     [pygame.image.load("Resources/Default/break{}.png".format(i)) for i in range(0, 9)]
 }
 
 TILE_TABLE = {
@@ -490,6 +496,11 @@ TILE_ATTR = {
 
 
 def loadImageTable():
-    for key in TILE_TABLE:
-        TILE_TABLE[key] = TILE_TABLE[key].convert_alpha()
-        TILE_TABLE[key] = pygame.transform.smoothscale(TILE_TABLE[key], (TILE_WIDTH, TILE_WIDTH))
+      for key in TILE_TABLE:
+            TILE_TABLE[key] = pygame.transform.smoothscale(TILE_TABLE[key], (TILE_WIDTH, TILE_WIDTH))
+            TILE_TABLE[key] = TILE_TABLE[key].convert_alpha()
+      for key in TILE_MODIFIER_TABLE:
+            for i in range(0, len(TILE_MODIFIER_TABLE[key])):
+                  TILE_MODIFIER_TABLE[key][i] = pygame.transform.smoothscale( TILE_MODIFIER_TABLE[key][i], ( TILE_WIDTH, TILE_WIDTH ) )
+                  TILE_MODIFIER_TABLE[key][i] = TILE_MODIFIER_TABLE[key][i].convert_alpha()
+
