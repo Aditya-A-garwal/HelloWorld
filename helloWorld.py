@@ -25,11 +25,13 @@ chunkBuffer = ChunkBuffer(11, 0, "world1")
 keyPress = { pygame.K_w : False, pygame.K_a : False, pygame.K_s : False, pygame.K_d : False }
 
 mousePress = { 1 : False, 2 : False, 3 : False, 4 : False, 5 : False }
-mousePos = [-1, -1]
-mouseWorldPos = [-1, -1]
+mousePos = [0, 0]
+mouseWorldPos = [0, 0]
+
+userInputFlag = False
 
 # Player variables
-player = entity.Player(0, [0, 0], [0, 0], chunkBuffer, DEFAULT_FRICTION)
+player = entity.Player([0, 0], chunkBuffer, keyPress, mousePress, mouseWorldPos, DEFAULT_FRICTION)
 currChunk = prevChunk = deltaChunk = 0
 
 # Create and display window
@@ -51,8 +53,6 @@ running = True
 while running:
 
     # Client-side
-    keyFlag = False
-    mouseFlag = False
 
     # event handling loop
     for event in pygame.event.get():
@@ -63,8 +63,8 @@ while running:
         elif(event.type == pygame.KEYDOWN):
 
             if(event.key in keyPress):
-                keyFlag = True
                 keyPress[event.key] = True
+                userInputFlag = True
 
             elif(event.key is pygame.K_c):
                 Renderer.setShaders()
@@ -76,24 +76,28 @@ while running:
 
         elif event.type == pygame.KEYUP:
             if( event.key in keyPress):
-                keyFlag = True
                 keyPress[event.key] = False
+                userInputFlag = True
 
         # i for left, 2 for middle, 3 for right, 4 for scroll up and 5 for scroll down
         elif(event.type == pygame.MOUSEMOTION):
-            mousePos = event.pos[0], event.pos[1]
-            mouseWorldPos = int(camera[0]) + mousePos[0] - displaySize[0]//2, int(camera[1]) + displaySize[1]//2 - mousePos[1]
+            mousePos[0] = event.pos[0]
+            mousePos[1] = event.pos[1]
+            mouseWorldPos[0] = int(camera[0]) + mousePos[0] - displaySize[0]//2
+            mouseWorldPos[1] = int(camera[1]) + displaySize[1]//2 - mousePos[1]
+            userInputFlag = True
 
         elif(event.type == pygame.MOUSEBUTTONDOWN):
-            mouseFlag = True
             mousePress[event.button] = True
+            userInputFlag = True
 
         elif(event.type == pygame.MOUSEBUTTONUP):
-            mouseFlag = True
             mousePress[event.button] = False
+            userInputFlag = True
 
         elif(event.type == pygame.VIDEORESIZE):
-            displaySize[0], displaySize[1] = screen.get_width(), screen.get_height()
+            displaySize[0] = screen.get_width()
+            displaySize[1] = screen.get_height()
 
             Renderer.updateRefs()
             Renderer.render()
@@ -127,13 +131,13 @@ while running:
     #framerate = 1 / min(dt, 0.001)
 
     # Player movement handling
-    if(cameraBound):
-        player.run(keyPress, mousePress, mouseWorldPos)
+    if(userInputFlag and cameraBound):
+        player.run()
 
-    updatedIndex = player.update(dt)
+    updatedIndex = player.update( dt )
 
     if(updatedIndex is not None):
-        Renderer.renderChunk( updatedIndex )
+        Renderer.renderChunkOnly( updatedIndex )
         Renderer.render()
 
     deltaChunk = currChunk - prevChunk
@@ -141,8 +145,9 @@ while running:
 
     if(deltaChunk != 0):        # Player has moved
         loadedIndex = chunkBuffer.shiftBuffer(deltaChunk)
-        Renderer.renderChunk(loadedIndex)
-        Renderer.renderLightmap(loadedIndex - deltaChunk)
+        Renderer.renderChunkOnly(loadedIndex)
+        #Renderer.renderChunk(loadedIndex)
+        #Renderer.renderLightmap(loadedIndex - deltaChunk)
 
 
 chunkBuffer.saveComplete()

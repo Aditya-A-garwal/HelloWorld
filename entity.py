@@ -2,14 +2,18 @@ from constants import *
 import tiles, items
 import math, Chunk
 
+player = 0
+zombie = 1
+
+ENTITY_NAMES = {}
+ENTITY_TABLE = {}
+
 class Entity:
 
-    def __init__(self, i:int, sp:list, p:list, cb:Chunk.ChunkBuffer, f:float, h:int=100, g:bool=True):
+    def __init__(self, pos:list, chunkBuffer:Chunk.ChunkBuffer, width, height, friction:float, health:int=100, grounded:bool=True):
         """[summary]
 
         Args:
-            i (int): [description]
-            sp (list): [description]
             p (list): [description]
             cb (Chunk.ChunkBuffer): [description]
             f (float): [description]
@@ -17,52 +21,31 @@ class Entity:
             g (bool, optional): [description]. Defaults to True.
         """
 
-        self.id          = i
-        self.spawnPoint  = sp
-        self.pos         = p
-        # self.camera      = c
-        # self.display     = d
-        self.chunkBuffer = cb
-        self.friction    = f
-        self.health      = h
-        self.grounded    = g
+        self.pos         = pos
+        self.chunkBuffer = chunkBuffer
+        self.friction    = friction
+        self.health      = health
+        self.grounded    = grounded
 
         # self.itemHeld    = None
         self.vel         = [0.0, 0.0]
         self.acc         = [0.0, 0.0]
 
+        self.width       = width
+        self.height      = height
+
         self.hitting     = False
         self.placing     = False
-        self.width       = PLYR_WIDTH
-        self.height      = PLYR_HEIGHT
+
         # self.left        = self.display[0]+self.pos[0]-self.camera[0]-(self.width*0.5)
         # self.right       = self.display[1]-self.pos[1]+self.camera[1]-(self.height*0.5)
         # self.rect        = pygame.rect.Rect(self.left, self.right, )
-        #
+        # ! these formulas are used in a lot of places and must be made into functions (THEY ARE ALSO GOING TO CHANGE!)
         # currentChunk = math.floor(self.pos[0] / CHUNK_WIDTH_P)
         # currentChunkInd = currentChunk - self.chunkBuffer.positions[0]
         # xPosChunk = self.pos[0] // TILE_WIDTH - currentChunk * CHUNK_WIDTH
         # yPosChunk = self.pos[1] // TILE_WIDTH
         # self.tile = self.chunkBuffer[currentChunkInd][yPosChunk][xPosChunk]
-
-    def run(self, key):
-        """[summary]
-
-        Args:
-            key ([type]): [description]
-        """
-        self.acc[0] = 0
-        self.acc[1] = 0
-
-        if( key[pygame.K_a] and not key[pygame.K_d] ):
-            self.moveLeft()
-        elif( key[pygame.K_d] and not key[pygame.K_a] ):
-            self.moveRight()
-
-        if( key[pygame.K_s] and not key[pygame.K_w] ):
-            self.moveDown()
-        elif( key[pygame.K_w] and not key[pygame.K_s] ):
-            self.moveUp()
 
     def update(self, dt):
         """[summary]
@@ -97,13 +80,13 @@ class Entity:
     def moveRight(self):
         self.acc[0] = self.friction * 2
 
+    def moveDown(self):  # only temporary to adjust to current usage. Will be changed/removed
+        self.acc[1] = -self.friction * 2
+
     def moveUp(self):  # only temporary to adjust to current usage. Will be changed to jump
         # self.vel[1] = JUMP_VEL
         # self.acc[1] = max(0, self.acc[1] - AIR_FRICTION)
         self.acc[1] = self.friction * 2
-
-    def moveDown(self):  # only temporary to adjust to current usage. Will be changed/removed
-        self.acc[1] = -self.friction * 2
 
     def calcFriction(self, c):
         pass
@@ -119,11 +102,14 @@ class Entity:
 
 class Player(Entity):
 
-    def __init__( self , i:int, sp:list, p:list, cb:Chunk.ChunkBuffer, f:float, h:int=100, g:bool=True):
-        super().__init__( i, sp, p, cb, f, h, g)
-        self.cursorPos = [-1, -1]
+    def __init__( self , pos:list, chunkBuffer:Chunk.ChunkBuffer, keyState, mouseState, cursorPos, friction:float, health:int=100, grounded:bool=True):
+        super().__init__(pos, chunkBuffer, PLYR_WIDTH, PLYR_HEIGHT, friction, health, grounded)
 
-    def run( self, key, mouse, mousePos ):
+        self.keyState = keyState
+        self.mouseState = mouseState
+        self.cursorPos = cursorPos
+
+    def run( self ):
         """[summary]
 
         Args:
@@ -135,28 +121,27 @@ class Player(Entity):
         self.hitting = False
         self.placing = False
 
-        if( key[pygame.K_a] and not key[pygame.K_d] ):
+        if( self.keyState[pygame.K_a] and not self.keyState[pygame.K_d] ):
             self.moveLeft()
-        elif( key[pygame.K_d] and not key[pygame.K_a] ):
+        elif( self.keyState[pygame.K_d] and not self.keyState[pygame.K_a] ):
             self.moveRight()
 
-        if( key[pygame.K_s] and not key[pygame.K_w] ):
+        if( self.keyState[pygame.K_s] and not self.keyState[pygame.K_w] ):
             self.moveDown()
-        elif( key[pygame.K_w] and not key[pygame.K_s] ):
+        elif( self.keyState[pygame.K_w] and not self.keyState[pygame.K_s] ):
             self.moveUp()
 
-        self.cursorPos = mousePos
-        if(mouse[1]): # left is there
+        if(self.mouseState[1]): # left is there
             self.hitting = True
 
-        if(mouse[2]): # middle is there
+        if(self.mouseState[2]): # middle is there
             self.placing = True
 
-        if(mouse[3]): # right is there
+        if(self.mouseState[3]): # right is there
             pass
-        if(mouse[4]): # scroll up
+        if(self.mouseState[4]): # scroll up
             pass
-        if(mouse[5]): # scroll down
+        if(self.mouseState[5]): # scroll down
             pass
 
     def update( self, dt ):
