@@ -5,7 +5,9 @@ import math, Chunk
 player = 0
 zombie = 1
 
-ENTITY_NAMES = {}
+ENTITY_NAMES = {
+    zombie  :   "Zombie"
+}
 ENTITY_TABLE = {}
 
 class Entity:
@@ -108,6 +110,11 @@ class Player(Entity):
         self.keyState = keyState
         self.mouseState = mouseState
         self.cursorPos = cursorPos
+
+        self.tangibility = 0
+        # 0 means intangible
+        # 1 means interacing with blocks
+        # 2 means interacting with walls
 
     def run( self ):
         """[summary]

@@ -82,16 +82,88 @@ deermeat        =  51
 rottenmeat      =  52
 
 # door
-door_upper      =  43
-door_lower      =  44
+door            =  43
 
 # bed and bucket
 bed             =  45
 bucket          =  46
 
+# items for blocks from the bedrock wastes
+bedrock         =  1
+obsidian        =  2
+hellstone       =  3
+
+# items for ores (not the same as the items for the block)
+unobtaniumOre   =  4
+diamondOre      =  5
+platinumOre     =  6
+goldOre         =  7
+ironOre         =  8
+copperOre       =  9
+
+# items for the stones
+granite         =  10
+quartz          =  11
+limestone       =  12
+greystone       =  13
+sandstone       =  14
+
+# items for transition blocks
+gravel          =  15
+coke            =  16
+
+# items for the clay blocks
+clay            =  17
+redClay         =  18
+
+# item for the sand block
+sand            =  19
+
+# items for dirt and grass blocks
+browndirt       =  20
+grass           =  21
+snowygrass      =  22
+
+# items for snowy blocks
+snow            =  23
+ice             =  24
+
+# items for all the wood blocks
+junglewood     =  25
+oakwood        =  26
+borealwood     =  27
+pinewood       =  28
+cactuswood     =  29
+palmwood       =  30
+
+# items for the mineral blocks
+cosmonium  =  31
+adamantite =  32
+unobtanium =  33
+diamond    =  34
+platinum   =  35
+gold       =  36
+iron       =  37
+copper     =  38
+
+# items for the mineral ingots/ pieces
+cosmonium  =  31
+adamantite =  32
+unobtanium =  33
+diamond    =  34
+platinum   =  35
+gold       =  36
+iron       =  37
+copper     =  38
+
+# items for the glass blocks
+glass           =  39
+glasswindow     =  40
+
+torch           =  41
+
 ITEM_NAMES = {
-    door_upper     : "door",
-    door_lower     : "door",
+    door           : "door",
     bed            : "bed",
     bucket         : "bucket",
     bow            : "bow",
@@ -106,25 +178,80 @@ ITEM_NAMES = {
     apple          : "apple"
 }
 
+TILE_NAMES = {
+
+    # bedrock wastes blocks
+    bedrock        : "bedrock",
+    obsidian       : "block of obsidian",
+    hellstone      : "block of hellstone",
+
+    # ores
+    unobtaniumOre   : "unrefined unobtanium",
+    diamondOre      : "diamond ore",
+    platinumOre     : "platinum ore",
+    goldOre         : "gold ore",
+    ironOre         : "iron ore",
+    copperOre       : "copper ore",
+
+
+    # stones
+    granite        : "block of granite",
+    quartz         : "block of quartz",
+    limestone      : "block of limestone",
+    greystone      : "block of stone",
+    sandstone      : "block of sandstone",
+
+    # transition blocks
+    gravel         : "block of gravel",
+    coke           : "block of coke",
+
+    # clays
+    clay           : "block of clay",
+    redClay        : "block of red clay",
+
+    # sand
+    sand           : "block of sand",
+
+    # dirt, grass
+    browndirt      : "block of dirt",
+    grass          : "block of grass",
+
+    # Snowy blocks
+    snowygrass     : "block of snowy grass",
+    snow           : "block of snow",
+    ice            : "block of ice",
+
+    # woods
+    junglewood    : "jungle logs",
+    oakwood       : "oak logs",
+    borealwood    : "boreal logs",
+    pinewood      : "pine logs",
+    cactuswood    : "cactus",
+    palmwood      : "palm logs",
+
+    # mineral blocks
+    cosmonium : "block of cosmonium",
+    adamantite: "block of adamantite",
+    unobtanium: "unobtanium block",
+    diamond   : "diamond block",
+    platinum  : "platinum block",
+    gold      : "gold block",
+    iron      : "iron block",
+    copper    : "copper block",
+
+    glass          : "block of glass",
+    glasswindow    : "glass window",
+
+    torch          : "torch",
+    bed            : "bed",
+
+}
+
 ITEM_TABLE = {
     slot : pygame.image.load("Resources/Default/InventorySpace.png")
 }
 
 ITEM_ATTR = {
-    door_upper:{ID:43,
-                WEIGHT:25,
-                LUMINOSITY:0,
-                DAMAGE:10,
-                HEALTH:20,
-                INFLAMMABLE:3,
-                LTIMPERMEABILITY:0},
-    door_lower: {ID: 44,
-                WEIGHT: 25,
-                LUMINOSITY: 0,
-                DAMAGE: 10,
-                HEALTH: 20,
-                INFLAMMABLE: 3,
-                LTIMPERMEABILITY: 0},
     bed:{ID:45,
         WEIGHT:30,
         LUMINOSITY:0,

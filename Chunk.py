@@ -33,9 +33,33 @@ class Chunk:
         self.lightMap           =  [[0 for i in range(0,   CHUNK_WIDTH)] for i in range(0, CHUNK_HEIGHT)]
 
     def breakWallAt( self, x, y, tool, dt):
-        #if(self.walls[y][x] == tiles.air): return False
-        #return True
-        self.walls[y][x] = tiles.air
+
+        """[summary]
+
+        Args:
+            x ([type]): [description]
+            y ([type]): [description]
+            tool ([type]): [description]
+
+        Returns:
+            [type]: [description]
+        """
+
+        if(self.walls[y][x] == tiles.air): return False
+
+        if( ( x, y, False ) not in self.TILE_TABLE_LOCAL ):
+            self.TILE_TABLE_LOCAL[ ( x, y, False ) ] = { }
+
+        if( HEALTH not in self.TILE_TABLE_LOCAL[ ( x, y, False ) ] ):
+            self.TILE_TABLE_LOCAL[ ( x, y, False ) ][ HEALTH ] = 100
+
+        self.TILE_TABLE_LOCAL[ ( x, y, False ) ][ HEALTH ] -= (25 * dt)
+
+        if(self.TILE_TABLE_LOCAL[ ( x, y, False ) ][ HEALTH ] <= 0):
+            del self.TILE_TABLE_LOCAL[ ( x, y, False ) ]
+            self.walls[y][x] = tiles.air
+
+        return True
 
     def breakBlockAt( self, x, y, tool, dt):
 
