@@ -24,6 +24,12 @@ CAVE_Y              =  0.1
 UNDERGROUND_X       =  0.05
 UNDERGROUND_Y       =  0.1
 
+# Infinity
+INF = 1 << 64
+# INF = 1 << 64
+# for i in range(0, 64):
+#     INF = (INF << 1) | 1
+
 ## Constants for camera
 LERP_C              =  0.05
 

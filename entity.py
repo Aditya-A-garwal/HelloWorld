@@ -2,6 +2,12 @@ from constants import *
 import tiles, items
 import math, Chunk
 
+#!----------------------------------------------------------------------------------------------------
+# todo  Please add all the entities for the various items
+# todo  Please make sure that they are named appropriately
+# todo  Please make sure that they are numbered properly
+#!----------------------------------------------------------------------------------------------------
+
 player = 0
 zombie = 1
 
@@ -225,4 +231,5 @@ class Inventory:
         pass
 
 # class EntityBuffer:
-#     pass
+#    def __init__( self ):
+#        pass

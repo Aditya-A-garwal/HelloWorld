@@ -12,7 +12,7 @@ bedrock         =  1
 obsidian        =  2
 hellstone       =  3
 
-# blocks for mineral ore
+# blocks for mineral ores
 unobtaniumOre   =  4
 diamondOre      =  5
 platinumOre     =  6
@@ -178,6 +178,9 @@ TILE_NAMES = {
 
 TILE_MODIFIERS = {
       crack :     [pygame.image.load("Resources/Default/break{}.png".format(i)) for i in range(0, 9)]
+      #fire :     [pygame.image.load("Resources/Default/break{}.png".format(i)) for i in range(0, 9)]
+      #water :     [pygame.image.load("Resources/Default/break{}.png".format(i)) for i in range(0, 9)]
+      #lava :     [pygame.image.load("Resources/Default/break{}.png".format(i)) for i in range(0, 9)]
 }
 
 TILE_TABLE = {
@@ -214,7 +217,7 @@ TILE_ATTR = {
                   FRICTION:0.8,
                   LUMINOSITY:0,
                   DAMAGE:None,
-                  HEALTH:10**10,
+                  HEALTH:INF,
                   INFLAMMABLE:None,
                   LTIMPERMEABILITY:0},
       obsidian:{ID:2,
