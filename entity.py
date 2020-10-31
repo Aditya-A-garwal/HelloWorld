@@ -206,17 +206,33 @@ class Inventory:
             rows ([type]): [description]
         """
 
-        self.items          =  [ [ 0 for j in range( 0, rows ) ] for i in range( 0, cols ) ]
-        self.quantities     =  [ [ 0 for j in range( 0, rows ) ] for i in range( 0, cols ) ]
-        self.positions      =  { }
-        self.selectedPos    =  0
-        self.selectedItem   =  None
+        self.items      = [ [ None for j in range( 0, cols ) ] for i in range( 0, rows ) ]
+        self.quantities = [ [ 0 for j in range( 0, cols ) ] for i in range( 0, rows ) ]
+        self.positions  = {}
+        self.selPos     = 0
+        self.selItem    = [None, 0]
+        self.itemHeld   = None
 
-    def addItemStack( self, i, q ):
+    def addItem( self, i:int, q:int ):
         pass
 
-    def addItemPos( self, i, q, p ):
-        pass
+    def addItemPos( self, i:int, q:int, p ):
+        if self.items[p[1]][p[0]] != i:
+            self.selItem[0] = self.items[p[1]][p[0]]
+            self.selItem[1] = self.quantities[p[1]][p[0]]
+            self.items[p[1]][p[0]] = i
+            self.quantities[p[1]][p[0]] = q
+        else:
+            if self.quantities[p[1]][p[0]] + q > items.ITEM_ATTR[i][MAX_STACK]:
+                self.selItem[0] = i
+                self.selItem[1] = self.quantities[p[1]][p[0]] + q - items.ITEM_ATTR[i][MAX_STACK]
+                self.quantities[p[1]][p[0]] = items.ITEM_ATTR[i][MAX_STACK]
+
+            else:
+                self.selItem[0] = None
+                self.selItem[1] = 0
+                self.quantities[p[1]][p[0]] += q
+            self.items[p[1]][p[0]] = i
 
     def addItemLast( self, i, q ):
         pass
