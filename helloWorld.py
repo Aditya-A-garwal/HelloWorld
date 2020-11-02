@@ -116,7 +116,9 @@ while running:
         if( keyPress[pygame.K_w] ): camera[1] += SCALE_VEL * dt
         elif( keyPress[pygame.K_s] ): camera[1] -= SCALE_VEL * dt
 
+    #if(int(prevCamera[0]) - int(camera[0]) or int(prevCamera[1]) - int(camera[1])):
     if(int(prevCamera[0]) != int(camera[0]) or int(prevCamera[1]) != int(camera[1])):
+        #print(camera)
         Renderer.updateCam()
         Renderer.render()
 
