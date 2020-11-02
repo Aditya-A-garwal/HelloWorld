@@ -246,6 +246,8 @@ class Renderer:
 
             leftWalker      -= 1
 
+        if(cls.player.inventory.isEnabled): Renderer.renderInv()
+
         # Temporary player crosshair rendering
         playerCoors = [cls.player.pos[0], cls.player.pos[1]]
 

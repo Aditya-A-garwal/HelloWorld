@@ -1,11 +1,13 @@
 from constants import *
 import tiles, items
-import math, Chunk
+import Chunk
 
 #!----------------------------------------------------------------------------------------------------
 # todo  Please add all the entities for the various items
 # todo  Please make sure that they are named appropriately
 # todo  Please make sure that they are numbered properly
+
+# todo  Start work on the entity buffer
 #!----------------------------------------------------------------------------------------------------
 
 player = 0
@@ -110,13 +112,12 @@ class Entity:
 
 class Player(Entity):
 
-    def __init__( self , pos:list, chunkBuffer:Chunk.ChunkBuffer, keyState, mouseState, cursorPos, friction:float, health:int=100, grounded:bool=True):
+    def __init__( self , pos:list, chunkBuffer:Chunk.ChunkBuffer, eventHandler, friction:float, health:int=100, grounded:bool=True):
         super().__init__(pos, chunkBuffer, PLYR_WIDTH, PLYR_HEIGHT, friction, health, grounded)
 
-        self.keyState = keyState
-        self.mouseState = mouseState
-        self.cursorPos = cursorPos
-
+        self.keyState = eventHandler.keyStates
+        self.mouseState = eventHandler.mouseState
+        self.cursorPos = eventHandler.cursorPos
         self.inventory = Inventory(INV_COLS, INV_ROWS)
 
         self.tangibility = 0
@@ -254,6 +255,68 @@ class Inventory:
     def remItemLast( self, i, q ):
         pass
 
-# class EntityBuffer:
-#    def __init__( self ):
-#        pass
+class WorldEventHandler:
+
+    def __init__( self ):
+
+        self.userInputFlag  =   False
+        self.vidResizeFlag  =   False
+
+        self.keyStates      =   { pygame.K_w : False, pygame.K_a : False, pygame.K_s : False, pygame.K_d : False, pygame.K_e : False }
+
+        self.mouseState     =   { 1 : False, 2 : False, 3 : False, 4 : False, 5 : False }
+        self.mousePos       =   [0, 0]
+        self.cursorPos      =   [0, 0]
+
+        self.chunkShifts    =   False
+        self.loadChunkIndex =   None
+
+    def resetFlags( self ):
+        self.userInputFlag = False
+        self.vidResizeFlag = False
+
+    def addKey( self, key ):
+        if(key in self.keyStates):
+            self.userInputFlag = True
+            self.keyStates[key] = True
+
+    def remKey( self, key ):
+        if(key in self.keyStates):
+            self.userInputFlag = True
+            self.keyStates[key] = False
+
+    def addMouseMotion( self, event, camera, displaySize ):
+        userInputFlag = True
+        self.mousePos[0] = event.pos[0]
+        self.mousePos[1] = event.pos[1]
+        self.cursorPos[0] = int(camera[0]) + self.mousePos[0] - displaySize[0]//2
+        self.cursorPos[1] = int(camera[1]) + displaySize[1]//2 - self.mousePos[1]
+
+    # 1 for left, 2 for middle, 3 for right, 4 for scroll up and 5 for scroll down
+    def addMouseButton( self, button ):
+        userInputFlag = True
+        self.mouseState[ button ] = True
+
+    def remMouseButton( self, button ):
+        userInputFlag = True
+        self.mouseState[ button ] = False
+
+    def addVideoResize( self ):
+        vidResizeFlag = True
+
+    def addCameraMotion( self ):
+        vidResizeFlag = True
+
+    def isRenderableEvent( self ):
+        pass
+        # This function returns if any event has been registered that must cause the entire screen to re-render
+
+class EntityBuffer:
+    def __init__( self, chunkBuffer ):
+        self.chunkBuffer = chunkBuffer
+        self.serializer = self.chunkBuffer.serializer
+        self.length = 0
+        self.len = 0
+
+        self.entities = [ ]
+        self.mousePos       =   [0, 0]

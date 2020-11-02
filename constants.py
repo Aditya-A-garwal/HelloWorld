@@ -1,4 +1,5 @@
 import pygame
+import math
 
 # Width of an individual tile unit (in points)
 TILE_WIDTH          =  16
@@ -25,8 +26,8 @@ UNDERGROUND_X       =  0.05
 UNDERGROUND_Y       =  0.1
 
 # Infinity
-generateBigNum = lambda numBits : 1<<(numBits-1)|generateBigNum(numBits-1) if(numBits >= 1) else 1
-INF = generateBigNum(64)
+#generateBigNum = lambda numBits : 1<<(numBits-1)|generateBigNum(numBits-1) if(numBits >= 1) else 1
+INF = math.inf #generateBigNum(64)
 
 ## Constants for camera
 LERP_C              =  0.05

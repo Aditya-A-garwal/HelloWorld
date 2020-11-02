@@ -22,16 +22,10 @@ clock = pygame.time.Clock()
 chunkBuffer = ChunkBuffer(11, 0, "world1")
 
 # Input handling containers
-keyPress = { pygame.K_w : False, pygame.K_a : False, pygame.K_s : False, pygame.K_d : False, pygame.K_e : False }
-
-mousePress = { 1 : False, 2 : False, 3 : False, 4 : False, 5 : False }
-mousePos = [0, 0]
-mouseWorldPos = [0, 0]
-
-userInputFlag = False
+eventHandler = entity.WorldEventHandler()
 
 # Player variables
-player = entity.Player([0, 0], chunkBuffer, keyPress, mousePress, mouseWorldPos, DEFAULT_FRICTION)
+player = entity.Player([0, 0], chunkBuffer, eventHandler, DEFAULT_FRICTION)
 currChunk = prevChunk = deltaChunk = 0
 
 # Create and display window
@@ -54,7 +48,7 @@ while running:
 
     # Client-side
 
-    userInputFlag = False
+    #eventHandler.resetFlags()
 
     # event handling loop
     for event in pygame.event.get():
@@ -64,42 +58,33 @@ while running:
 
         elif(event.type == pygame.KEYDOWN):
 
-            if(event.key in keyPress):
-                keyPress[event.key] = True
-                userInputFlag = True
-
-            elif(event.key is pygame.K_c):
+            if(event.key is pygame.K_c):
                 Renderer.setShaders()
             elif(event.key is pygame.K_n):
                 cameraBound = not cameraBound # This should free the camera from being fixed to the player
             elif(event.key is pygame.K_SLASH):
                 plc = input(">> ")
-                # processPLC(plc)
+            else:
+                eventHandler.addKey(event.key)
 
         elif event.type == pygame.KEYUP:
-            if( event.key in keyPress):
-                keyPress[event.key] = False
-                userInputFlag = True
+                eventHandler.remKey(event.key)
 
-        # i for left, 2 for middle, 3 for right, 4 for scroll up and 5 for scroll down
         elif(event.type == pygame.MOUSEMOTION):
-            mousePos[0] = event.pos[0]
-            mousePos[1] = event.pos[1]
-            mouseWorldPos[0] = int(camera[0]) + mousePos[0] - displaySize[0]//2
-            mouseWorldPos[1] = int(camera[1]) + displaySize[1]//2 - mousePos[1]
-            userInputFlag = True
+            eventHandler.addMouseMotion( event, camera, displaySize )
 
         elif(event.type == pygame.MOUSEBUTTONDOWN):
-            mousePress[event.button] = True
-            userInputFlag = True
+            eventHandler.addMouseButton( event.button )
 
         elif(event.type == pygame.MOUSEBUTTONUP):
-            mousePress[event.button] = False
-            userInputFlag = True
+            eventHandler.remMouseButton( event.button )
 
         elif(event.type == pygame.VIDEORESIZE):
+
             displaySize[0] = screen.get_width()
             displaySize[1] = screen.get_height()
+
+            eventHandler.addVideoResize()
 
             Renderer.updateRefs()
             Renderer.render()
@@ -110,13 +95,14 @@ while running:
         camera[1] += ( player.pos[1] - camera[1] ) * LERP_C
 
     else:
-        if( keyPress[pygame.K_a] ): camera[0] -= SCALE_VEL * dt
-        elif( keyPress[pygame.K_d] ): camera[0] += SCALE_VEL * dt
+        if( eventHandler.keyStates[pygame.K_a] ): camera[0] -= SCALE_VEL * dt
+        elif( eventHandler.keyStates[pygame.K_d] ): camera[0] += SCALE_VEL * dt
 
-        if( keyPress[pygame.K_w] ): camera[1] += SCALE_VEL * dt
-        elif( keyPress[pygame.K_s] ): camera[1] -= SCALE_VEL * dt
+        if( eventHandler.keyStates[pygame.K_w] ): camera[1] += SCALE_VEL * dt
+        elif( eventHandler.keyStates[pygame.K_s] ): camera[1] -= SCALE_VEL * dt
 
     if(int(prevCamera[0]) != int(camera[0]) or int(prevCamera[1]) != int(camera[1])):
+        eventHandler.addCameraMotion()
         Renderer.updateCam()
         Renderer.render()
 
@@ -133,9 +119,9 @@ while running:
     #framerate = 1 / min(dt, 0.001)
 
     # Player movement handling
-    if(userInputFlag and cameraBound):
+    if(eventHandler.userInputFlag and cameraBound):
         player.run()
-        if(player.inventory.isEnabled): Renderer.renderInv()
+        eventHandler.userInputFlag = False
 
     updatedIndex = player.update( dt )
 
