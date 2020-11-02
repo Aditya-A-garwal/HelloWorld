@@ -1,13 +1,11 @@
 from constants import *
 import tiles, items
-import Chunk
+import math, Chunk
 
 #!----------------------------------------------------------------------------------------------------
 # todo  Please add all the entities for the various items
 # todo  Please make sure that they are named appropriately
 # todo  Please make sure that they are numbered properly
-
-# todo  Start work on the entity buffer
 #!----------------------------------------------------------------------------------------------------
 
 player = 0
@@ -112,12 +110,13 @@ class Entity:
 
 class Player(Entity):
 
-    def __init__( self , pos:list, chunkBuffer:Chunk.ChunkBuffer, eventHandler, friction:float, health:int=100, grounded:bool=True):
+    def __init__( self , pos:list, chunkBuffer:Chunk.ChunkBuffer, keyState, mouseState, cursorPos, friction:float, health:int=100, grounded:bool=True):
         super().__init__(pos, chunkBuffer, PLYR_WIDTH, PLYR_HEIGHT, friction, health, grounded)
 
-        self.keyState = eventHandler.keyStates
-        self.mouseState = eventHandler.mouseState
-        self.cursorPos = eventHandler.cursorPos
+        self.keyState = keyState
+        self.mouseState = mouseState
+        self.cursorPos = cursorPos
+
         self.inventory = Inventory(INV_COLS, INV_ROWS)
 
         self.tangibility = 0
@@ -149,7 +148,6 @@ class Player(Entity):
 
         if(self.keyState[pygame.K_e]):
             self.inventory.isEnabled = not self.inventory.isEnabled
-            print(self.inventory.isEnabled)
 
         if(self.mouseState[1]): # left is there
             self.hitting = True
@@ -164,7 +162,7 @@ class Player(Entity):
         if(self.mouseState[5]): # scroll down
             pass
 
-    def update( self, dt, eventHandler ):
+    def update( self, dt ):
         """[summary]
 
         Args:
@@ -390,21 +388,7 @@ class WorldEventHandler:
         #print("CAMERA MOVED")
         userInputFlag = True
 
-class EntityBuffer:
-    def __init__( self, chunkBuffer ):
-        self.chunkBuffer = chunkBuffer
-        self.serializer = self.chunkBuffer.serializer
-        self.length = 0
-        self.len = 0
 
-        self.entities = { }
-        self.mousePos       =   [0, 0]
-
-    def shiftLeftLoadRight( self ):
-        pass
-
-    def shiftRightLoadLeft( self ):
-        pass
-
-    def saveComplete( self ):
-        pass
+# class EntityBuffer:
+#    def __init__( self ):
+#        pass
