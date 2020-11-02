@@ -22,7 +22,7 @@ clock = pygame.time.Clock()
 chunkBuffer = ChunkBuffer(11, 0, "world1")
 
 # Input handling containers
-keyPress = { pygame.K_w : False, pygame.K_a : False, pygame.K_s : False, pygame.K_d : False }
+keyPress = { pygame.K_w : False, pygame.K_a : False, pygame.K_s : False, pygame.K_d : False, pygame.K_e : False }
 
 mousePress = { 1 : False, 2 : False, 3 : False, 4 : False, 5 : False }
 mousePos = [0, 0]
@@ -53,6 +53,8 @@ running = True
 while running:
 
     # Client-side
+
+    userInputFlag = False
 
     # event handling loop
     for event in pygame.event.get():
@@ -133,6 +135,7 @@ while running:
     # Player movement handling
     if(userInputFlag and cameraBound):
         player.run()
+        if(player.inventory.isEnabled): Renderer.renderInv()
 
     updatedIndex = player.update( dt )
 

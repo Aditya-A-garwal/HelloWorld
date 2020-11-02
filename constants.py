@@ -25,10 +25,8 @@ UNDERGROUND_X       =  0.05
 UNDERGROUND_Y       =  0.1
 
 # Infinity
-INF = 1 << 64
-# INF = 1 << 64
-# for i in range(0, 64):
-#     INF = (INF << 1) | 1
+generateBigNum = lambda numBits : 1<<(numBits-1)|generateBigNum(numBits-1) if(numBits >= 1) else 1
+INF = generateBigNum(64)
 
 ## Constants for camera
 LERP_C              =  0.05
@@ -42,9 +40,10 @@ DOWN_ACC            =  0.8
 DEFAULT_FRICTION    =  1
 MAX_ACC             =  1
 MAX_VEL             =  1
-PLYR_WIDTH          =  36
-PLYR_HEIGHT         =  54
-
+PLYR_WIDTH          =  TILE_WIDTH       # 36
+PLYR_HEIGHT         =  TILE_WIDTH<<1    # 54
+INV_COLS            =  10
+INV_ROWS            =  3
 
 # List of attributes (constants)
 

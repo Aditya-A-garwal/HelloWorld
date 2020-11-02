@@ -117,6 +117,8 @@ class Player(Entity):
         self.mouseState = mouseState
         self.cursorPos = cursorPos
 
+        self.inventory = Inventory(INV_COLS, INV_ROWS)
+
         self.tangibility = 0
         # 0 means intangible
         # 1 means interacing with blocks
@@ -143,6 +145,10 @@ class Player(Entity):
             self.moveDown()
         elif( self.keyState[pygame.K_w] and not self.keyState[pygame.K_s] ):
             self.moveUp()
+
+        if(self.keyState[pygame.K_e]):
+            self.inventory.isEnabled = not self.inventory.isEnabled
+            print(self.inventory.isEnabled)
 
         if(self.mouseState[1]): # left is there
             self.hitting = True
@@ -212,6 +218,8 @@ class Inventory:
         self.selPos     = 0
         self.selItem    = [None, 0]
         self.itemHeld   = None
+
+        self.isEnabled = False
 
     def addItem( self, i:int, q:int ):
         pass

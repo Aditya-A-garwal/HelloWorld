@@ -257,7 +257,25 @@ class Renderer:
         playerCoors[0] += cls.numHor
         playerCoors[1] =  cls.numVer - playerCoors[1]
 
+        # ! temporary rendering of player crosshair
         pygame.draw.circle( cls.screen, (255,50,50), playerCoors, 2 )
+
+    @classmethod
+    def renderInv( cls ):   # todo THIS FUNCTION HAS A LOT OF MAGIC NUMBERS
+
+        inventory = cls.player.inventory
+        slot = items.ITEM_TABLE[items.slot]
+        coors = [16, 16] # ! MAGIC NUMBERS
+
+        for x in range(0, INV_COLS):
+            for y in range(0, INV_ROWS):
+                cls.screen.blit(slot, coors)
+                # get the texture of the item stored in the current slot
+                # get the count/durability of the item stored in the current slot
+                # get the modifiers of the texture of the item stored in the current slot
+                coors[1]+= 40   #! MAGIC NUMBER
+            coors[1] = 16
+            coors[0] +=40       #! MAGIC NUMBER
 
     @classmethod
     def updateSize(  cls  ):
