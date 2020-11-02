@@ -164,7 +164,7 @@ class Player(Entity):
         if(self.mouseState[5]): # scroll down
             pass
 
-    def update( self, dt ):
+    def update( self, dt, eventHandler ):
         """[summary]
 
         Args:
@@ -259,8 +259,9 @@ class WorldEventHandler:
 
     def __init__( self ):
 
-        self.userInputFlag  =   False
-        self.vidResizeFlag  =   False
+        self.userInputFlag  =   False       # This holds whether the user gave an input or not (NOT IMP FOR RENDERING)
+        self.vidResizeFlag  =   False       # This holds whether the window was resized or not (IMPORTANT FOR RENDERING)
+        self.cameraFlag     =   False       # This holds whether the camera has moved or not (IMPORTANT FOR RENDERING)
 
         self.keyStates      =   { pygame.K_w : False, pygame.K_a : False, pygame.K_s : False, pygame.K_d : False, pygame.K_e : False }
 
@@ -276,16 +277,19 @@ class WorldEventHandler:
         self.vidResizeFlag = False
 
     def addKey( self, key ):
+        #print("KEY RELEASE")
         if(key in self.keyStates):
             self.userInputFlag = True
             self.keyStates[key] = True
 
     def remKey( self, key ):
+        #print("KEY PRESS")
         if(key in self.keyStates):
             self.userInputFlag = True
             self.keyStates[key] = False
 
     def addMouseMotion( self, event, camera, displaySize ):
+        #print("MOUSE MOTION")
         userInputFlag = True
         self.mousePos[0] = event.pos[0]
         self.mousePos[1] = event.pos[1]
@@ -294,22 +298,22 @@ class WorldEventHandler:
 
     # 1 for left, 2 for middle, 3 for right, 4 for scroll up and 5 for scroll down
     def addMouseButton( self, button ):
+        #print("MOUSE PRESS")
         userInputFlag = True
         self.mouseState[ button ] = True
 
     def remMouseButton( self, button ):
+        #print("MOUSE RELEASE")
         userInputFlag = True
         self.mouseState[ button ] = False
 
     def addVideoResize( self ):
+        print("VIDEO RESIZE")
         vidResizeFlag = True
 
     def addCameraMotion( self ):
-        vidResizeFlag = True
-
-    def isRenderableEvent( self ):
-        pass
-        # This function returns if any event has been registered that must cause the entire screen to re-render
+        #print("CAMERA MOVED")
+        userInputFlag = True
 
 class EntityBuffer:
     def __init__( self, chunkBuffer ):
