@@ -401,44 +401,51 @@ class Shader:
     def shadeRadial( self ):
 
         luminous = None # the luminosity of the block
-        #sq2 = sqrt(2)
         sq2 = 1.414
-        for y in range(CHUNK_HEIGHT):
-            for x in range(CHUNK_WIDTH):
+        for index in range(0, parent.length):
+            currChunkRef = self.parent[index]
+            for y in range(CHUNK_HEIGHT):
+                for x in range(CHUNK_WIDTH):
 
-                if( chunk[x][y] is luminous ):
+                    currTileRef = parent[index][y][x]
+                    currWallRef = parent[index].walls[y][x]
 
-                    propagateRadial( chunk, x, y, True, True, True, True)
+                    if( currTileRef is luminous or currWallRef is luminous):
 
-                    while(y-1-i>0 and x-1-i>0):#up diagonal left
-                        propagateRadial(chunk,x-1-i,y-1-i,up=True,left=True)
+                        propagateRadial( index, x, y, True, True, True, True)
 
-                    while(y-1-i>0 and x+1+i<CHUNK_WIDTH):#up diagonal right
-                        propagateRadial(chunk,x+1+i,y-1-i,up=True,right=True)
+                        # i, j = 1, 1
+                        while( y-1-i>0 and x-1-i>0 ):   #up diagonal left
+                            propagateRadial( index, x-1-i, y-1-i, up=True, left=True)
 
-                    while(y+1+i<CHUNK_HEIGHT and x-1-i>0):#down diagonal left
-                        propagateRadial(chunk,x-1-i,y+1+i,down=True,left=True)
+                        # i, j = 1, 1
+                        while( y-1-i>0 and x+1+i<CHUNK_WIDTH ): #up diagonal right
+                            propagateRadial( index, x+1+i, y-1-i, up=True, right=True)
 
-                    while(y+1+i<CHUNK_HEIGHT and x+1+i<CHUNK_WIDTH):#down diagonal right
-                        propagateRadial(chunk,x+1+i,y+1+i,down=True,right=True)
+                        # i, j = 1, 1
+                        while( y+1+i<CHUNK_HEIGHT and x-1-i>0 ):    #down diagonal left
+                            propagateRadial( index, x-1-i, y+1+i, down=True, left=True)
 
-    def propagateRadial(l, x, y, up=False, down=False, left=False, right=False):
+                        # i, j = 1, 1
+                        while( y+1+i<CHUNK_HEIGHT and x+1+i<CHUNK_WIDTH ):  #down diagonal right
+                            propagateRadial( index, x+1+i, y+1+i, down=True, right=True)
+
+    def propagateRadial( self, index, x, y, up=False, down=False, left=False, right=False ):
+
+        currChunkRef = self.parent[index]
         valid = True       #check if valid
+
         if valid and lightval != 0:
             if up:
-                l[y+1][x].lightval = 0.5    #some value
+                currChunkRef[y+1][x].lightval = 0.5    #some value
                 propagateRadial(y+1, x, up=True)
             if down:
-                l[y-1][x].lightval = 0.5    #some value
+                currChunkRef[y-1][x].lightval = 0.5    #some value
                 propagateRadial(y-1, x, down=True)
             if right:
-                l[y][x+1].lightval = 0.5    #some value
+                currChunkRef[y][x+1].lightval = 0.5    #some value
                 propagateRadial(y, x+1, right=True)
             if left:
-                l[y][x-1].lightval = 0.5     #some value
+                currChunkRef[y][x-1].lightval = 0.5     #some value
                 propagateRadial(y, x-1, left=True)
 
-    # def shadeSmooth( self, target):
-    #     pass
-    # def propogateSmooth( self, target ):
-    #     pass
