@@ -268,20 +268,12 @@ class Inventory:
     def remItemLast( self, i, q ):
         pass
 
-class WorldEventHandler:
+class ClientEventHandler:
     """ Class to abstract recording, management and processing of client-side events
 
         Types of events
 
-        1> Camera movement event:
-            Description:
-                This event is triggered when the camera moved between 2 consecutive frames.
-                It requires the whole screen to be reloaded.
-                It requires re-calculation of the cursor position.
-            Associated Data:
-                - position of the mouse pointer in the updated window
-
-        2> User Keyboard input event:
+        1> User Keyboard input event:
             Description:
                 This event is triggered when the user gives input from the keyboard, i.e. presses or releases keys.
                 It may open the console for issuing text commands, open the chat-box for typing messages or cause
@@ -289,19 +281,28 @@ class WorldEventHandler:
             Associated Data:
                 - The key(s) which were pressed (if any) and the key(s) which were released (if any)
 
-        3> User mouse button input event:
+        2> User mouse button input event:
             Description:
                 This event is triggered when the user gives input from the mouse buttons but does not include the
-                movement of the mouse pointer. It might require either the whole screen or a part to be reloaded
+                movement of the mouse pointer.
             Associated Data:
                 - The button(s) which were pressed (if any) and the button(s) which were released (if any)
-                - The changed regions of the chunk (in case of blocks broken, placed or altered
-                - The entity being affected, and all associated region data
 
-        4> User mouse pointer input event:
+        3> User mouse pointer input event:
             Description:
                 This event is triggered when the user moves the mouse pointer on the window.
                 It requires re-calculation of the cursor position.
+            Associated Data:
+                - New position of the mouse pointer
+                - New position of the cursor
+
+        4> Camera movement event:
+            Description:
+                This event is triggered when the camera moved between 2 consecutive frames.
+                It requires the whole screen to be reloaded.
+                It requires re-calculation of the cursor position.
+            Associated Data:
+                - New position of the cursor
 
         5> Window resize event
             Description:
@@ -309,86 +310,176 @@ class WorldEventHandler:
                 It requires the whole screen to be reloaded.
                 It requires re-calculation of the cursor position.
             Associated Data:
-                - The new size of the window
-                - position of the mouse pointer in the resized window
+                - New size of the window
+                - New position of the mouse pointer in the updated window
+                - New position of the cursor
 
-        6> tile/wall break event
+        6> player movement event
             Description:
+                This event is triggered when the player moves or is moved.
+                It must be sent to the server
             Associated Data:
+                ?
 
-        7> tile/wall place event
+        7> tile/wall break event
             Description:
+                This event is triggered when a tile/wall is broken.
+                It requires the light-maps to be reloaded
+                It requires the affected regions of the screen to be reloaded
+                It requires the chunk to be saved (or sent to the server)
             Associated Data:
+                - Position of the tile being broken
+                - Chunk of the tile being broken
+                - Local-specific information of the tile
 
-        8> tile/wall alter event
+        8> tile/wall place event
             Description:
+                This event is triggered when a tile/wall is placed
+                It requires the light-maps to be reloaded
+                It requires the affected regions of the screen to be reloaded
+                It requires the chunk ot be saved (or sent to the server)
             Associated Data:
+                - Position of the tile/wall being places
+                - Chunk of the tile/wall being placed
 
-        9> chunk-shifting event
+        9> tile/wall alter event
             Description:
+                This event is triggered when a tile/wall 's local data is altered
+                It may or may not require the light maps to be reloaded
+                It may or may not require the affected regions of the screen to be reloaded
+                It required the chunk to be saved (or sent to the server)
             Associated Data:
+                - Position of the tile/wall being altered
+                - Nature of the data which was altered
 
+        10> Chunk-shifting event
+            Description:
+                This event is triggered when the client's player switches chunks
+                It requires the chunk buffer to serialize and de-serialize chunks
+                It requires the entity buffer to serialize and de-serialize entities
+                It requires the lightmaps to be reloaded
+            Associated Data:
+                The index of the newly added chunk
+
+        11> Entity spawn event
+                Description:
+                    This event is triggered when an entity is spawned.
+                    It requires the entity buffer to be updated
+                    It requires a part of the screen to be updated
+                    It may or may not require lightmaps to be reloaded
+                    It requires information to be sent to the server
+                Associated Data:
+                    - The position where the entity was spawned
+                    - The description of the entity
+
+        12> Entity despawn event
+                Description:
+                    This event is triggered when an entity is de-spawned
+                    It requires the entity buffer to be updated
+                    It requires a part of the screen to be updated
+                    It may or may not require lightmaps to be reloaded
+                    It requires the information to be sent to the server
+                Associated Data:
+                    - The position where the entity was spawned
+                    - The description of the entity
+
+        13> Entity movement event
+                Description:
+                    This event is triggered when a mobile entity moves or is moved
+                    It requires a part of the screen to be updated
+                    It requires information be sent to the server
+                    It may or may not require the entity buffer to be updated
+                Associated Data:
+                    - The new position of the entity
+                    - The chunk of the entity
+                    - The area of the screen occupied by the entity
+                    - The description of the entity
     """
 
     def __init__( self ):
 
-        self.userInputFlag  =   False       # This holds whether the user gave an input or not (NOT IMP FOR RENDERING)
-        self.vidResizeFlag  =   False       # This holds whether the window was resized or not (IMPORTANT FOR RENDERING)
-        self.cameraFlag     =   False       # This holds whether the camera has moved or not (IMPORTANT FOR RENDERING)
+        self.playerMovementFlag = False
+        self.cameraMovementFlag = False
 
+        self.windowResizeFlag = False
+
+        self.keyInFlag = False
         self.keyStates      =   { pygame.K_w : False, pygame.K_a : False, pygame.K_s : False, pygame.K_d : False, pygame.K_e : False }
 
+        self.mouseInFlag = False
         self.mouseState     =   { 1 : False, 2 : False, 3 : False, 4 : False, 5 : False }
+
+        self.mouseCursorFlag = False
         self.mousePos       =   [0, 0]
         self.cursorPos      =   [0, 0]
 
-        self.chunkShifts    =   False
-        self.loadChunkIndex =   None
+        self.entityMovementFlag = False
+        self.entitySpawnedFlag = False
+        self.entityDespawnFlag = False
 
-    def resetFlags( self ):
-        self.userInputFlag = False
-        self.vidResizeFlag = False
+        self.chunkShiftFlag = False
+        self.loadChunkIndex =   None
+        self.saveChunkIndex =   None
+
+        self.tileBreakFlag = False
+        self.tilePlaceFlag = False
+        self.tileAlterFlag = False
 
     def addKey( self, key ):
         #print("KEY RELEASE")
         if(key in self.keyStates):
-            self.userInputFlag = True
+            self.keyInFlag = True
             self.keyStates[key] = True
 
     def remKey( self, key ):
         #print("KEY PRESS")
         if(key in self.keyStates):
-            self.userInputFlag = True
+            self.keyInFlag = True
             self.keyStates[key] = False
 
     def addMouseMotion( self, event, camera, displaySize ):
         #print("MOUSE MOTION")
-        userInputFlag = True
+        mouseCursorFlag = True
         self.mousePos[0] = event.pos[0]
         self.mousePos[1] = event.pos[1]
         self.cursorPos[0] = int(camera[0]) + self.mousePos[0] - displaySize[0]//2
         self.cursorPos[1] = int(camera[1]) + displaySize[1]//2 - self.mousePos[1]
 
-    # 1 for left, 2 for middle, 3 for right, 4 for scroll up and 5 for scroll down
     def addMouseButton( self, button ):
         #print("MOUSE PRESS")
-        userInputFlag = True
+        # 1 for left, 2 for middle, 3 for right, 4 for scroll up and 5 for scroll down
+        mouseInFlag = True
         self.mouseState[ button ] = True
 
     def remMouseButton( self, button ):
         #print("MOUSE RELEASE")
-        userInputFlag = True
+        mouseInFlag = True
         self.mouseState[ button ] = False
 
     def addVideoResize( self ):
         #print("VIDEO RESIZE")
-        vidResizeFlag = True
+        self.windowResizeFlag = True
 
     def addCameraMotion( self ):
         #print("CAMERA MOVED")
-        userInputFlag = True
+        self.cameraMovementFlag = True
 
 
-# class EntityBuffer:
-#    def __init__( self ):
-#        pass
+class EntityBuffer:
+    def __init__( self ):
+        self.length = 0
+        self.len = 0
+
+        self.entities = [ ]
+        self.mousePos       =   [0, 0]
+        self.entities = { }
+        self.mousePos       =   [0, 0]
+
+    def shiftLeftLoadRight( self ):
+        pass
+
+    def shiftRightLoadLeft( self ):
+        pass
+
+    def saveComplete( self ):
+        pass
