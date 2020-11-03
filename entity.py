@@ -148,6 +148,7 @@ class Player(Entity):
 
         if(self.keyState[pygame.K_e]):
             self.inventory.isEnabled = not self.inventory.isEnabled
+            self.keyState[pygame.K_e] = False
 
         if(self.mouseState[1]): # left is there
             self.hitting = True
@@ -456,8 +457,8 @@ class ClientEventHandler:
         mouseInFlag = True
         self.mouseState[ button ] = False
 
-    def addVideoResize( self ):
-        #print("VIDEO RESIZE")
+    def addWindowResize( self ):
+        #print("WINDOW RESIZE")
         self.windowResizeFlag = True
 
     def addCameraMotion( self ):

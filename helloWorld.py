@@ -47,6 +47,8 @@ items.loadImageTable()
 Renderer.initialize(chunkBuffer, camera, player, displaySize, screen)
 dt = 0
 
+eventHandler = entity.ClientEventHandler()
+
 # game loop
 
 running = True
@@ -64,38 +66,52 @@ while running:
 
         elif(event.type == pygame.KEYDOWN):
 
-            if(event.key in keyPress):
-                keyPress[event.key] = True
-                userInputFlag = True
-
-            elif(event.key is pygame.K_c):
+            if(event.key is pygame.K_c):
                 Renderer.setShaders()
             elif(event.key is pygame.K_n):
                 cameraBound = not cameraBound # This should free the camera from being fixed to the player
             elif(event.key is pygame.K_SLASH):
                 plc = input(">> ")
                 # processPLC(plc)
+            elif(event.key in keyPress):
+                keyPress[event.key] = True
+                userInputFlag = True
+#!----------------------------------------------------------------------------------------------------
+            eventHandler.addKey( event.key )
+#!----------------------------------------------------------------------------------------------------
 
         elif event.type == pygame.KEYUP:
             if( event.key in keyPress):
                 keyPress[event.key] = False
                 userInputFlag = True
+#!----------------------------------------------------------------------------------------------------
+            eventHandler.remKey( event.key )
+#!----------------------------------------------------------------------------------------------------
 
-        # i for left, 2 for middle, 3 for right, 4 for scroll up and 5 for scroll down
         elif(event.type == pygame.MOUSEMOTION):
             mousePos[0] = event.pos[0]
             mousePos[1] = event.pos[1]
             mouseWorldPos[0] = int(camera[0]) + mousePos[0] - displaySize[0]//2
             mouseWorldPos[1] = int(camera[1]) + displaySize[1]//2 - mousePos[1]
             userInputFlag = True
+#!----------------------------------------------------------------------------------------------------
+            eventHandler.addMouseMotion( event, camera, displaySize )
+#!----------------------------------------------------------------------------------------------------
 
         elif(event.type == pygame.MOUSEBUTTONDOWN):
             mousePress[event.button] = True
             userInputFlag = True
+#!----------------------------------------------------------------------------------------------------
+            eventHandler.addMouseButton( event.button )
+#!----------------------------------------------------------------------------------------------------
 
         elif(event.type == pygame.MOUSEBUTTONUP):
+
             mousePress[event.button] = False
             userInputFlag = True
+#!----------------------------------------------------------------------------------------------------
+            eventHandler.remMouseButton( event.button )
+#!----------------------------------------------------------------------------------------------------
 
         elif(event.type == pygame.VIDEORESIZE):
             displaySize[0] = screen.get_width()
@@ -103,6 +119,9 @@ while running:
 
             Renderer.updateRefs()
             Renderer.render()
+#!----------------------------------------------------------------------------------------------------
+            eventHandler.addWindowResize( )
+#!----------------------------------------------------------------------------------------------------
 
     # camera movement handling
     if( cameraBound ):
@@ -118,7 +137,9 @@ while running:
 
     #if(int(prevCamera[0]) - int(camera[0]) or int(prevCamera[1]) - int(camera[1])):
     if(int(prevCamera[0]) != int(camera[0]) or int(prevCamera[1]) != int(camera[1])):
-        #print(camera)
+#!----------------------------------------------------------------------------------------------------
+        eventHandler.addCameraMotion( )
+#!----------------------------------------------------------------------------------------------------
         Renderer.updateCam()
         Renderer.render()
 
