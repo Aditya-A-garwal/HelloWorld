@@ -110,6 +110,21 @@ class Entity:
 
 class Player(Entity):
 
+    # def __init__( self , pos:list, chunkBuffer:Chunk.ChunkBuffer, eventHandler, friction:float, health:int=100, grounded:bool=True):
+
+    #     self.keyState = eventHandler.keyState
+    #     self.mouseState = eventHandler.mouseState
+    #     self.cursorPos = eventHandler.cursorPos
+
+    #     self.eventHandler = eventHandler
+
+    #     self.inventory = Inventory(INV_COLS, INV_ROWS)
+
+    #     self.tangibility = 0
+    #     # 0 means intangible
+    #     # 1 means interacing with blocks
+    #     # 2 means interacting with walls
+
     def __init__( self , pos:list, chunkBuffer:Chunk.ChunkBuffer, keyState, mouseState, cursorPos, friction:float, health:int=100, grounded:bool=True):
         super().__init__(pos, chunkBuffer, PLYR_WIDTH, PLYR_HEIGHT, friction, health, grounded)
 
