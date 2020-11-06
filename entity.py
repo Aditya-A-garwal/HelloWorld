@@ -455,7 +455,7 @@ class ClientEventHandler:
 
     def addMouseMotion( self, event, camera, displaySize ):
         #print("MOUSE MOTION")
-        mouseCursorFlag = True
+        self.mouseInFlag = True
         self.mousePos[0] = event.pos[0]
         self.mousePos[1] = event.pos[1]
         self.cursorPos[0] = int(camera[0]) + self.mousePos[0] - displaySize[0]//2
