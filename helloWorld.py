@@ -25,7 +25,7 @@ chunkBuffer = ChunkBuffer(11, 0, "world1")
 eventHandler = entity.ClientEventHandler()
 
 # Player variables
-player = entity.Player([0, 0], chunkBuffer, eventHandler.keyStates, eventHandler.mouseState, eventHandler.cursorPos, DEFAULT_FRICTION)
+player = entity.Player([0, 0], chunkBuffer, eventHandler, eventHandler.keyStates, eventHandler.mouseState, eventHandler.cursorPos, DEFAULT_FRICTION)
 currChunk = prevChunk = deltaChunk = 0
 
 # Create and display window
@@ -100,8 +100,8 @@ while running:
 
     updatedIndex, updatedX, updatedY = player.update( dt )
 
-    if(updatedIndex is not None):
-        Renderer.renderChunkOnly( updatedIndex[0], (updatedX, updatedY, updatedX + 1, updatedY + 1) )
+    if updatedIndex :
+        Renderer.renderChunkOnly( updatedIndex, (updatedX - 1, updatedY - 1, updatedX + 1, updatedY + 1) )
         Renderer.updateScreen()
 
 #!------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -119,8 +119,9 @@ while running:
 
         if(deltaChunk != 0):
 
-            loadedIndex = chunkBuffer.shiftBuffer(deltaChunk)
-            Renderer.renderChunk(loadedIndex)
+            #eventHandler.chunkShiftFlag = True # server must be notified
+            eventHandler.loadChunkIndex = chunkBuffer.shiftBuffer(deltaChunk)
+            Renderer.renderChunk(eventHandler.loadChunkIndex)
 
         eventHandler.cameraMovementFlag = False
 

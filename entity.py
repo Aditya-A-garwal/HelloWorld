@@ -127,8 +127,10 @@ class Player(Entity):
     #     # 1 means interacing with blocks
     #     # 2 means interacting with walls
 
-    def __init__( self , pos:list, chunkBuffer:Chunk.ChunkBuffer, keyState, mouseState, cursorPos, friction:float, health:int=100, grounded:bool=True):
+    def __init__( self , pos:list, chunkBuffer:Chunk.ChunkBuffer, eventHandler, keyState, mouseState, cursorPos, friction:float, health:int=100, grounded:bool=True):
         super().__init__(pos, chunkBuffer, PLYR_WIDTH, PLYR_HEIGHT, friction, health, grounded)
+
+        self.eventHandler = eventHandler
 
         self.keyState = keyState
         self.mouseState = mouseState
@@ -217,6 +219,8 @@ class Player(Entity):
             self.chunkBuffer[ chunkInd ].breakBlockAt( x, y, 10, dt)
             self.chunkBuffer[ chunkInd ].breakWallAt( x, y, 10, dt)
 
+            self.eventHandler.tileBreakFlag = True
+
             return chunkInd, x, y
 
         elif  self.placing:
@@ -229,6 +233,8 @@ class Player(Entity):
 
 
             return chunkInd, x, y
+
+        return None, None, None
 
 class Inventory:
 
@@ -451,8 +457,13 @@ class ClientEventHandler:
         self.saveChunkIndex =   None
 
         self.tileBreakFlag = False
+        self.tileBreakPos = [-1, -1]
+
         self.tilePlaceFlag = False
+        self.tilePlacePos = [-1, -1]
+
         self.tileAlterFlag = False
+        self.tileAlterPos = [-1, -1]
 
     def addKey( self, key ):
         #print("KEY RELEASE")
