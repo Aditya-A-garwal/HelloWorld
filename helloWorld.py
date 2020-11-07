@@ -98,10 +98,10 @@ while running:
 
         if  int(prevCamera[0] - camera[0]) or int(prevCamera[1] - camera[1])    : eventHandler.addCameraMotion()
 
-    updatedIndex = player.update( dt )
+    updatedIndex, updatedX, updatedY = player.update( dt )
 
     if(updatedIndex is not None):
-        Renderer.renderChunkOnly( updatedIndex )
+        Renderer.renderChunkOnly( updatedIndex[0], (updatedX, updatedY, updatedX + 1, updatedY + 1) )
         Renderer.updateScreen()
 
 #!------------------------------------------------------------------------------------------------------------------------------------------------------

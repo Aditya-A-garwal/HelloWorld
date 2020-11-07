@@ -112,6 +112,8 @@ class Player(Entity):
 
     # def __init__( self , pos:list, chunkBuffer:Chunk.ChunkBuffer, eventHandler, friction:float, health:int=100, grounded:bool=True):
 
+    #     super().__init__(pos, chunkBuffer, PLYR_WIDTH, PLYR_HEIGHT, friction, health, grounded)
+
     #     self.keyState = eventHandler.keyState
     #     self.mouseState = eventHandler.mouseState
     #     self.cursorPos = eventHandler.cursorPos
@@ -205,7 +207,7 @@ class Player(Entity):
 
             self.pos[i] += self.vel[i] * SCALE_VEL * dt
 
-        if(self.hitting):
+        if  self.hitting and not self.placing :
             chunk = math.floor(self.cursorPos[0] / CHUNK_WIDTH_P)
             chunkInd = chunk - self.chunkBuffer.positions[0]
 
@@ -215,7 +217,18 @@ class Player(Entity):
             self.chunkBuffer[ chunkInd ].breakBlockAt( x, y, 10, dt)
             self.chunkBuffer[ chunkInd ].breakWallAt( x, y, 10, dt)
 
-            return chunkInd
+            return chunkInd, x, y
+
+        elif  self.placing:
+            chunk = math.floor(self.cursorPos[0] / CHUNK_WIDTH_P)
+            chunkInd = chunk - self.chunkBuffer.positoins[0]
+
+            x = (self.cursorPos[0] // TILE_WIDTH) - chunk * CHUNK_WIDTH
+            y = (self.cursorPos[1] // TILE_WIDTH)
+
+
+
+            return chunkInd, x, y
 
 class Inventory:
 

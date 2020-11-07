@@ -30,7 +30,7 @@ UNDERGROUND_Y       =  0.1
 INF = math.inf #generateBigNum(64)
 
 ## Constants for camera
-LERP_C              =  0.05
+LERP_C              =  0.025
 
 ## Constants for entity and physics (time_unit = seconds, length_unit = points)
 GRAVITY_ACC         =  9.8
