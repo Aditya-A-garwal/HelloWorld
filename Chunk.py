@@ -405,7 +405,7 @@ class chunkBufferManager:
 
     def loadAll( self ):
         for i in range(0, self.length):
-            self.chunks.append(self.serializer[self.positions[0] + i)
+            self.chunks.append(self.serializer[self.positions[0] + i])
             # generation and processing must be done here
 
     def dumpAll( self ):
