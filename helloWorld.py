@@ -41,6 +41,28 @@ items.loadImageTable()
 Renderer.initialize(chunkBuffer, camera, player, displaySize, screen)
 dt = 0
 
+def takeCommand( ):
+    global cameraBound
+    command = input(">> ")
+
+    what = ""
+    cntr = 4
+    for i in command[4::]:
+        cntr += 1
+        if(i == ' '): break
+        what = what + i
+
+    if(what == "shader"):
+        if(command[0] == 's'):
+            Renderer.isShader = exec(command[cntr::])
+        elif(command[0] == 'g'):
+            print(Renderer.isShader)
+    elif(what == "cameraRoam"):
+        if(command[0] == 's'):
+            cameraBound = exec(command[cntr::])
+        elif(command[0] == 'g'):
+            print(not cameraBound)
+
 # game loop
 
 running = True
@@ -58,7 +80,7 @@ while running:
 
             if      event.key == pygame.K_c :              Renderer.setShaders()
             elif    event.key == pygame.K_n :              cameraBound = not cameraBound # This should free the camera from being fixed to the player
-            elif    event.key == pygame.K_SLASH :          pass
+            elif    event.key == pygame.K_SLASH :          takeCommand()
             else :                                         eventHandler.addKey( event.key )
 
         elif    event.type == pygame.KEYUP :               eventHandler.remKey( event.key )
