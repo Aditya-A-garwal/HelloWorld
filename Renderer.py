@@ -186,7 +186,7 @@ class Renderer:
             coors[1]  -= TILE_WIDTH         # Every Iteration, decrease the y-coordinate by tile-width
 
     @classmethod
-    def render(  cls  ):
+    def updateScreen(  cls  ):
 
         """Renders the surfaces of each chunk (in the active chunk buffer) on to the window
         """

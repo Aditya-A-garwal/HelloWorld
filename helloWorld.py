@@ -46,6 +46,8 @@ dt = 0
 running = True
 while running:
 
+#!------------------------------------------------------------------------------------------------------------------------------------------------------
+
     # event handling loop
     for event in pygame.event.get():
 
@@ -54,39 +56,60 @@ while running:
 
         elif(event.type == pygame.KEYDOWN):
 
-            if  event.key is pygame.K_c :                Renderer.setShaders()
-            elif    event.key is pygame.K_n :              cameraBound = not cameraBound # This should free the camera from being fixed to the player
-            elif    event.key is pygame.K_SLASH :          pass
-            elif cameraBound :                                       eventHandler.addKey( event.key )
+            if      event.key == pygame.K_c :              Renderer.setShaders()
+            elif    event.key == pygame.K_n :              cameraBound = not cameraBound # This should free the camera from being fixed to the player
+            elif    event.key == pygame.K_SLASH :          pass
+            else :                                         eventHandler.addKey( event.key )
 
-        elif    event.type == pygame.KEYUP and cameraBound :                eventHandler.remKey( event.key )
+        elif    event.type == pygame.KEYUP :               eventHandler.remKey( event.key )
 
-        elif    event.type == pygame.MOUSEMOTION and cameraBound :         eventHandler.addMouseMotion( event, camera, displaySize )
+        elif    event.type == pygame.MOUSEMOTION :         eventHandler.addMouseMotion( event, camera, displaySize )
 
-        elif    event.type == pygame.MOUSEBUTTONDOWN and cameraBound :     eventHandler.addMouseButton( event.button )
+        elif    event.type == pygame.MOUSEBUTTONDOWN :     eventHandler.addMouseButton( event.button )
 
-        elif    event.type == pygame.MOUSEBUTTONUP and cameraBound :       eventHandler.remMouseButton( event.button )
+        elif    event.type == pygame.MOUSEBUTTONUP :       eventHandler.remMouseButton( event.button )
 
         elif    event.type == pygame.VIDEORESIZE :         eventHandler.addWindowResize( )
+
+#!------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    # Player movement handling
+    if  eventHandler.keyInFlag or eventHandler.mouseInFlag :
+
+        if cameraBound:
+            player.run()
+            #if(player.inventory.isEnabled): Renderer.renderInv()
+
+        else:
+            if      eventHandler.keyStates[pygame.K_a]  : camera[0] -= SCALE_VEL * dt
+            elif    eventHandler.keyStates[pygame.K_d]  : camera[0] += SCALE_VEL * dt
+
+            if      eventHandler.keyStates[pygame.K_w]  : camera[1] += SCALE_VEL * dt
+            elif    eventHandler.keyStates[pygame.K_s]  : camera[1] -= SCALE_VEL * dt
+
+            eventHandler.addCameraMotion()
+
+        eventHandler.mouseInFlag, eventHandler.keyinFlag = False, False
 
     # camera movement handling
     if  cameraBound :
         camera[0] += ( player.pos[0] - camera[0] ) * LERP_C
         camera[1] += ( player.pos[1] - camera[1] ) * LERP_C
 
-    elif    eventHandler.keyInFlag  :
-        if      eventHandler.keyStates[pygame.K_a]  : camera[0] -= SCALE_VEL * dt
-        elif    eventHandler.keyStates[pygame.K_d]  : camera[0] += SCALE_VEL * dt
+        if  int(prevCamera[0] - camera[0]) or int(prevCamera[1] - camera[1])    : eventHandler.addCameraMotion()
 
-        if      eventHandler.keyStates[pygame.K_w]  : camera[1] += SCALE_VEL * dt
-        elif    eventHandler.keyStates[pygame.K_s]  : camera[1] -= SCALE_VEL * dt
+    updatedIndex = player.update( dt )
 
-    if(int(prevCamera[0]) != int(camera[0]) or int(prevCamera[1]) != int(camera[1])):   eventHandler.addCameraMotion( )
+    if(updatedIndex is not None):
+        Renderer.renderChunkOnly( updatedIndex )
+        Renderer.updateScreen()
+
+#!------------------------------------------------------------------------------------------------------------------------------------------------------
 
     if(eventHandler.cameraMovementFlag):
 
         Renderer.updateCam()
-        Renderer.render()
+        Renderer.updateScreen()
 
         prevCamera[0], prevCamera[1] = camera[0], camera[1]
 
@@ -101,31 +124,19 @@ while running:
 
         eventHandler.cameraMovementFlag = False
 
+#!------------------------------------------------------------------------------------------------------------------------------------------------------
+
     if(eventHandler.windowResizeFlag):
 
         displaySize[0] = screen.get_width()
         displaySize[1] = screen.get_height()
 
         Renderer.updateRefs()
-        Renderer.render()
+        Renderer.updateScreen()
 
         eventHandler.windowResizeFlag = False
 
-    # Player movement handling
-    if  eventHandler.keyInFlag or eventHandler.mouseInFlag :
-
-        player.run()
-        if(player.inventory.isEnabled): Renderer.renderInv()
-        eventHandler.mouseInFlag, eventHandler.keyinFlag = False, False
-
-    updatedIndex = player.update( dt )
-
-    if(updatedIndex is not None):
-        Renderer.renderChunkOnly( updatedIndex )
-        Renderer.render()
-
-    # Updating screen
-    pygame.display.update()
+    pygame.display.update()     # Updating the screen
 
     # Framerate calculation
     dt = clock.tick(0) / 1000
