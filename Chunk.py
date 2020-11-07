@@ -386,7 +386,7 @@ class chunkBufferManager:
     def __init__(  self, length, middleIndex, targetWorld, seed=None  ):
 
         # Create references to required objects
-        self.serializer     =  Serializer(targetWorld)
+        #self.serializer     =  Serializer(targetWorld)
         self.chunkGenerator =  chunkGenerator()
 
         # Save length and index of last item
@@ -394,7 +394,7 @@ class chunkBufferManager:
         self.len            =  length - 1
 
         # Positions of the left-most, middle and right-most chunks
-        self.positions      =  [ middleIndex - self.len // 2, middleIndex, middleIndex + self.len // 2 ]
+        self.positions      =  [ middleIndex - self.length // 2, middleIndex, middleIndex + self.length // 2 ]
 
         # Create lists of required objects
         self.chunks         =  [ ]
@@ -405,7 +405,7 @@ class chunkBufferManager:
 
     def loadAll( self ):
         for i in range(0, self.length):
-            self.chunks.append(self.serializer[self.positions[0] + i])
+            self.chunks.append(self.serializer[self.positions[0] + i)
             # generation and processing must be done here
 
     def dumpAll( self ):
