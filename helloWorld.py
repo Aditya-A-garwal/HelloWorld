@@ -98,11 +98,17 @@ while running:
 
         if  int(prevCamera[0] - camera[0]) or int(prevCamera[1] - camera[1])    : eventHandler.addCameraMotion()
 
-    updatedIndex, updatedX, updatedY = player.update( dt )
+    player.update( dt )
 
-    if updatedIndex :
-        Renderer.renderChunkOnly( updatedIndex, (updatedX - 1, updatedY - 1, updatedX + 1, updatedY + 1) )
+    if eventHandler.tileBreakFlag :
+        Renderer.renderChunkOnly( eventHandler.tileBreakIndex, (eventHandler.tileBreakPos[0], eventHandler.tileBreakPos[1], eventHandler.tileBreakPos[0]  + 1, eventHandler.tileBreakPos[1] + 1) )
         Renderer.updateScreen()
+        eventHandler.tileBreakFlag = False
+
+    elif eventHandler.tilePlaceFlag :
+        Renderer.renderChunkOnly( eventHandler.tileBreakIndex, (eventHandler.tileBreakPos[0], eventHandler.tileBreakPos[1], eventHandler.tileBreakPos[0]  + 1, eventHandler.tileBreakPos[1] + 1) )
+        Renderer.updateScreen()
+        eventHandler.tilePlaceFlag = False
 
 #!------------------------------------------------------------------------------------------------------------------------------------------------------
 

@@ -221,7 +221,9 @@ class Player(Entity):
 
             self.eventHandler.tileBreakFlag = True
 
-            return chunkInd, x, y
+            self.eventHandler.tileBreakIndex = chunkInd
+            self.eventHandler.tileBreakPos[0] = x
+            self.eventHandler.tileBreakPos[1] = y
 
         elif  self.placing:
             chunk = math.floor(self.cursorPos[0] / CHUNK_WIDTH_P)
@@ -230,11 +232,11 @@ class Player(Entity):
             x = (self.cursorPos[0] // TILE_WIDTH) - chunk * CHUNK_WIDTH
             y = (self.cursorPos[1] // TILE_WIDTH)
 
+            self.eventHandler.tilePlaceFlag = True
 
-
-            return chunkInd, x, y
-
-        return None, None, None
+            self.eventHandler.tilePlaceFlag = chunkInd
+            self.eventHandler.tilePlacePos[0] = x
+            self.eventHandler.tilePlacePos[1] = y
 
 class Inventory:
 
@@ -457,9 +459,11 @@ class ClientEventHandler:
         self.saveChunkIndex =   None
 
         self.tileBreakFlag = False
+        self.tileBreakIndex = -1
         self.tileBreakPos = [-1, -1]
 
         self.tilePlaceFlag = False
+        self.tilePlaceIndex = -1
         self.tilePlacePos = [-1, -1]
 
         self.tileAlterFlag = False
