@@ -123,8 +123,9 @@ class Renderer:
         currSurfRef                     =  cls.chunkBuffer.surfaces[index]
         coors                           =  [ 0, ( CHUNK_HEIGHT - rect[1] - 1 ) * TILE_WIDTH ]
         # y-coordinate starts from bottom (1 is subtracted to acc for rendering from top instead of bottom)
+        # x remains unaffected
 
-        cls.chunkBuffer.surfaces[index].fill( ( 30, 150, 240 ), [i * TILE_WIDTH for i in rect] )
+        cls.chunkBuffer.surfaces[index].fill( ( 30, 150, 240 ), [rect[0] * TILE_WIDTH, TILE_WIDTH* (CHUNK_HEIGHT - 1 - rect[1]), TILE_WIDTH * (rect[2] - rect[0]), TILE_WIDTH * (rect[3] - rect[1])])
 
         for i in range( rect[1], rect[3] ):
 

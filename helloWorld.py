@@ -123,9 +123,7 @@ while running:
     player.update( dt )
 
     if eventHandler.tileBreakFlag :
-        # print(chunkBuffer[eventHandler.tileBreakIndex].blocks[eventHandler.tileBreakPos[1]][eventHandler.tileBreakPos[0]])
-        # Renderer.renderChunkOnly( eventHandler.tileBreakIndex, ([)eventHandler.tileBreakPos[0], eventHandler.tileBreakPos[1], eventHandler.tileBreakPos[0]  + 1, eventHandler.tileBreakPos[1] + 1) )
-        Renderer.renderChunkOnly( eventHandler.tileBreakIndex)
+        Renderer.renderChunkOnly( eventHandler.tileBreakIndex, (eventHandler.tileBreakPos[0], eventHandler.tileBreakPos[1], eventHandler.tileBreakPos[0] + 1, eventHandler.tileBreakPos[1] + 1) )
         Renderer.updateScreen()
         eventHandler.tileBreakFlag = False
 
