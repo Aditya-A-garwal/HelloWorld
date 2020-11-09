@@ -68,15 +68,18 @@ class Renderer:
 
         lightBox                        =  pygame.Surface( ( TILE_WIDTH, TILE_WIDTH ) )
 
-        coors                           =  [ 0, ( CHUNK_HEIGHT - rect[1] - 1) * TILE_WIDTH ]
+        #coors                           =  [ 0, ( CHUNK_HEIGHT - rect[1] - 1) * TILE_WIDTH ]
 
         # Fill the to-be-updated region of the surface to "clear" it
         cls.chunkBuffer.surfaces[ index ].fill( ( 30, 150, 240 ), [ i * TILE_WIDTH for i in rect ] )
 
         for i in range( rect[1], rect[3] ):
 
-            coors[0]  =  rect[0] * TILE_WIDTH    # x coordinate starts from 0
+            coors = [0, ( CHUNK_HEIGHT - i - 1 ) * TILE_WIDTH ]
+
             for j in range( rect[0], rect[2] ):
+
+                coors[0] = j * TILE_WIDTH
 
                 currTileRef =  currChunkRef[ i ][ j ]
                 currWallRef =  currChunkRef.walls[ i ][ j ]
@@ -103,10 +106,6 @@ class Renderer:
                             breakState = (currChunkRef.TILE_TABLE_LOCAL[ ( j, i, False ) ][ HEALTH ] * 8) / 100
                             currSurfRef.blit( tiles.TILE_MODIFIERS[ tiles.crack ][ 8 - int(breakState) ], coors )
 
-                coors[0]    += TILE_WIDTH   # Every Iteration, increase the x-coordinate by tile-width
-
-            coors[1]  -= TILE_WIDTH         # Every Iteration, decrease the y-coordinate by tile-width
-
     @classmethod
     def renderChunkOnly(  cls, index, rect = [0, 0, CHUNK_WIDTH, CHUNK_HEIGHT] ):
 
@@ -119,14 +118,16 @@ class Renderer:
         # Create a reference to the chunk currently being rendered (for convenience)
         currChunkRef                    =  cls.chunkBuffer[index]
         currSurfRef                     =  cls.chunkBuffer.surfaces[index]
-        coors                           =  [ 0, ( CHUNK_HEIGHT - rect[1] - 1 ) * TILE_WIDTH ]
 
         cls.chunkBuffer.surfaces[index].fill( ( 30, 150, 240 ), [rect[0] * TILE_WIDTH, TILE_WIDTH* (CHUNK_HEIGHT - 1 - rect[1]), TILE_WIDTH * (rect[2] - rect[0]), TILE_WIDTH * (rect[3] - rect[1])])
 
         for i in range( rect[1], rect[3] ):
 
-            coors[0]  =  rect[0] * TILE_WIDTH    # x coordinate starts from 0
+            coors  =  [ 0, ( CHUNK_HEIGHT - i - 1 ) * TILE_WIDTH ]
+
             for j in range( rect[0], rect[2] ):
+
+                coors[0] = j * TILE_WIDTH
 
                 currTileRef =  currChunkRef[i][j]
                 currWallRef =  currChunkRef.walls[i][j]
@@ -149,10 +150,6 @@ class Renderer:
                             breakState = (currChunkRef.TILE_TABLE_LOCAL[ ( j, i, False ) ][ HEALTH ] * 8) / 100
                             currSurfRef.blit( tiles.TILE_MODIFIERS[ tiles.crack ][ 8 - int(breakState) ], coors )
 
-                coors[0]    += TILE_WIDTH   # Every Iteration, increase the x-coordinate by tile-width
-
-            coors[1]  -= TILE_WIDTH         # Every Iteration, decrease the y-coordinate by tile-width
-
     @classmethod
     def renderLightmap(  cls, index, rect = [0, 0, CHUNK_WIDTH, CHUNK_HEIGHT] ):
 
@@ -160,20 +157,18 @@ class Renderer:
         currLightmap                    =  cls.chunkBuffer.lightSurfs[index]
 
         lightBox                        =  pygame.Surface( ( TILE_WIDTH, TILE_WIDTH ) )
-        coors                           =  [0, ( CHUNK_HEIGHT - rect[1] - 1) * TILE_WIDTH]
 
         for i in range( rect[1], rect[3] ):
 
-            coors[0]  =  rect[0] * TILE_WIDTH    # x coordinate starts from 0
+            coors   =   [0, ( CHUNK_HEIGHT - i - 1 ) * TILE_WIDTH]
+
             for j in range( rect[0], rect[2] ):
+
+                coors[0] = j * TILE_WIDTH
 
                 ltVal = currChunkRef.lightMap[i][j]
                 lightBox.fill( ( ltVal, ltVal, ltVal ) )
                 currLightmap.blit( lightBox, coors )
-
-                coors[0]    += TILE_WIDTH   # Every Iteration, increase the x-coordinate by tile-width
-
-            coors[1]  -= TILE_WIDTH         # Every Iteration, decrease the y-coordinate by tile-width
 
     @classmethod
     def updateScreen(  cls  ):
