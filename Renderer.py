@@ -45,12 +45,12 @@ class Renderer:
         cls.renderChunks()
 
     @classmethod
-    def renderChunks(cls):
+    def renderChunks( cls ):
+        for _ in range( cls.length ):   cls.renderChunk( _ )
 
-        """Method to render all chunks in the active chunk buffer to their corresponding surfaces
-        """
-
-        for c in range( 0, cls.length ):    cls.renderChunk( c )
+    @classmethod
+    def renderLightmaps( cls ):
+        for _ in range( cls.length ):   cls.renderLightmap( _ )
 
     @classmethod
     def renderChunk(  cls, index, rect = [ 0, 0, CHUNK_WIDTH, CHUNK_HEIGHT ] ):
@@ -68,12 +68,10 @@ class Renderer:
 
         lightBox                        =  pygame.Surface( ( TILE_WIDTH, TILE_WIDTH ) )
 
-        coors                           =  [ 0, 0 ]
+        coors                           =  [ 0, ( CHUNK_HEIGHT - rect[1] - 1) * TILE_WIDTH ]
 
         # Fill the to-be-updated region of the surface to "clear" it
         cls.chunkBuffer.surfaces[ index ].fill( ( 30, 150, 240 ), [ i * TILE_WIDTH for i in rect ] )
-
-        coors[1]    =  ( CHUNK_HEIGHT - rect[1] - 1) * TILE_WIDTH    # y-coordinate starts from bottom (1 is subtracted to acc for rendering from top instead of bottom)
 
         for i in range( rect[1], rect[3] ):
 
@@ -122,8 +120,6 @@ class Renderer:
         currChunkRef                    =  cls.chunkBuffer[index]
         currSurfRef                     =  cls.chunkBuffer.surfaces[index]
         coors                           =  [ 0, ( CHUNK_HEIGHT - rect[1] - 1 ) * TILE_WIDTH ]
-        # y-coordinate starts from bottom (1 is subtracted to acc for rendering from top instead of bottom)
-        # x remains unaffected
 
         cls.chunkBuffer.surfaces[index].fill( ( 30, 150, 240 ), [rect[0] * TILE_WIDTH, TILE_WIDTH* (CHUNK_HEIGHT - 1 - rect[1]), TILE_WIDTH * (rect[2] - rect[0]), TILE_WIDTH * (rect[3] - rect[1])])
 
@@ -158,20 +154,13 @@ class Renderer:
             coors[1]  -= TILE_WIDTH         # Every Iteration, decrease the y-coordinate by tile-width
 
     @classmethod
-    def renderLightmaps( cls ):
-        for i in range(0, cls.length ):
-            cls.renderLightmap( i )
-
-    @classmethod
     def renderLightmap(  cls, index, rect = [0, 0, CHUNK_WIDTH, CHUNK_HEIGHT] ):
 
         currChunkRef                    =  cls.chunkBuffer[index]
         currLightmap                    =  cls.chunkBuffer.lightSurfs[index]
 
         lightBox                        =  pygame.Surface( ( TILE_WIDTH, TILE_WIDTH ) )
-        coors = [0, 0]
-
-        coors[1]    =  ( CHUNK_HEIGHT - rect[1] - 1) * TILE_WIDTH    # y-coordinate starts from bottom (1 is subtracted to acc for rendering from top instead of bottom)
+        coors                           =  [0, ( CHUNK_HEIGHT - rect[1] - 1) * TILE_WIDTH]
 
         for i in range( rect[1], rect[3] ):
 
