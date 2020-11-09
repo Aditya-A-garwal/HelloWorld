@@ -169,7 +169,8 @@ while running:
 
     # Framerate calculation
     dt = clock.tick(0) / 1000
-    #framerate = 1 / min(dt, 0.001)
+    #framerate = 1 / max(dt, 0.001)
+    #print(framerate)
 
 
 chunkBuffer.saveComplete()

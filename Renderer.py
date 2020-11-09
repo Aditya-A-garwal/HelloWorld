@@ -76,7 +76,7 @@ class Renderer:
         lightBox                        =  pygame.Surface( ( TILE_WIDTH, TILE_WIDTH ) )
 
         # Fill the to-be-updated region of the surface to "clear" it
-        cls.chunkBuffer.surfaces[ index ].fill( ( 30, 150, 240 ), [ i * TILE_WIDTH for i in rect ] )
+        cls.chunkBuffer.surfaces[ index ].fill( ( 30, 150, 240 ), [0, 0, CHUNK_WIDTH_P, CHUNK_HEIGHT_P] )
 
         for i in range( rect[1], rect[3] ):
 
