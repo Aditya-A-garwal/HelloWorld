@@ -42,7 +42,11 @@ class Renderer:
 
         # Update constants to reflect new References
         cls.updateRefs()
-        cls.renderChunks()
+        cls.renderFulls()
+
+    @classmethod
+    def renderFulls( cls ):
+        for _ in range( cls.length ):   cls.renderFull( _ )
 
     @classmethod
     def renderChunks( cls ):
@@ -53,7 +57,7 @@ class Renderer:
         for _ in range( cls.length ):   cls.renderLightmap( _ )
 
     @classmethod
-    def renderChunk(  cls, index, rect = [ 0, 0, CHUNK_WIDTH, CHUNK_HEIGHT ] ):
+    def renderFull(  cls, index, rect = [ 0, 0, CHUNK_WIDTH, CHUNK_HEIGHT ] ):
 
         """Method to render the chunk (in the active chunk buffer) whose index has been supplied
         Args:
@@ -61,14 +65,15 @@ class Renderer:
             rect (list): Rectangular region of the chunk which needs to be rendered (optional argument)
         """
 
+        #cls.renderChunkOnly( index, rect )
+        #cls.renderLightmap( index, rect )
+
         # Create a reference to the chunk currently being rendered (for convenience)
         currChunkRef                    =  cls.chunkBuffer[ index ]
         currSurfRef                     =  cls.chunkBuffer.surfaces[ index ]
         currLightmap                    =  cls.chunkBuffer.lightSurfs[ index ]
 
         lightBox                        =  pygame.Surface( ( TILE_WIDTH, TILE_WIDTH ) )
-
-        #coors                           =  [ 0, ( CHUNK_HEIGHT - rect[1] - 1) * TILE_WIDTH ]
 
         # Fill the to-be-updated region of the surface to "clear" it
         cls.chunkBuffer.surfaces[ index ].fill( ( 30, 150, 240 ), [ i * TILE_WIDTH for i in rect ] )
@@ -83,9 +88,9 @@ class Renderer:
 
                 currTileRef =  currChunkRef[ i ][ j ]
                 currWallRef =  currChunkRef.walls[ i ][ j ]
-                ltVal       =  currChunkRef.lightMap[ i ][ j ]
+                lightIntensity       =  currChunkRef.lightMap[ i ][ j ]
 
-                lightBox.fill( ( ltVal, ltVal, ltVal ) )
+                lightBox.fill( ( lightIntensity, ) * 3 )
                 currLightmap.blit( lightBox, coors )
 
                 if( currTileRef > 0 ):
@@ -107,7 +112,7 @@ class Renderer:
                             currSurfRef.blit( tiles.TILE_MODIFIERS[ tiles.crack ][ 8 - int(breakState) ], coors )
 
     @classmethod
-    def renderChunkOnly(  cls, index, rect = [0, 0, CHUNK_WIDTH, CHUNK_HEIGHT] ):
+    def renderChunk(  cls, index, rect = [0, 0, CHUNK_WIDTH, CHUNK_HEIGHT] ):
 
         """Method to render the chunk (in the active chunk buffer) whose index has been supplied
         Args:
@@ -166,8 +171,8 @@ class Renderer:
 
                 coors[0] = j * TILE_WIDTH
 
-                ltVal = currChunkRef.lightMap[i][j]
-                lightBox.fill( ( ltVal, ltVal, ltVal ) )
+                lightIntensity = currChunkRef.lightMap[ i ][ j ]
+                lightBox.fill( ( lightIntensity, ) * 3 )
                 currLightmap.blit( lightBox, coors )
 
     @classmethod

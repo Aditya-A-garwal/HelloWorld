@@ -123,12 +123,12 @@ while running:
     player.update( dt )
 
     if eventHandler.tileBreakFlag :
-        Renderer.renderChunkOnly( eventHandler.tileBreakIndex, (eventHandler.tileBreakPos[0], eventHandler.tileBreakPos[1], eventHandler.tileBreakPos[0] + 1, eventHandler.tileBreakPos[1] + 1) )
+        Renderer.renderChunk( eventHandler.tileBreakIndex, (eventHandler.tileBreakPos[0], eventHandler.tileBreakPos[1], eventHandler.tileBreakPos[0] + 1, eventHandler.tileBreakPos[1] + 1) )
         Renderer.updateScreen()
         eventHandler.tileBreakFlag = False
 
     elif eventHandler.tilePlaceFlag :
-        Renderer.renderChunkOnly( eventHandler.tilePlaceIndex, (eventHandler.tilePlacePos[0] - 2, eventHandler.tilePlacePos[1] - 2, eventHandler.tileBreakPos[0]  + 2, eventHandler.tilePlacePos[1] + 2) )
+        Renderer.renderChunk( eventHandler.tilePlaceIndex, (eventHandler.tilePlacePos[0] - 2, eventHandler.tilePlacePos[1] - 2, eventHandler.tileBreakPos[0]  + 2, eventHandler.tilePlacePos[1] + 2) )
         Renderer.updateScreen()
         eventHandler.tilePlaceFlag = False
 
@@ -149,7 +149,7 @@ while running:
 
             #eventHandler.chunkShiftFlag = True # server must be notified
             eventHandler.loadChunkIndex = chunkBuffer.shiftBuffer(deltaChunk)
-            Renderer.renderChunk(eventHandler.loadChunkIndex)
+            Renderer.renderFull(eventHandler.loadChunkIndex)
 
         eventHandler.cameraMovementFlag = False
 
