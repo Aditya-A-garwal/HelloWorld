@@ -100,6 +100,12 @@ class Chunk:
         self.blocks[y][x] = val
         return True
 
+    def update( self, dt ):
+
+        for i in range(0, CHUNK_HEIGHT):
+            for j in range(0, CHUNK_WIDTH):
+                pass
+
     def __getitem__(  self, key  ):
         return self.blocks[key]
 
@@ -307,6 +313,9 @@ class ChunkBuffer:
                 if(rightVal > self[index+1].lightMap[y][0]):
                     self[index+1].lightMap[y][0]   =  rightVal
                     self.propagate(index+1, 0, y, left=False)
+
+    def update( self, dt ):
+        for _ in range( 0, self.length ):   self.chunks[_].update()
 
     def __getitem__( self, key ):
         return self.chunks[key]
