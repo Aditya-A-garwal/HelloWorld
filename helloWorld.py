@@ -93,8 +93,6 @@ while running:
 
         elif    event.type == pygame.VIDEORESIZE :         eventHandler.addWindowResize( )
 
-#!------------------------------------------------------------------------------------------------------------------------------------------------------
-
     # Player movement handling
     if  eventHandler.keyInFlag or eventHandler.mouseInFlag :
 
@@ -132,8 +130,6 @@ while running:
         Renderer.updateScreen()
         eventHandler.tilePlaceFlag = False
 
-#!------------------------------------------------------------------------------------------------------------------------------------------------------
-
     if(eventHandler.cameraMovementFlag):
 
         Renderer.updateCam()
@@ -152,8 +148,6 @@ while running:
             Renderer.renderFull(eventHandler.loadChunkIndex)
 
         eventHandler.cameraMovementFlag = False
-
-#!------------------------------------------------------------------------------------------------------------------------------------------------------
 
     if(eventHandler.windowResizeFlag):
 
