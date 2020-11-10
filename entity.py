@@ -1,6 +1,7 @@
 from constants import *
 import tiles, items
 import math, Chunk
+import gameUtilities
 
 #!----------------------------------------------------------------------------------------------------
 # todo  Please add all the entities for the various items
@@ -15,6 +16,30 @@ ENTITY_NAMES = {
     zombie  :   "Zombie"
 }
 ENTITY_TABLE = {}
+
+
+class ActiveNPC:
+    def __init__(self):
+        pass
+
+
+class PassiveNPC:
+    def __init__(self):
+        pass
+
+
+class ItemEntity:
+    def __init__(self):
+        pass
+
+
+class Projectile:
+    def __init__(self):
+        pass
+
+    def update(self):
+        pass
+
 
 class Entity:
 
@@ -45,15 +70,38 @@ class Entity:
         self.hitting     = False
         self.placing     = False
 
-        # self.left        = self.display[0]+self.pos[0]-self.camera[0]-(self.width*0.5)
-        # self.right       = self.display[1]-self.pos[1]+self.camera[1]-(self.height*0.5)
-        # self.rect        = pygame.rect.Rect(self.left, self.right, )
-        # ! these formulas are used in a lot of places and must be made into functions (THEY ARE ALSO GOING TO CHANGE!)
-        # currentChunk = math.floor(self.pos[0] / CHUNK_WIDTH_P)
-        # currentChunkInd = currentChunk - self.chunkBuffer.positions[0]
-        # xPosChunk = self.pos[0] // TILE_WIDTH - currentChunk * CHUNK_WIDTH
-        # yPosChunk = self.pos[1] // TILE_WIDTH
-        # self.tile = self.chunkBuffer[currentChunkInd][yPosChunk][xPosChunk]
+        # ! these formulas are used in a lot of places(THEY MAY ALSO CHANGE!)
+        self.le           = lambda off: (self.pos[0] - (self.width * 0.5) + off[0], self.pos[1] + off[1])    # Left
+        self.ri           = lambda off: (self.pos[0] + (self.width * 0.5) + off[0], self.pos[1] + off[1])    # Right
+        self.bo           = lambda off: (self.pos[0] + off[0], self.pos[1] - (self.height * 0.5) + off[1])    # Bottom
+        self.up           = lambda off: (self.pos[0] + off[0], self.pos[1] + (self.height * 0.5) + off[1])    # Top
+        self.lB           = lambda off: (self.pos[0] - (self.width * 0.5) + off[0], self.pos[1] - (self.height * 0.5) + off[1])    # Left bottom
+        self.lU           = lambda off: (self.pos[0] - (self.width * 0.5) + off[0], self.pos[1] + (self.height * 0.5) + off[1])    # Left top
+        self.rB           = lambda off: (self.pos[0] + (self.width * 0.5) + off[0], self.pos[1] - (self.height * 0.5) + off[1])    # Right bottom
+        self.rU           = lambda off: (self.pos[0] + (self.width * 0.5) + off[0], self.pos[1] + (self.height * 0.5) + off[1])    # Right top
+        # These are the rects of the player
+        self.left         = self.le((0,0))
+        self.right        = self.ri((0,0))
+        self.bottom       = self.bo((0,0))
+        self.top          = self.up((0,0))
+        self.leftBot      = self.lB((0,0))
+        self.leftUp       = self.lU((0,0))
+        self.rightBot     = self.rB((0,0))
+        self.rightUp      = self.rU((0,0))
+        # In the following lambda functions, 'p' means position which is a tuple
+        self.currChunk    = lambda p: int(math.floor(p[0] / CHUNK_WIDTH_P))
+        self.currChunkInd = lambda p: int(self.currChunk(p) - self.chunkBuffer.positions[0])
+        self.xPosChunk    = lambda p: int(p[0] // TILE_WIDTH - self.currChunk(p) * CHUNK_WIDTH)
+        self.yPosChunk    = lambda p: int(p[1] // TILE_WIDTH)
+        self.tile         = lambda p: self.chunkBuffer[self.currChunkInd(p)][self.yPosChunk(p)][self.xPosChunk(p)]
+        # self.tileLeft     = self.chunkBuffer[self.currChunkInd( self.le((-1,0)) )][self.yPosChunk( self.le((-1,0)) )][self.xPosChunk( self.le((-1,0)) )]
+        # self.tileRight    = self.chunkBuffer[self.currChunkInd( self.ri((1,0)) )][self.yPosChunk( self.ri((1,0)) )][self.xPosChunk( self.ri((1,0)) )]
+        # self.tileBot      = self.chunkBuffer[self.currChunkInd( self.bo((0,0)) )][self.yPosChunk( self.bo((-1,0)) )][self.xPosChunk( self.bo((-1,0)) )]
+        # self.tileUp       = self.chunkBuffer[self.currChunkInd( self.up((-1,0)) )][self.yPosChunk( self.up((-1,0)) )][self.xPosChunk( self.up((-1,0)) )]
+        # self.tileLeftBot  = self.chunkBuffer[self.currChunkInd( self.lB((-1,0)) )][self.yPosChunk( self.lB((-1,0)) )][self.xPosChunk( self.lB((-1,0)) )]
+        # self.tileLeftUp   = self.chunkBuffer[self.currChunkInd( self.lU((-1,0)) )][self.yPosChunk( self.lU((-1,0)) )][self.xPosChunk( self.lU((-1,0)) )]
+        # self.tileRightBot = self.chunkBuffer[self.currChunkInd( self.rB((-1,0)) )][self.yPosChunk( self.rB((-1,0)) )][self.xPosChunk( self.rB((-1,0)) )]
+        # self.tileRightUp  = self.chunkBuffer[self.currChunkInd( self.rU((-1,0)) )][self.yPosChunk( self.rU((-1,0)) )][self.xPosChunk( self.rU((-1,0)) )]
 
     def update(self, dt):
         """[summary]
@@ -62,6 +110,8 @@ class Entity:
             dt ([type]): [description]
         """
 
+        self.calcFriction()
+        self.checkGround()
         for i in range(0, 2):
             nextVel = self.vel[i] + self.acc[i]*dt
 
@@ -96,17 +146,34 @@ class Entity:
         # self.acc[1] = max(0, self.acc[1] - AIR_FRICTION)
         self.acc[1] = self.friction * 2
 
-    def calcFriction(self, c):
-        pass
+    def jump(self):
+        self.vel[1] = JUMP_VEL
+        self.acc[1] = -GRAVITY_ACC
+        self.grounded = False
 
-    def notGround(self, c):
-        pass
+    def calcFriction(self):
+        # print(tiles.TILE_ATTR[self.tile(self.lB((0,-1)))])
+        # print(self.acc)
+        # print()
+        if self.tile(self.lB((0,-1))) == 0:
+            self.friction = DEFAULT_FRICTION
+        else:
+            self.friction = tiles.TILE_ATTR[self.tile(self.lB((0,-1)))][FRICTION]
+
+    def checkGround(self):
+        if self.tile(self.lB((0,-1))) == 0:
+            self.grounded = False
+            # return False
+        else:
+            self.grounded = True
+            # return True
 
     def damage(self):
         pass
 
     def notObstacle(self, c):
         pass
+
 
 class Player(Entity):
 
@@ -140,7 +207,7 @@ class Player(Entity):
 
         self.tangibility = 0
         # 0 means intangible
-        # 1 means interacing with blocks
+        # 1 means interacting with blocks
         # 2 means interacting with walls
 
     def run( self ):
@@ -160,10 +227,11 @@ class Player(Entity):
         elif( self.keyState[pygame.K_d] and not self.keyState[pygame.K_a] ):
             self.moveRight()
 
-        if( self.keyState[pygame.K_s] and not self.keyState[pygame.K_w] ):
-            self.moveDown()
-        elif( self.keyState[pygame.K_w] and not self.keyState[pygame.K_s] ):
-            self.moveUp()
+        if self.grounded:
+            if( self.keyState[pygame.K_s] and not self.keyState[pygame.K_w] ):
+                self.moveDown()
+            elif( self.keyState[pygame.K_w] and not self.keyState[pygame.K_s] ):
+                self.jump()
 
         if(self.keyState[pygame.K_e]):
             self.inventory.isEnabled = not self.inventory.isEnabled
@@ -186,9 +254,10 @@ class Player(Entity):
         """[summary]
 
         Args:
-            dt ([type]): [description]
+            dt (float): [description]
         """
 
+        self.calcFriction()
         for i in range(0, 2):
             nextVel = self.vel[i] + self.acc[i]*dt
 
@@ -204,8 +273,8 @@ class Player(Entity):
             self.acc[i] = MAX_ACC*2 if(self.acc[i] > MAX_ACC*2) else -MAX_ACC*2 if(self.acc[i] < -MAX_ACC*2) else self.acc[i]
 
             self.vel[i] += self.acc[i] * dt
-            if self.vel[i] < -MAX_VEL: self.vel[i] = -MAX_VEL
-            elif self.vel[i] > MAX_VEL: self.vel[i] = MAX_VEL
+            if self.vel[i] < -MAX_VEL+(self.friction*0.3): self.vel[i] = -MAX_VEL+(self.friction*0.3)
+            elif self.vel[i] > MAX_VEL-(self.friction*0.3): self.vel[i] = MAX_VEL-(self.friction*0.3)
 
             self.pos[i] += self.vel[i] * SCALE_VEL * dt
 
@@ -509,21 +578,64 @@ class ClientEventHandler:
         self.cameraMovementFlag = True
 
 
+class Menu:
+    def __init__(self, h:int, w:int, bL:list, bG=(130, 102, 68)):
+        self.height  = h
+        self.width   = w
+        self.buttons = bL    # The list of buttons where each button is in the form of a list
+        # Basic structure of each button - ['Text on button', ypos, color, color2, xpos=None, onlyText=False]
+        self.menuSurf = pygame.surface.Surface( (self.height, self.width) )
+
+    def create(self):
+        pygame.font.init()
+        font = pygame.font.SysFont(pygame.font.get_default_font(), 12)
+        for i in self.buttons:
+            buttonSurf = font.render(i[0], True, i[2])
+            w = buttonSurf.get_width()
+            buttonSurf.blit(self.menuSurf, [(self.width-w)//2, i[1]])
+        return self.menuSurf
+
+    def update(self, mP, mS):
+        pass
+
+
 class EntityBuffer:
-    def __init__( self ):
-        self.length = 0
+    def __init__( self, cB:Chunk.ChunkBuffer, s:gameUtilities.Serializer):
+        self.chunkBuffer = cB
+        self.serializer  = s
+        self.length = self.chunkBuffer.length
         self.len = 0
 
-        self.entities = [ ]
+        self.entities = [[] for i in range(self.length)]
         self.mousePos       =   [0, 0]
-        self.entities = { }
-        self.mousePos       =   [0, 0]
+        # self.entities = { }
+        # self.mousePos       =   [0, 0]
 
-    def shiftLeftLoadRight( self ):
-        pass
+    def add(self, e:Entity):
+        self.entities[e.currChunkInd(e.pos)].append(e)
 
-    def shiftRightLoadLeft( self ):
-        pass
+    def shift( self, d):
+        if d < 0:       # Player has moved left
+            self.serializer.setEntity(self.chunkBuffer.positions[-1]+1, self.entities[-1])
+            del self.entities[-1]
+            li = self.serializer.getEntity(self.chunkBuffer.positions[0])
+            if li is None:
+                self.entities.insert(0, [])
+            else:
+                self.entities.insert(0, li)
+        elif d > 0:     # Player has moved right
+            self.serializer.setEntity(self.chunkBuffer.positions[0]-1, self.entities[0])
+            del self.entities[0]
+            li = self.serializer.getEntity(self.chunkBuffer.positions[-1])
+            if li is None:
+                self.entities.insert(len(self.entities), [])
+            else:
+                self.entities.insert(len(self.entities), li)
+
+    def update( self ):
+        for i in self.entities:
+            for j in i:
+                j.update()
 
     def saveComplete( self ):
         pass

@@ -18,7 +18,7 @@ class Serializer:
         c = self.conn.cursor()
         try:
             ## Create Table
-            c.execute( '''CREATE TABLE terrain(keys INTEGER NOT NULL PRIMARY KEY, list TEXT, local TEXT)''' )
+            c.execute( '''CREATE TABLE terrain(keys INTEGER NOT NULL PRIMARY KEY, list TEXT, local TEXT, entity TEXT)''' )
             self.conn.commit()
             c.execute( '''CREATE TABLE player(playername TEXT NOT NULL PRIMARY KEY, pickledplayer TEXT)''' )
             self.conn.commit()
@@ -63,6 +63,22 @@ class Serializer:
             li = bz2.decompress( li[0] )
             lo = bz2.decompress( lo[0] )
             return li, lo
+        except:
+            return None
+
+    def setEntity(self, key, li):
+        c = self.conn.cursor()
+        ## Update string at existing key
+        c.execute('UPDATE terrain SET entity =?, WHERE keys=?', (bz2.compress(li), key))
+        self.conn.commit()
+
+    def getEntity(self, key):
+        c = self.conn.cursor()
+        c.execute('''SELECT entity FROM terrain WHERE keys=?''', (key,))
+        li = c.fetchone()
+        try:
+            li = bz2.decompress( li )
+            return li
         except:
             return None
 
@@ -471,7 +487,7 @@ class RidgedMulti():
 
 #     def grad(self, hash, x, y, z):
 #         h = hash & 15
-        
+
 #         if h < 8:
 #             u = x
 #         else:
@@ -501,7 +517,7 @@ class RidgedMulti():
 #         x,y,z = pos
 #         F3 = 1/3
 #         G3 = 1/6
-        
+
 #         x *= self.frequency
 #         y *= self.frequency
 #         z *= self.frequency
