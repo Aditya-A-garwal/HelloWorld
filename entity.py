@@ -127,8 +127,8 @@ class Entity:
             self.acc[i] = MAX_ACC*2 if(self.acc[i] > MAX_ACC*2) else -MAX_ACC*2 if(self.acc[i] < -MAX_ACC*2) else self.acc[i]
 
             self.vel[i] += self.acc[i] * dt
-            if self.vel[i] < -MAX_VEL: self.vel[i] = -MAX_VEL
-            elif self.vel[i] > MAX_VEL: self.vel[i] = MAX_VEL
+            if self.vel[i] < -MAX_VEL*(1-self.friction*0.2): self.vel[i] = -MAX_VEL*(1-self.friction*0.2)
+            elif self.vel[i] > MAX_VEL*(1-self.friction*0.2): self.vel[i] = MAX_VEL*(1-self.friction*0.2)
 
             self.pos[i] += self.vel[i] * SCALE_VEL * dt
 
@@ -227,11 +227,10 @@ class Player(Entity):
         elif( self.keyState[pygame.K_d] and not self.keyState[pygame.K_a] ):
             self.moveRight()
 
-        if self.grounded:
-            if( self.keyState[pygame.K_s] and not self.keyState[pygame.K_w] ):
-                self.moveDown()
-            elif( self.keyState[pygame.K_w] and not self.keyState[pygame.K_s] ):
-                self.jump()
+        if( self.keyState[pygame.K_s] and not self.keyState[pygame.K_w] ):
+            self.moveDown()
+        elif( self.keyState[pygame.K_w] and not self.keyState[pygame.K_s] ):
+            self.jump()
 
         if(self.keyState[pygame.K_e]):
             self.inventory.isEnabled = not self.inventory.isEnabled
@@ -273,8 +272,8 @@ class Player(Entity):
             self.acc[i] = MAX_ACC*2 if(self.acc[i] > MAX_ACC*2) else -MAX_ACC*2 if(self.acc[i] < -MAX_ACC*2) else self.acc[i]
 
             self.vel[i] += self.acc[i] * dt
-            if self.vel[i] < -MAX_VEL+(self.friction*0.3): self.vel[i] = -MAX_VEL+(self.friction*0.3)
-            elif self.vel[i] > MAX_VEL-(self.friction*0.3): self.vel[i] = MAX_VEL-(self.friction*0.3)
+            if self.vel[i] < -MAX_VEL*(1-self.friction*0.2): self.vel[i] = -MAX_VEL*(1-self.friction*0.2)
+            elif self.vel[i] > MAX_VEL*(1-self.friction*0.2): self.vel[i] = MAX_VEL*(1-self.friction*0.2)
 
             self.pos[i] += self.vel[i] * SCALE_VEL * dt
 
