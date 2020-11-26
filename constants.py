@@ -65,6 +65,7 @@ DROPS               = 7
 PLACEABLE           = 8
 PLACES              = 9
 DAMAGE              = 10
+MAX_STACK           = 11
 
 # entities
-WEIGHT              = 11
+WEIGHT              = 12
