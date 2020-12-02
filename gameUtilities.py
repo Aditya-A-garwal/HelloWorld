@@ -8,7 +8,8 @@ import math
 from sortedcontainers import SortedDict, SortedList
 from functools import lru_cache
 ## Pip-Installed Modules
-# import numpy as np
+import numpy as np
+
 
 class Serializer:
 
@@ -256,6 +257,7 @@ Z_NOISE_GEN = 6971
 SEED_NOISE_GEN = 1013
 SHIFT_NOISE_GEN = 8
 
+
 def cubic_interp(n0, n1, n2, n3, a):
     p = (n3 - n2) - (n0 - n1)
     q = (n0 - n1) - p
@@ -264,14 +266,18 @@ def cubic_interp(n0, n1, n2, n3, a):
 
     return (p*a**3) + (q*a**2) + (r*a) + s
 
+
 def linear_interp(n0, n1, a):
     return ((1 - a) * n0) + (a * n1)
+
 
 def scurve3(a):
     return (a * a * (3-2*a))
 
+
 def scurve5(a):
     return (6 * a**5) - (15 * a**4) + (10 * a**3)
+
 
 def gradient_coherent_noise_3d(x, y, z, seed, quality):
     if x > 0:
@@ -330,6 +336,7 @@ def gradient_coherent_noise_3d(x, y, z, seed, quality):
 
     return linear_interp(iy0, iy1, zs)
 
+
 def gradient_noise_3d(fx, fy, fz, ix, iy, iz, seed):
     vectorIndex = (
     X_NOISE_GEN * ix +
@@ -352,6 +359,7 @@ def gradient_noise_3d(fx, fy, fz, ix, iy, iz, seed):
 
     return ((xv * xvp) + (yv * yvp) + (zv * zvp)*2.12)
 
+
 def int_value_noise_3d(x, y, z, seed):
     n = (
         X_NOISE_GEN * x +
@@ -364,6 +372,7 @@ def int_value_noise_3d(x, y, z, seed):
 
     return (n * (n * n * 60493 + 19990303) + 1376312589) & 0x7fffffff
 
+
 def value_noise_3d(x, y, z, seed):
     return 1 - (int_value_noise_3d(x, y, z, seed) / 1073741824)
 
@@ -375,7 +384,7 @@ class Quality(Enum):
 
 
 ## Different Noise Generators
-class Perlin():
+class Perlin:
     """ The classic noise. https://en.wikipedia.org/wiki/Perlin_noise """
     def __init__(self, frequency=1, lacunarity=2, octaves=6, persistence=0.5, seed=0, quality=Quality.std):
         self.frequency = frequency
@@ -409,7 +418,7 @@ class Perlin():
         return value
 
 
-class RidgedMulti():
+class RidgedMulti:
     """ This is much like perlin noise, however each octave is modified by
     abs(x*-exponent) where x is x *= frequency repeated over each octave. """
     def __init__(self, frequency=1, lacunarity=2, quality=Quality.std,
@@ -621,7 +630,7 @@ class RidgedMulti():
 #         return value
 
 
-class Turbulence():
+class Turbulence:
     """
     Noise module that randomly displaces the input value before
     returning the output value from a source module.
@@ -710,7 +719,7 @@ class Turbulence():
         return self.source0[xDistort, yDistort, zDistort]
 
 
-class Voronoi():
+class Voronoi:
     """
     Noise module that outputs Voronoi cells.
 

@@ -12,6 +12,7 @@ import math
 # 4   camera-space                screen-space
 #     coordinates in the array    coordinates on the display
 
+
 class Renderer:
 
     @classmethod

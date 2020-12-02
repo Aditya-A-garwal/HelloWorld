@@ -7,6 +7,7 @@ from gameUtilities import *
 
 from random import randint
 
+
 class Chunk:
 
     def __init__(  self, index = 0, blocks = None, walls = None, localTable = {}  ):
@@ -112,10 +113,11 @@ class Chunk:
     def __setitem__(  self, key, value  ):
         self.blocks[key] = value
 
+
 class ChunkBuffer:
 
     def __init__(  self, length, middleIndex, targetWorld, seed=None  ):
-        """Contructor for a chunk buffer
+        """Constructor for a chunk buffer
 
         Args:
             length (int): The number of chunks in the chunk buffer (Always an odd integer)
@@ -554,6 +556,7 @@ class chunkBufferManager:
 
 
             absouluteIndex  +=  1
+
 
 class chunkGenerator:
 

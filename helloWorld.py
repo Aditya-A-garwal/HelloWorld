@@ -25,7 +25,7 @@ chunkBuffer = ChunkBuffer(11, 0, "world1")
 eventHandler = entity.ClientEventHandler()
 
 # Player variables
-player = entity.Player([0, 0], chunkBuffer, eventHandler, eventHandler.keyStates, eventHandler.mouseState, eventHandler.cursorPos, DEFAULT_FRICTION)
+player = entity.Player([0, 2720], chunkBuffer, eventHandler, eventHandler.keyStates, eventHandler.mouseState, eventHandler.cursorPos, DEFAULT_FRICTION)
 currChunk = prevChunk = deltaChunk = 0
 
 # Create and display window
@@ -118,6 +118,7 @@ while running:
 
         if  int(prevCamera[0] - camera[0]) or int(prevCamera[1] - camera[1])    : eventHandler.addCameraMotion()
 
+    print(dt)
     player.update( dt )
 
     if eventHandler.tileBreakFlag :

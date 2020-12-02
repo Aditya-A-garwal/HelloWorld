@@ -103,11 +103,26 @@ class Entity:
         # self.tileRightBot = self.chunkBuffer[self.currChunkInd( self.rB((-1,0)) )][self.yPosChunk( self.rB((-1,0)) )][self.xPosChunk( self.rB((-1,0)) )]
         # self.tileRightUp  = self.chunkBuffer[self.currChunkInd( self.rU((-1,0)) )][self.yPosChunk( self.rU((-1,0)) )][self.xPosChunk( self.rU((-1,0)) )]
 
-    def update(self, dt):
+    def driveUpdate(self, dt:float):
+        dt2 = dt
+        t = TILE_WIDTH / (MAX_VEL*SCALE_VEL)
+        # t = 1 / (MAX_VEL * SCALE_VEL)
+        # if self.vel != [0,0]:
+        #     if self.vel[0] == 0:
+        #         t = TILE_WIDTH/MAX_VEL*SCALE_VEL
+        #     elif self.vel[1] == 0:
+        #         t = TILE_WIDTH/self.vel[0]
+        #     else:
+        #         t = min(TILE_WIDTH/self.vel[1], TILE_WIDTH/self.vel[0])
+        while self.vel != [0,0] and dt2 > 0:
+            dt2 -= t
+            self.update(t)
+
+    def update(self, dt:float):
         """[summary]
 
         Args:
-            dt ([type]): [description]
+            dt (float): [description]
         """
 
         self.calcFriction()
@@ -172,6 +187,25 @@ class Entity:
         pass
 
     def notObstacle(self, c):
+        pass
+
+
+class Slime(Entity):
+    def __init__(self, pos: list, chunkBuffer: Chunk.ChunkBuffer, eventHandler, keyState, mouseState, cursorPos, friction: float, health: int = 100,
+                 grounded: bool = True):
+        super().__init__(pos, chunkBuffer, PLYR_WIDTH, PLYR_HEIGHT, friction, health, grounded)
+        self.inventory = Inventory(1, 1)
+
+    def runAI(self):
+        pass
+
+
+class Zombie(Entity):
+    def __init__(self, pos:list, chunkBuffer:Chunk.ChunkBuffer, eventHandler, keyState, mouseState, cursorPos, friction:float, health:int=100, grounded:bool=True):
+        super().__init__(pos, chunkBuffer, PLYR_WIDTH, PLYR_HEIGHT, friction, health, grounded)
+        self.inventory = Inventory(1, 1)
+
+    def runAI(self):
         pass
 
 
@@ -306,6 +340,7 @@ class Player(Entity):
             self.eventHandler.tilePlacePos[0] = x
             self.eventHandler.tilePlacePos[1] = y
 
+
 class Inventory:
 
     def __init__( self, cols, rows ):
@@ -347,12 +382,12 @@ class Inventory:
             self.items[pos[1]][pos[0]] = item
             self.items[pos[1]][pos[0]] = item
 
-            if( self.quantities[pos[1]][pos[0]] + quantity > items.ITEM_ATTR[i][MAX_STACK] ):
+            if( self.quantities[pos[1]][pos[0]] + quantity > items.ITEM_ATTR[item][MAX_STACK] ):
 
                 self.selItem[0] = item
-                self.selItem[1] = self.quantities[pos[1]][pos[0]] + quantity - items.ITEM_ATTR[i][MAX_STACK]
+                self.selItem[1] = self.quantities[pos[1]][pos[0]] + quantity - items.ITEM_ATTR[item][MAX_STACK]
 
-                self.quantities[pos[1]][pos[0]] = items.ITEM_ATTR[i][MAX_STACK]
+                self.quantities[pos[1]][pos[0]] = items.ITEM_ATTR[item][MAX_STACK]
 
             else:
 
@@ -372,6 +407,7 @@ class Inventory:
 
     def remItemLast( self, i, q ):
         pass
+
 
 class ClientEventHandler:
     """ Class to abstract recording, management and processing of client-side events

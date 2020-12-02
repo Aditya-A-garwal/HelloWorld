@@ -68,3 +68,4 @@ DAMAGE              = 10
 
 # entities
 WEIGHT              = 11
+MAX_STACK           = 12
