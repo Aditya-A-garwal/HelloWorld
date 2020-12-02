@@ -129,7 +129,6 @@ while running:
         if  int(prevCamera[0] - camera[0]) or int(prevCamera[1] - camera[1])    : eventHandler.addCameraMotion()
 
     player.update( dt )
-    chunkBuffer.update( dt )
 
     if eventHandler.tileBreakFlag :
         Renderer.renderChunk( eventHandler.tileBreakIndex, (eventHandler.tileBreakPos[0], eventHandler.tileBreakPos[1], eventHandler.tileBreakPos[0] + 1, eventHandler.tileBreakPos[1] + 1) )
