@@ -4,6 +4,8 @@ from Renderer import *
 
 import entity
 
+import listeners
+
 # Screen variables
 displaySize = [400, 300]
 framerate = 0
@@ -63,6 +65,14 @@ def takeCommand( ):
         elif(command[0] == 'g'):
             print(not cameraBound)
 
+@listeners.windowResizeEvent
+def onWindowResize():
+    displaySize[0] = screen.get_width()
+    displaySize[1] = screen.get_height()
+
+    Renderer.updateRefs()
+    Renderer.updateScreen()
+
 # game loop
 
 running = True
@@ -119,6 +129,7 @@ while running:
         if  int(prevCamera[0] - camera[0]) or int(prevCamera[1] - camera[1])    : eventHandler.addCameraMotion()
 
     player.update( dt )
+    chunkBuffer.update( dt )
 
     if eventHandler.tileBreakFlag :
         Renderer.renderChunk( eventHandler.tileBreakIndex, (eventHandler.tileBreakPos[0], eventHandler.tileBreakPos[1], eventHandler.tileBreakPos[0] + 1, eventHandler.tileBreakPos[1] + 1) )
@@ -159,7 +170,6 @@ while running:
 
         eventHandler.windowResizeFlag = False
 
-    chunkBuffer.update(dt)
     pygame.display.update()     # Updating the screen
 
     # Framerate calculation
