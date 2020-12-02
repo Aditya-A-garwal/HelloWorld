@@ -159,12 +159,12 @@ while running:
 
         eventHandler.windowResizeFlag = False
 
+    chunkBuffer.update(dt)
     pygame.display.update()     # Updating the screen
 
     # Framerate calculation
     dt = clock.tick(0) / 1000
     #framerate = 1 / max(dt, 0.001)
-    #print(framerate)
 
 
 chunkBuffer.saveComplete()
