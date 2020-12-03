@@ -4,8 +4,6 @@ from Renderer import *
 
 import entity
 
-import listeners
-
 # Screen variables
 displaySize = [400, 300]
 framerate = 0
@@ -64,14 +62,6 @@ def takeCommand( ):
             cameraBound = exec(command[cntr::])
         elif(command[0] == 'g'):
             print(not cameraBound)
-
-@listeners.windowResizeEvent
-def onWindowResize():
-    displaySize[0] = screen.get_width()
-    displaySize[1] = screen.get_height()
-
-    Renderer.updateRefs()
-    Renderer.updateScreen()
 
 # game loop
 
@@ -174,6 +164,7 @@ while running:
     # Framerate calculation
     dt = clock.tick(0) / 1000
     #framerate = 1 / max(dt, 0.001)
+    #print(framerate)
 
 
 chunkBuffer.saveComplete()

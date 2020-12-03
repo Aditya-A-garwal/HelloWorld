@@ -101,13 +101,10 @@ class Chunk:
         return True
 
     def update( self, dt ):
+
         for i in range(0, CHUNK_HEIGHT):
             for j in range(0, CHUNK_WIDTH):
-                if(( j, i, True ) in self.TILE_TABLE_LOCAL):
-                    if(HEALTH in self.TILE_TABLE_LOCAL[( j, i, True )]):
-                        self.TILE_TABLE_LOCAL[( j, i, True )][HEALTH] += 25*dt
-                        if(self.TILE_TABLE_LOCAL[( j, i, True )][HEALTH] >= 100):
-                            del self.TILE_TABLE_LOCAL[ ( j, i, True ) ]
+                pass
 
     def __getitem__(  self, key  ):
         return self.blocks[key]
@@ -318,8 +315,7 @@ class ChunkBuffer:
                     self.propagate(index+1, 0, y, left=False)
 
     def update( self, dt ):
-        for _ in range( 0, self.length ):
-            self.chunks[_].update( dt )
+        for _ in range( 0, self.length ):   self.chunks[_].update()
 
     def __getitem__( self, key ):
         return self.chunks[key]
