@@ -1,7 +1,7 @@
-import pickle
-
 import tiles, items
 from constants import *
+from Renderer import *
+
 from opensimplex import OpenSimplex
 from gameUtilities import *
 

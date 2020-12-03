@@ -1,6 +1,6 @@
 import sys
 from pygame.locals import *
-from Renderer import *
+from Chunk import *
 
 import entity
 

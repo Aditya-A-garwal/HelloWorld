@@ -1,5 +1,6 @@
 import pygame
 import math
+import pickle
 
 # Width of an individual tile unit (in points)
 TILE_WIDTH          =  16

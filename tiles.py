@@ -542,7 +542,7 @@ TILE_ATTR = {
             LTIMPERMEABILITY:0},
 }
 
-
+#! THIS MUST BE DONE WITHOUT THE FUNCTIONS
 def loadImageTable():
       for key in TILE_TABLE:
             TILE_TABLE[key] = pygame.transform.smoothscale(TILE_TABLE[key], (TILE_WIDTH, TILE_WIDTH))

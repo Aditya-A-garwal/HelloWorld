@@ -618,6 +618,8 @@ ITEM_ATTR = {
            LTIMPERMEABILITY:0}
 }
 
+#! THIS MUST BE DONE WITHOUT THE FUNCTIONS
+
 def loadImageTable():
     for key in ITEM_TABLE:
         ITEM_TABLE[key] = ITEM_TABLE[key].convert_alpha()
